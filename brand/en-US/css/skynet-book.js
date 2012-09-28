@@ -1,0 +1,4 @@
+function skynetBookLoad(){
+  setUpCodeTabs();
+  deathstarItUp();
+}

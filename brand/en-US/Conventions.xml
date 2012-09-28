@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+]>
+<section>
+  <title>Document Conventions</title>
+
+  <!-- This section is hidden by css in the brand. When javascript is enabled, 
+    this section is unhidden by removing the hidden class -->
+  <!-- TODO: Add something to the xsl to make the TOC entry for this section
+  hideable as well -->
+  <!-- TODO: Figure out how to elide this section in PDF output via xsl -->
+  <section role="skynet-defaultcodeselector hidden">
+    <title>Default Programming Language for Code Samples</title>
+     <para>
+	      If this book contains programming samples in more than one programming language,
+ you can set your preferred programming language here.
+    </para>
+
+    <itemizedlist role="codetabs-selector">
+      <listitem role="cs"><para>C#/.NET</para></listitem>
+      <listitem role="cpp"><para>C++</para></listitem>
+      <listitem role="java"><para>Java</para></listitem>
+      <listitem role="js"><para>JavaScript</para></listitem>
+      <listitem role="node"><para>Node.js</para></listitem>
+      <listitem role="py"><para>Python</para></listitem>
+      <listitem role="rb"><para>Ruby</para></listitem>
+    </itemizedlist>
+
+    <para>When code samples are available in multiple languages, your language will be presented by default.</para>
+  </section>
+
+</section>
