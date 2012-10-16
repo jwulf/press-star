@@ -109,7 +109,7 @@ function dtdvalidate (req, res){
     if (!req.body.xml){res.send("Body format: {'xml' : '<xmltovalidate>'}");}
     else
     {
-        console.log(req.body.xml);
+        //console.log(req.body.xml);
         var dtdstring=('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"\n' +
             '"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\" []>');
