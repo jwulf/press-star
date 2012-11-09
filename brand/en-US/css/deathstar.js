@@ -69,9 +69,4 @@ function updateTopic (topicid, newContent) {
 	if (prereq) prereq.prependTo(target);
 	if (seealso) seealso.appendTo(target);
 	if (buglink) buglink.appendTo(target);
-
-	// Now do: .sectionTopic add as first child: NodeA
-   	// Now do : .sectionTopic.add as last: NodeY
-	// Now do : .sectionTopic.add as last: NodeZ
-   
 }
