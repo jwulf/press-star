@@ -1,31 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=PT+Mono|Open+Sans:400italic,400,600);
 
-/* @font-face {
-  font-family: 'PT Mono';
-  font-style: normal;
-  font-weight: 400;
-  src: local('PT Mono'), local('PTMono-Regular'), url(jmle3kzCPnW8O7_gZGRDlQ.woff) format('woff');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(MTP_ySUJH_bn48VBG8sNSnhCUOGz7vYGh680lGh-uXM.woff) format('woff');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: italic;
-  font-weight: 400;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(xjAJXh38I15wypJXxuGMBobN6UDyHWBl620a-IRfuBk.woff) format('woff');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
-}
-*/
-
 .RoleCreateBugPara a {
   display:inline-block;
   border: 1px dotted red;
@@ -86,14 +60,14 @@ pre {
 }
 
 .command, .filename, .keycap, .classname, .literal {
-	font-family:"PT Mono", "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
+	font-family: "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
   font-weight: normal;
 	/* font-weight:bold; */
 }
 
 code {
-	font-family: "PT Mono", "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
-	white-space: nowrap;
+	font-family:  "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
+	white-space: pre-wrap;
   font-weight:normal;
 	/* font-weight:bold; */
 }
@@ -106,7 +80,7 @@ font-variant: normal;
 }
 
 .guilabel, .guibutton {
-  font-family: "PT Mono", "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
+  font-family: "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
   font-weight: bold;
 }
 

@@ -21,19 +21,57 @@ function deathstarItUp()
 {
   var editorURL, injectorURL, buildData, endLoc, topicID, skynetURL;
   
-  skynetURL = 'http://skynet.usersys.redhat.com:8080/TopicIndex';
-  editorURL = url_query('editorurl') || '../editor/index.html';  
+  editorURL = '/edit';  
 
   // rewrite bug links as editor links
   $('.RoleCreateBugPara > a').each(function(){
-    buildData = url_query('cf_build_id', $(this).attr('href')) || 'undefined-';
+	var target = $(this);
+    buildData = url_query('cf_build_id', target.attr('href')) || 'undefined-';
     endLoc = buildData.indexOf('-');
     topicID = buildData.substr(0, endLoc);
-    editURL = editorURL + '?skyneturl=' + skynetURL + '&topicid='+ topicID; 
-    $(this).attr('href', editURL);
-    $(this).attr('target', '_new');
-    $(this).addClass('edittopiclink');
-    $(this).text('Edit');
-    $($(this).parents('.section')[0]).addClass('sectionTopic');
+    editURL = editorURL + '/test/' + topicID; 
+    target.attr('href', editURL);
+    target.attr('target', '_new');
+    target.addClass('edittopiclink');
+    target.text('Edit');
+
+	// Identify the bug link, to allow us to preserve it when updating the DOM
+	$(target.parents('.simplesect')).addClass('bug-link');
+	// Identify the div containing the Topic as a topic, and uniquely with the Topic ID
+    $(target.parents('.section')[0]).addClass('sectionTopic sectionTopic' + topicID);
+
   }); 
+}
+
+// This function is typically invoked from a child window containing an editor
+// It updates the DOM of the book in the browser, allowing topic edits to be
+// seen immediately
+function updateTopic (topicid, newContent) {
+
+	// Locate the sectionTopic
+	var target = $('.sectionTopic' + topicid);
+
+	if (!target) return;
+
+	// Locate and preserve its .prereqs-list child, if it exists
+	var prereq = target.children('.prereqs-list').detach();
+
+	// Locate and preserve its .see-also-list child, if it exists
+	var seealso = target.children('.see-also-list').detach();
+
+	// Locate and preserve the bug link / edit child
+	var buglink = target.children('.bug-link').detach();
+	
+	// Update the content
+	target.html(newContent);
+	
+	// Restore injected content
+	if (prereq) prereq.prependTo(target);
+	if (seealso) seealso.appendTo(target);
+	if (buglink) buglink.appendTo(target);
+
+	// Now do: .sectionTopic add as first child: NodeA
+   	// Now do : .sectionTopic.add as last: NodeY
+	// Now do : .sectionTopic.add as last: NodeZ
+   
 }
