@@ -193,7 +193,7 @@ http://stackoverflow.com/questions/11823965/jquery-each-performance-of-anonymous
             } // iterate through languages in the book
 
             // Now we need to set one of them as the default active one
-            //makeFirstActive($(this)); 
+            makeFirstActive($(this)); 
         });
     }
 
