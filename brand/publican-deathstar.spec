@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.29
+Version:	0.30
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Thu Dec 06 2012 Joshua Wulf <jwulf@redhat.com> 0.30
+- Added css for master selector. Cleaned up and commented code
+ 
 * Fri Sep 28 2012 Joshua Wulf <jwulf@redhat.com> 0.29
 - Forked from redhat-video to deathstar
 
