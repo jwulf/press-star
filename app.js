@@ -8,18 +8,25 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , sockethandler = require('./routes/sockethandler');
+  , sockethandler = require('./routes/sockethandler')
+  , xslt = require('node_xslt');
 
 // Our REST API routes
 var restapi = require('./routes/restapi');
 
 var app = express();
 
+/*
+console.log('Starting XSL stylesheet load');
+var stylesheet = xslt.readXsltFile("xsl/html-single.xsl");
+console.log('Completed XSL stylesheet load');
+*/
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.favicon());
+//  app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());

@@ -1,8 +1,9 @@
-var fs = require('fs');
-var exec = require('child_process').exec;
-var cylon = require('pressgang-cylon');
-var PressGangCCMS = require('pressgang-rest').PressGangCCMS;
-var db = require('./dbconnector').init();
+var fs = require('fs')
+  , exec = require('child_process').exec
+  , cylon = require('pressgang-cylon')
+  , PressGangCCMS = require('pressgang-rest').PressGangCCMS
+  , db = require('./dbconnector').init()
+  , xslt = require('node_xslt');
 
 exports.restroute = restroute;
 exports.checkout = checkout;
@@ -14,6 +15,10 @@ exports.checkout = checkout;
 // {operation: addbook, url: <pressgang url>, id: <spec id>, 
 //      [username: <pressgang user>, authtoken: <auth token>, authmethod: <authmethod>,
 //      restver: <pressgang REST ver>]}
+console.log("Loading stylesheet in rest router");
+var stylesheet = xslt.readXsltFile("xsl/html-single.xsl");
+console.log("Loaded stylesheet in rest router");
+
 
 function restroute (req, res){
     console.log('rest router called');
@@ -26,6 +31,30 @@ function restroute (req, res){
     if (op === 'buildstatus') {buildstatus (req, res);}
     else 
     if (op ==='addbook') {addbook (req, res);}
+    else
+    if (op ==='xmlpreview') {xmlPreview (req, res);}
+}
+
+function xmlPreview(req, res){
+     
+    console.log("xmlPreview handler called");
+    var preview="<p>Could not transform</p>";
+    console.log("Message was: " + req.body.xml);
+    try {
+        var xmldocument = xslt.readXmlString(req.body.xml);
+
+        //preview = xslt.transform(req.app.settings.xslt, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0']); }
+        preview = xslt.transform(stylesheet, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0']); }
+    catch (err) {   
+        console.log(err);
+        preview="<p>Could not transform</p>"; }
+    
+    console.log("Transformed: " + preview);
+    
+     // http://stackoverflow.com/questions/8863179/enyo-is-giving-me-a-not-allowed-by-access-control-allow-origin-and-will-not-lo
+    // http://www.wilsolutions.com.br/content/fix-request-header-field-content-type-not-allowed-access-control-allow-headers
+    
+    res.send(preview);
 }
 
 function addbook(req, res){
