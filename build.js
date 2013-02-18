@@ -3,7 +3,8 @@
 var program = require('commander'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn, 
-	async = require('async');
+	async = require('async'),
+	PressGangCCMS = require('pressgang-rest').PressGangCCMS;
 
 var books = [],
 	all = false,
@@ -42,7 +43,7 @@ if (program.args) {
 }
 
 var q = async.queue(function (bookIndex, callback) {
-    spawn( 'csprocessor', ['build'], {cwd: books[bookIndex].directory}).on('exit', unlockDir(bookIndex));
+    spawn( 'csprocessor', ['build'], {cwd: books[bookIndex].directory}).on('exit', csBuildDone(bookIndex));
 }, 1).drain(buildingFinished);
 
 if (books.length > 0) {
@@ -50,6 +51,15 @@ if (books.length > 0) {
 		{
 			buildBook(bookIndex);
 		}
+}
+
+function csBuildDone(bookIndex)
+{
+	// Called when the csprocessor has built the spec locally
+	// Now we invade the publican directory, set the brand to one we want
+	// and rebuild
+
+	unlockDir(bookIndex);
 }
 
 function unlockDir(bookIndex)
@@ -84,6 +94,11 @@ function buildBook(bookIndex)
 	fs.writeFileSync(directory + '/build.lock');
 
 	// Read the csprocessor and add the spec ID and product name to the book object
+	require(directory + '/csprocessor.cfg');
+	var pressgang = new PressGangCCMS(SERVER_URL);
+	pressgang.getContentSpec(SPEC_ID, function (err, result){
+		books[bookIndex].metadata = result.metadata;
+	});
 
 	q.push(bookIndex);
 }
