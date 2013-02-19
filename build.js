@@ -91,6 +91,12 @@ function csBuildDone(bookIndex) {
     books[bookIndex].publicanDirectory = directory + bookFilename + '/publican';
 
     console.log('Unzipping publican book');
+    
+    if (!fs.existsSync(zipfile))
+    {
+        console.log(zipfile + ' not found.');
+        return;
+    }
     spawn('unzip', [zipfile], {
         cwd: directory
     }).on('exit', function(err) {
@@ -113,21 +119,25 @@ function unlockDir(bookIndex) {
 
 function buildBook(bookIndex) {
     var directory = books[bookIndex].directory;
+    
+    if (!fs.existsSync(directory))
+    {
+        console.log(directory + ' does not exist');
+        return;
+    }
     var stats = fs.statSync(directory);
     if (!stats.isDirectory()) {
         console.log(directory + ' is not a directory');
         return;
     }
     // Check if the directory is locked by another build process
-    stats = fs.statSync(directory + '/build.lock');
-    if (stats.isFile()) {
+    if (fs.existsSync(directory + '/build.lock')) {
         console.log('Directory ' + directory + ' locked.');
         return;
     }
 
     // Check that a csprocessor.cfg file exists in the target location
-    stats = fs.statSync(directory + '/csprocessor.cfg');
-    if (!stats.isFile()) {
+    if (!fs.existsSync(directory + '/csprocessor.cfg')) {
         console.log('No csprocessor.cfg file found in ' + directory);
         return;
     }
