@@ -1,5 +1,3 @@
-# /env/node
-
 var program = require('commander'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn, 
@@ -18,7 +16,7 @@ program
   .parse(process.argv);
 
 if (program.args) {
-	// If given on or more arguments we interpret them as directory names
+	// If given one or more arguments we interpret them as directory names
 	for (var argument = 0; argument ++; argument < program.args.length) {
 		book = {};
 		book.directory = program.args[argument];
@@ -33,7 +31,7 @@ if (program.args) {
     		var currentFile = currentPath + '/' + files[index];
        		var stats = fs.statSync(currentFile);
        		if (stats.isDirectory())
-       			if fs.statSync(currentFile + '/csprocessor.cfg').isFile {
+       			if (fs.statSync(currentFile + '/csprocessor.cfg').isFile) {
 	       			book = {};
 	       			book.directory = currentFile;
 	       			books.push(book);
@@ -43,8 +41,16 @@ if (program.args) {
 }
 
 var q = async.queue(function (bookIndex, callback) {
+	console.log('Initiating csprocessor build');
     spawn( 'csprocessor', ['build'], {cwd: books[bookIndex].directory}).on('exit', csBuildDone(bookIndex));
-}, 1).drain(buildingFinished);
+}, 1);
+
+var publicanQueue = async.queue(function(bookIndex, callback){
+	console.log('Initiating Publican build');
+	spawn( 'publican', ['build', '--formats', 'html-single', '--langs', 'en-US'], {cwd: books[bookIndex].publicanDirectory}).on('exit', function(err) {unlockDir(bookIndex)});
+});
+
+},1).drain(buildingFinished);
 
 if (books.length > 0) {
 		for (bookIndex = 0; bookIndex ++; bookIndex < books.length)
@@ -59,7 +65,47 @@ function csBuildDone(bookIndex)
 	// Now we invade the publican directory, set the brand to one we want
 	// and rebuild
 
-	unlockDir(bookIndex);
+	/* Construct a publican.cfg file that looks like this:
+
+	xml_lang: en-US
+	type: Book
+	brand: redhat-video
+	chunk_first: 0
+	git_branch: docs-rhel-6
+	web_formats: "epub,html,html-single"
+
+	docname: Messaging Installation and Configuration Guide
+	product: Red Hat Enterprise MRG
+	*/
+
+	var publicanConfig = 'xml_lang: en-US \n' +
+						 'type: Book\n' +
+						  'brand: deathstar\n' +
+						  'chunk_first: 0\n' +
+						  'git_branch: docs-rhel-6\n' +
+						  'web_formats: "epub,html, html-single\n' +
+						  'docname: ' + books[bookIndex].metadata.title + '\n' +
+						  'product: ' + books[bookIndex].metadata.product + '\n';
+
+
+	var directory = books[bookIndex].directory + '/assembly';
+	var bookFilename = books[bookIndex].metadata.title.split(' ').join('_');
+	var zipfile = bookFilename + '-publican.zip';
+	var publicanFile = directory + bookFilename + '/publican/publican.cfg';
+	books[bookIndex].publicanDirectory = directory + bookFilename + '/publican';
+
+	console.log('Unzipping publican book');
+	spawn( 'unzip', [zipfile], {cwd: directory}).on('exit', function (err) {
+		fs.unlinkSync(publicanFile);
+		fs.writeFileSync(publicanFile, publicanConfig, function (err){
+			if (err) {
+				console.log(err);
+			} else {
+				console.log('Saved publican.cfg: ' + publicanFile);
+				q2.push(bookIndex);
+			}
+		});
+	});
 }
 
 function unlockDir(bookIndex)
@@ -106,4 +152,5 @@ function buildBook(bookIndex)
 function buildingFinished()
 {
 	// Building is finished - now we need to construct the index page
+	console.log('Building is finished');
 }
