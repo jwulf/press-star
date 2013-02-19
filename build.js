@@ -15,7 +15,7 @@ if (program.args) {
     
     console.log('Invoked with arguments');
     console.log(program.args);
-    for (var argument = 0; argument++; argument < program.args.length) {
+    for (var argument = 0; argument < program.args.length; argument++) {
         book = {};
         console.log('Given: ' + program.args[argument]);
         book.directory = program.args[argument];
@@ -58,7 +58,7 @@ var publicanQueue = async.queue(function(bookIndex, callback) {
 publicanQueue.drain = buildingFinished;
 
 if (books.length > 0) {
-    for (var bookIndex = 0; bookIndex++; bookIndex < books.length) {
+    for (var bookIndex = 0; bookIndex < books.length; bookIndex++) {
         buildBook(bookIndex);
     }
 }
