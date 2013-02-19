@@ -12,14 +12,18 @@ program.version('0.0.1').usage('<directory>').parse(process.argv);
 
 if (program.args) {
     // If given one or more arguments we interpret them as directory names
+    
+    console.log('Invoked with arguments');
     for (var argument = 0; argument++; argument < program.args.length) {
         book = {};
+        console.log('Given: ' + program.args[argument]);
         book.directory = program.args[argument];
         books.push(book);
     }
 }
 else {
     // If given no arguments we scan the current directory for books
+    console.log('Scanning for books...')
     fs.readdirSync('.', function(err, files) {
         if (err) throw err;
         for (var index in files) {
@@ -27,6 +31,7 @@ else {
             var stats = fs.statSync(currentFile);
             if (stats.isDirectory()) if (fs.statSync(currentFile + '/csprocessor.cfg').isFile) {
                 book = {};
+                console.log('Found: ' + currentFile);
                 book.directory = currentFile;
                 books.push(book);
             }
