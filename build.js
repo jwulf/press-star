@@ -146,7 +146,6 @@ function buildBook(bookIndex) {
     fs.writeFileSync(directory + '/build.lock');
 
     // Read the csprocessor and add the spec ID and product name to the book object
-    require(directory + '/csprocessor.cfg');
     
     // This style of reading config files I used here:
     // https://github.com/jwulf/node-pressgang-cylon-processor/blob/master/index.js
