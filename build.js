@@ -165,6 +165,7 @@ function buildBook(bookIndex) {
         }
     }
     
+    console.log('Got server: ' + spec.serverURL + ' spec ID: ' + spec.specID );
     cylon.getSpecMetadata(spec.serverURL, spec.specID, function (err, md)
     {
         if (err) {
