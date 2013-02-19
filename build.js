@@ -48,7 +48,8 @@ var publicanQueue = async.queue(function(bookIndex, callback) {
     }).on('exit', function(err) {
         unlockDir(bookIndex)
     });
-}, 1).drain(buildingFinished);
+}, 1)
+publicanQueue.drain = buildingFinished;
 
 if (books.length > 0) {
     for (var bookIndex = 0; bookIndex++; bookIndex < books.length) {
