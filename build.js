@@ -14,6 +14,7 @@ if (program.args) {
     // If given one or more arguments we interpret them as directory names
     
     console.log('Invoked with arguments');
+    console.log(program.args);
     for (var argument = 0; argument++; argument < program.args.length) {
         book = {};
         console.log('Given: ' + program.args[argument]);
