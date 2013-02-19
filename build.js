@@ -2,7 +2,7 @@ var program = require('commander'),
     fs = require('fs'),
     spawn = require('child_process').spawn,
     async = require('async'),
-    PressGangCCMS = require('pressgang-rest').PressGangCCMS;
+    cylon = require('pressgang-cylon');
 
 var books = [],
     book = {},
@@ -147,12 +147,34 @@ function buildBook(bookIndex) {
 
     // Read the csprocessor and add the spec ID and product name to the book object
     require(directory + '/csprocessor.cfg');
-    var pressgang = new PressGangCCMS(SERVER_URL);
-    pressgang.getContentSpec(SPEC_ID, function(err, result) {
-        books[bookIndex].metadata = result.metadata;
+    
+    // This style of reading config files I used here:
+    // https://github.com/jwulf/node-pressgang-cylon-processor/blob/master/index.js
+    
+    var csprocessorCfgSchema= [
+        {attr: 'serverURL', rule: /^SERVER_URL[ ]*((=.*)|$)/i},
+        {attr: 'specID', rule: /^SPEC_ID[ ]*((=.*)|$)/i}
+        ];
+        
+    var contentspec = fs.readFileSync(directory + '/csprocessor.cfg', 'utf8').split("\n");
+    var spec = {};
+    
+    for (var line = 0; line < contentspec.length; line ++) {
+        for (var rules = 0; rules < csprocessorCfgSchema.length; rules ++) {
+            if (contentspec[line].match(csprocessorCfgSchema[rules].rule))
+                spec[csprocessorCfgSchema[rules].attr] = contentspec[line].split('=')[1].replace(/^\s+|\s+$/g,'');
+        }
+    }
+    
+    cylon.getSpecMetadata(spec.serverURL, spec.specID, function (err, md)
+    {
+        if (err) {
+            console.log(err); 
+        } else {
+            books[bookIndex].metadata = md;
+            q.push(bookIndex);
+        }
     });
-
-    q.push(bookIndex);
 }
 
 function buildingFinished() {
