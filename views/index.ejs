@@ -6,6 +6,18 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+
+    <% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
+        <h3><%= books[each].title %> 
+            <span class="action-button btn-edit"><a target="_new" href="/edit/content?url=<%= url%>&id=<%= id %>">Edit Content</a></span>
+            <span class="action-button btn-structure"><a target="_new" href="/cspec-editor.html?skyneturl=<%= url%>&topicid=<%= id %>">Edit Structure</a></span>
+            <% if (books[each].data.locked) { %>
+            <span class="rebuilding-button"><a target="_new" href="/buildlog.html?buildid=<%= books[each].rebuildSocketID %>">Rebuilding</a></span>
+            <% } else { %>
+            <span class="action-button btn-rebuild"><a href="/action/rebuild?url=<%= url%>&id=<%= id %>">Rebuild Book</a></span>
+            <% } %>
+            <span class="btn-publish action-button"><a href="/action/publish?url=<%= url%>&id=<%= id %>">Publish Book</a></span></h3>
+    <% } %>
+
   </body>
 </html>

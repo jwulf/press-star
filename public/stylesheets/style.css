@@ -4,4 +4,19 @@ body {
 }
 a {
   color: #00b7ff;
+  text-decoration: none;
+}
+.rebuilding-button a {
+  color: #f00;
+}
+.rebuilding-button a:hover {
+  color: #f00;
+  border-bottom: 1px dotted;
+}
+.action-button a {
+  color: Beige;
+}
+.action-button a:hover {
+  color: #f00;
+  border-bottom: 1px dotted;
 }

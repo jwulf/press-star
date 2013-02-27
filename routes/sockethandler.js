@@ -1,6 +1,7 @@
-var fs=require('fs');
-var spawn = require('child_process').spawn;
-var carrier = require('carrier');
+var fs=require('fs'),
+    spawn = require('child_process').spawn,
+    carrier = require('carrier'),
+    builder = require('./build.js');
 
 exports.socketHandler = socketHandler;
 
@@ -14,11 +15,21 @@ function socketHandler(client){
         console.log('Client just sent:', data); 
     }); 
     client.on('pushspec', function(data){pushSpec(data, client);});
+    client.on('getBuildLog', function(data) {getBuildLog(data, client);})
     
-        
     client.on('disconnect', function() {
         console.log('Bye client :(');
     }); 
+}
+
+function getBuildLog(data, client){
+    console.log('Build Log requested via websocket for ' + data.buildID);
+    if (! builder.streams[data.buildID]) {
+        console.log('Stream does not exist - job finished?');
+        client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
+    } else {
+       builder.streams[data.buildID].on('line', function(line){client.emit('cmdoutput',line); console.log(line); }); 
+    }
 }
 
 function pushSpec(data, client) {
@@ -59,7 +70,7 @@ function pushSpec(data, client) {
             push.stdout.setEncoding('utf8');
             // add a 'data' event listener for the spawn instance
             var linereader = carrier.carry(push.stdout);
-            linereader.on('line', function(line){client.emit('cmdoutput',line); console.log(line); });
+            linereader.on('line', function(line){client.emit('cmdoutput',line); });
          
             //push.stdout.on('data', function(data) { client.emit('cmdoutput',data); console.log(data); });
             // add an 'end' event listener to close the writeable stream

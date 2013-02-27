@@ -3,16 +3,15 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , http = require('http')
-  , path = require('path')
-  , sockethandler = require('./routes/sockethandler')
-  , xslt = require('node_xslt');
-
-// Our REST API routes
-var restapi = require('./routes/restapi');
+var express = require('express'),
+    routes = require('./routes'),
+    user = require('./routes/user'),
+    http = require('http'),
+    path = require('path'),
+    sockethandler = require('./routes/sockethandler'),
+    jsondb = require('./lib/jsondb').read(),
+    restapi = require('./routes/restapi'),
+    actions = require('./routes/actions');
 
 var app = express();
 
@@ -50,6 +49,7 @@ app.all('/*', function(req, res, next) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/action/:action', actions.route);
 app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
 
