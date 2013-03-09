@@ -3,7 +3,6 @@ var fs = require('fs'),
     async = require('async'),
     jsondb = require('./../lib/jsondb'),
     mv = require('mv'),
-    uuid = require('node-uuid'),
     carrier = require('carrier'),
     path = require('path'), 
     Stream = require('stream').Stream;
@@ -16,12 +15,10 @@ exports.build = build;
 
 function build(url, id){
     console.log('building: ' + url + ' ' + id);
-    
     if (jsondb.Books[url] && jsondb.Books[url][id]){
         if (jsondb.Books[url][id].locked)
             return;
         jsondb.Books[url][id].locked = true;
-        jsondb.Books[url][id].buildID = uuid.v1();
         buildBook(url, id);
     } else {
         console.log('This book seems to have disappeared! Check it out again');
@@ -29,124 +26,54 @@ function build(url, id){
     }
 }
 
-var q = async.queue(function(task, callback) {
-    var url = task.url, id = task.id,
-        uid = jsondb.Books[url][id].buildID;
-    var csprocessorBuildJob = spawn('csprocessor', ['build'], {
-        cwd: path.normalize(process.cwd() + '/' + jsondb.Books[url][id]['bookdir'])
-    }).on('exit', function(err){csBuildDone(url, id)});
-    csprocessorBuildJob.stdout.setEncoding('utf8');
-    
-    exports.streams[uid] = new Stream();
-    exports.streams[uid].writeable = true;
-    exports.streams[uid].readable = true;
-    //exports.streams[uid].setEncoding('utf8');
-    exports.streams[uid].end = function(){console.log('That was the end of that part');};
-    exports.streams[uid].on('data',function(data){console.log(data);});
-    
-    csprocessorBuildJob.stdout.pipe(exports.streams[uid]);
-    
-   // var linereader = carrier.carry(exports.streams[uid]);
-   // linereader.on('line', function(line){console.log(line); });
-}, 1),
-
-publicanQueue = async.queue(function(task, callback) {
-    var url = task.url, id = task.id,
-    uid = jsondb.Books[url][id].buildID;
-    console.log('Initiating Publican build');
-    var publicanBuild = spawn('publican', ['build', '--formats', 'html-single', '--langs', 'en-US'], {
-        cwd: jsondb.Books[url][id].publicanDirectory
-    }).on('exit', function(err) {
-        publicanBuildComplete(url, id)
-    });
-    publicanBuild.stdout.setEncoding('utf8');
-    publicanBuild.stdout.pipe(exports.streams[uid]);
-    
-}, 1)
-publicanQueue.drain = buildingFinished;
-
-function csBuildDone(url, id) {
-    // Called when the csprocessor has built the spec locally
-    // Now we invade the publican directory, set the brand to one we want
-    // and rebuild
-
-    /* Construct a publican.cfg file that looks like this:
-
-	xml_lang: en-US
-	type: Book
-	brand: redhat-video
-	chunk_first: 0
-	git_branch: docs-rhel-6
-	web_formats: "epub,html,html-single"
-
-	docname: Messaging Installation and Configuration Guide
-	product: Red Hat Enterprise MRG
-	*/
-
-    var publicanConfig = 
-        'xml_lang: en-US \n' + 'type: Book\n' + 'brand: deathstar\n' + 
-        'chunk_first: 0\n' + 'git_branch: docs-rhel-6\n' + 
-        'web_formats: "epub,html, html-single\n' + 
-        'docname: ' + jsondb.Books[url][id].title + '\n' + 
-        'product: ' + jsondb.Books[url][id].product + '\n';
-
-    var directory = path.normalize(process.cwd() + '/' + jsondb.Books[url][id].bookdir + '/assembly'),
-        bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
-        zipfile = bookFilename + '-publican.zip',
-        publicanFile = directory + bookFilename + '/publican/publican.cfg',
-        uid = jsondb.Books[url][id].buildID;
-    
-    jsondb.Books[url][id].builtFilename = bookFilename;
-    jsondb.Books[url][id].publicanDirectory = directory + bookFilename + '/publican';
-
-    console.log('Unzipping publican book in ' + directory);
-    
-    if (!fs.existsSync(directory + '/' + zipfile))
-    {
-        console.log(zipfile + ' not found.');
-        return;
-    }
-    var zipjob = spawn('unzip', [zipfile], {
-        cwd: directory
-    }).on('exit', function(err) {
-        fs.unlinkSync(publicanFile);
-        fs.writeFileSync(publicanFile, publicanConfig, function(err) {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                console.log('Saved publican.cfg: ' + publicanFile);
-                publicanQueue.push({url: url, id: id});
-            }
-        });
-    });
-    zipjob.stdout.setEncoding('utf8');
-    zipjob.stdout.pipe(exports.streams[uid]);
-}
-
-function publicanBuildComplete(url, id) {
-    mv(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + jsondb.Books[url][id].builtFilename);
-    jsondb.Books[url][id].locked = false;
-    delete exports.streams[jsondb.Books[url][id].buildID];
-}
-
 function buildBook(url, id) {
-    var directory = jsondb.Books[url][id].bookdir;
+    var directory = jsondb.Books[url][id].bookdir,
+        uid = jsondb.Books[url][id].buildID;
+        
+    // This stream can be located in the array using the buildID property of the book
+    // It can then be connected to a websocket to see what is happening
+    exports.streams[uid] = new Stream();
+    exports.streams[uid].writable = exports.streams[uid].readable = true;
+    exports.streams[uid].end = function(data){ if (data) console.log(data);
+    console.log('That was the end of that part');};
+    exports.streams[uid].write = function (data) {
+        if (data)
+            this.emit('data', data);
+            console.log('stream listener: ' + data);
+        return true;
+    };
     
+    // We also pipe all the output to a file, so that it is persistent
+    
+    var buildlogURLPath = path.normalize('/' + jsondb.Books[url][id].bookdir + '/build.log');
+    var buildlogFilepath = path.normalize(process.cwd() + '/' + buildlogURLPath)
+    jsondb.Books[url][id].buildlog = buildlogURLPath;
+    
+    if (fs.existsSync(buildlogFilepath))
+        fs.unlinkSync(buildlogFilepath);
+        
+    jsondb.Books[url][id].buildlogStream = fs.createWriteStream(buildlogFilepath, {end: false});
+
+    // Pipe the ephemeral stream into this filestream
+    exports.streams[uid].pipe(jsondb.Books[url][id].buildlogStream);
+ 
     if (!fs.existsSync(directory))
     {
         console.log(directory + ' does not exist');
+        exports.streams[uid].write(directory + ' does not exist', 'utf8');
         return;
     }
     var stats = fs.statSync(directory);
     if (!stats.isDirectory()) {
         console.log(directory + ' is not a directory');
+        exports.streams[uid].write(directory + ' is not a directory', 'utf8');
         return;
     }
 
     // Check that a csprocessor.cfg file exists in the target location
     if (!fs.existsSync(directory + '/csprocessor.cfg')) {
         console.log('No csprocessor.cfg file found in ' + directory);
+        exports.streams[uid].write('No csprocessor.cfg file found in ' + directory, 'utf8');
         return;
     }
 
@@ -181,7 +108,107 @@ function buildBook(url, id) {
         }
     }); */
     
-    q.push({url: url,id: id});
+    csprocessorQueue.push({url: url,id: id});
+}
+
+var csprocessorQueue = async.queue(function(task, callback) {
+    var url = task.url, id = task.id, uid = jsondb.Books[url][id].buildID;
+    console.log(jsondb.Books[url][id]);
+    console.log(jsondb.Books[url][id].buildID);
+
+    var csprocessorBuildJob = spawn('csprocessor', ['build'], {
+        cwd: path.normalize(process.cwd() + '/' + jsondb.Books[url][id]['bookdir'])
+    }).on('exit', function(err){unzipCSProcessorArtifact(url, id)});
+    csprocessorBuildJob.stdout.setEncoding('utf8');
+    csprocessorBuildJob.stdout.pipe(exports.streams[uid]);
+}, 1);
+
+function unzipCSProcessorArtifact(url, id) {
+
+    var directory = path.normalize(process.cwd() + '/' + jsondb.Books[url][id].bookdir + '/assembly'),
+        bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
+        zipfile = bookFilename + '-publican.zip',
+        uid = jsondb.Books[url][id].buildID;
+    
+    jsondb.Books[url][id].builtFilename = bookFilename;
+    jsondb.Books[url][id].publicanDirectory = directory + bookFilename + '/publican';
+
+    console.log('Unzipping publican book in ' + directory);
+    
+    if (!fs.existsSync(directory + '/' + zipfile))
+    {
+        console.log(zipfile + ' not found.');
+        return;
+    }
+    console.log(directory);
+    var zipjob = spawn('unzip', ['-o', zipfile], {
+        cwd: directory
+    }).on('exit', function(err) {
+            customizePublicancfg(url,id);
+        });
+
+    zipjob.stdout.setEncoding('utf8');
+    zipjob.stderr.setEncoding('utf8');
+    zipjob.stdout.pipe(exports.streams[uid])
+    zipjob.stderr.pipe(exports.streams[uid])
+}
+
+function customizePublicancfg (url, id) {
+    var publicanConfig = 
+        'xml_lang: en-US \n' + 'type: Book\n' + 'brand: deathstar\n' + 
+        'chunk_first: 0\n' + 'git_branch: docs-rhel-6\n' + 
+        'web_formats: "epub,html, html-single\n' + 
+        'docname: ' + jsondb.Books[url][id].title + '\n' + 
+        'product: ' + jsondb.Books[url][id].product + '\n';
+
+    var directory = path.normalize(process.cwd() + '/' + jsondb.Books[url][id].bookdir + '/assembly'),
+        bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
+        publicanFile = directory + '/' + bookFilename + '/publican.cfg',
+        uid = jsondb.Books[url][id].buildID;
+
+    exports.streams[uid].write('Customizing publican.cfg', 'utf8');
+    
+    fs.unlink(publicanFile, function (err){
+        if (err) {
+            exports.streams[uid].write(err);
+        } else {
+            fs.writeFile(publicanFile, publicanConfig, 'utf8',  function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log('Saved publican.cfg: ' + publicanFile);
+                    publicanQueue.push({url: url, id: id});
+                }
+            });        
+        }
+    });
+    
+};
+
+var publicanQueue = async.queue(function(task, callback) {
+    var url = task.url, id = task.id,
+    uid = jsondb.Books[url][id].buildID;
+    console.log('Initiating Publican build');
+    var publicanBuild = spawn('publican', ['build', '--formats', 'html-single', '--langs', 'en-US'], {
+        cwd: jsondb.Books[url][id].publicanDirectory
+    }).on('exit', function(err) {
+        publicanBuildComplete(url, id)
+    });
+    publicanBuild.stdout.setEncoding('utf8');
+    publicanBuild.stderr.setEncoding('utf8');
+    publicanBuild.stdout.pipe(exports.streams[uid]);
+    publicanBuild.stderr.pipe(exports.streams[uid]);
+}, 1)
+publicanQueue.drain = buildingFinished;
+
+function publicanBuildComplete(url, id) {
+    mv(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + jsondb.Books[url][id].builtFilename, 
+        function mvCallback (err){
+            jsondb.Books[url][id].locked = false;
+            delete exports.streams[jsondb.Books[url][id].buildID];
+            jsondb.Books[url][id].buildID = null;            
+        });
 }
 
 function buildingFinished(url, id) {

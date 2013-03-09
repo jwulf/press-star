@@ -15,7 +15,7 @@ function socketHandler(client){
         console.log('Client just sent:', data); 
     }); 
     client.on('pushspec', function(data){pushSpec(data, client);});
-    client.on('getBuildLog', function(data) {getBuildLog(data, client);})
+    client.on('getBuildLog', function(data) {getBuildLog(data, client);});
     
     client.on('disconnect', function() {
         console.log('Bye client :(');
@@ -28,7 +28,8 @@ function getBuildLog(data, client){
         console.log('Stream does not exist - job finished?');
         client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
     } else {
-       builder.streams[data.buildID].on('line', function(line){client.emit('cmdoutput',line); console.log(line); }); 
+        var linereader = carrier.carry(builder.streams[data.buildID]);
+        linereader.on('line', function(line){client.emit('cmdoutput',line); console.log(line); });
     }
 }
 
