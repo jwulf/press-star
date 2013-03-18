@@ -5,7 +5,8 @@ var fs = require('fs'),
     mv = require('mv'),
     carrier = require('carrier'),
     path = require('path'), 
-    Stream = require('stream').Stream;
+    Stream = require('stream').Stream,
+    wrench = require('wrench');
     
 var BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
     BUILDS_DIR = process.cwd() + '/public/builds/';
@@ -131,7 +132,7 @@ function unzipCSProcessorArtifact(url, id) {
         uid = jsondb.Books[url][id].buildID;
     
     jsondb.Books[url][id].builtFilename = bookFilename;
-    jsondb.Books[url][id].publicanDirectory = directory + bookFilename + '/publican';
+    jsondb.Books[url][id].publicanDirectory = directory + '/' + bookFilename;
 
     console.log('Unzipping publican book in ' + directory);
     
@@ -162,7 +163,7 @@ function customizePublicancfg (url, id) {
         'product: ' + jsondb.Books[url][id].product + '\n';
 
     var directory = path.normalize(process.cwd() + '/' + jsondb.Books[url][id].bookdir + '/assembly'),
-        bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
+        bookFilename = jsondb.Books[url][id].bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
         publicanFile = directory + '/' + bookFilename + '/publican.cfg',
         uid = jsondb.Books[url][id].buildID;
 
@@ -190,6 +191,7 @@ var publicanQueue = async.queue(function(task, callback) {
     var url = task.url, id = task.id,
     uid = jsondb.Books[url][id].buildID;
     console.log('Initiating Publican build');
+    console.log(jsondb.Books[url][id].publicanDirectory);
     var publicanBuild = spawn('publican', ['build', '--formats', 'html-single', '--langs', 'en-US'], {
         cwd: jsondb.Books[url][id].publicanDirectory
     }).on('exit', function(err) {
@@ -203,15 +205,31 @@ var publicanQueue = async.queue(function(task, callback) {
 publicanQueue.drain = buildingFinished;
 
 function publicanBuildComplete(url, id) {
-    mv(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + jsondb.Books[url][id].builtFilename, 
+    exports.streams[jsondb.Books[url][id].buildID].write('Moving built book to public directory');
+    wrench.copyDirRecursive(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename, 
         function mvCallback (err){
-            jsondb.Books[url][id].locked = false;
-            delete exports.streams[jsondb.Books[url][id].buildID];
-            jsondb.Books[url][id].buildID = null;            
+            if (err) { exports.streams[jsondb.Books[url][id].buildID].write(err) 
+            } else {
+                fs.writeFile(BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/Common_Content/scripts/skynetURL.js', 
+                    'var skynetURL="' + url +'"', 'utf8',  function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    exports.streams[jsondb.Books[url][id].buildID].write('Wrote skynetURL.js');
+                    publicanQueue.push({url: url, id: id});
+                }
+                jsondb.Books[url][id].buildID = null;                
+                jsondb.Books[url][id].locked = false;
+                delete exports.streams[jsondb.Books[url][id].buildID];
+                jsondb.write();
+            });        
+
+            }
         });
 }
 
 function buildingFinished(url, id) {
     // Building is finished - now we need to construct the index page
-    console.log('Building is finished for ' + url + ' ' + id);
+    exports.streams[jsondb.Books[url][id].buildID].write('Building is finished for ' + url + ' ' + id);
 }

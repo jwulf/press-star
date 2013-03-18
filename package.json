@@ -18,7 +18,8 @@
     "node_xslt": "0.1.7",
     "mv": "0.0.4",
     "node-uuid": "1.4.0",
-    "async": "0.2.6"
+    "async": "0.2.6",
+    "wrench": "1.4.4"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",

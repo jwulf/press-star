@@ -1,9 +1,12 @@
  <% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
-        <h3><%= books[each].title %> 
-            <span class="action-button btn-edit"><a target="_new" href="/edit/content?url=<%= url%>&id=<%= id %>">Edit Content</a></span>
-            <span class="action-button btn-structure"><a target="_new" href="/cspec-editor.html?skyneturl=<%= url%>&topicid=<%= id %>">Edit Structure</a></span>
+        <h3><% if (books[each].data.builtFilename) { %>
+            <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %></a> 
+            <% } else { %>
+            <%= books[each].title %>
+            <% } %>
+            <span class="action-button btn-structure"><a target="cspec" href="/cspec-editor.html?skyneturl=<%= url%>&topicid=<%= id %>">Edit Structure</a></span>
             <% if (books[each].data.locked) { %>
-            <span class="rebuilding-button"><a target="_new" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Rebuilding</a></span>
+            <span class="rebuilding-button"><a target="log" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Rebuilding</a></span>
             <% } else { %>
             <span class="action-button btn-rebuild"><a href="/action/rebuild?url=<%= url%>&id=<%= id %>">Rebuild Book</a></span>
             <span class="action-button btn-log"><a href="/action/log?url=<%= url%>&id=<%= id %>">Build Log</a></span>
