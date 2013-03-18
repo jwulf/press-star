@@ -29,7 +29,7 @@
 /* The Publican website menu.css has a line-height set to 1em */
 
 body, h1, h2, h3, h4, h5, h6, pre, li, div {
-	line-height: normal;
+    line-height: normal;
 }
 
 .changelog-toggle {
@@ -58,44 +58,22 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
 
 .simplesect:after{content:""; display: block; clear: both; height:0px; width: 100%; float:none;}
 
-.RoleCreateBugPara a {
-  display:inline-block;
-  border: 1px dotted red;
-  padding:.333em 1em;
+.RoleCreateBugPara a{
+  padding:  0em 0.8em 0.2em;
   background-color:white;
   margin:0em .5em;
-  /*border-radius*/
-  -webkit-border-radius:1.5em;
-     -moz-border-radius:1.5em;
-          border-radius:1.5em;
-  /*box-shadow*/
-  -webkit-box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1),  inset 0 0 0 2px rgba(255,255,255,0.5), inset 0 -1.5em 1.5em rgba(0,0,0,0.05);
-  -moz-box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1),  inset 0 0 0 2px rgba(255,255,255,0.5), inset 0 -1.5em 1.5em rgba(0,0,0,0.05);
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1),  inset 0 0 0 2px rgba(255,255,255,0.5), inset 0 -1.5em 1.5em rgba(0,0,0,0.05);
+  font-size:12px; 
+  color: lightgray;
+  border-bottom:none;
 }
 
-.RoleCreateBugPara a:visited {color: red;}
-.RoleCreateBugPara { float:right; text-align:right; position: absolute; top:0px; right: 0px;}
-.RoleCreateBugPara a:hover {border: 1px dotted white;}
-.RoleCreateBugPara a:link {color: red;}
-
+.RoleCreateBugPara a:visited {color: lightgray; border-bottom:none; }
+.RoleCreateBugPara {float:right; text-align:right;} 
+.RoleCreateBugPara a:link {color: lightgray; border-bottom:none;}
 .RoleCreateBugPara a:focus,
 .RoleCreateBugPara a:hover{
-  background-color: red;
-  color: white;
-}
-
-.sectionTopic
-{
-  position: relative;
-}
-
-.sectionTopic:hover
-{
-    background:#f6f6f6;
-    box-shadow: 0 0 0 10px #f6f6f6, 0 0 0 11px #ddd, 0 0 10px 11px #ccc;
-    -moz-box-shadow: 0 0 0 10px #f6f6f6, 0 0 0 11px #ddd, 0 0 10px 11px #ccc;
-    -webkit-box-shadow: 0 0 0 10px #f6f6f6, 0 0 0 11px #ddd, 0 0 10px 11px #ccc;
+border-bottom: 1px dotted red;
+color: red;
 }
 
 /* 

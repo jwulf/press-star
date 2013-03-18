@@ -19,9 +19,10 @@ function url_query( query, url ) {
 
 function deathstarItUp()
 {
-  var editorURL, injectorURL, buildData, endLoc, topicID, skynetURL;
+  var editorURL, injectorURL, buildData, endLoc, topicID;
   
-  editorURL = '/edit';  
+  editorURL = '/edit.html';  
+  // skynetURL is provided by skynetURL.js
 
   // rewrite bug links as editor links
   $('.RoleCreateBugPara > a').each(function(){
@@ -29,9 +30,9 @@ function deathstarItUp()
     buildData = url_query('cf_build_id', target.attr('href')) || 'undefined-';
     endLoc = buildData.indexOf('-');
     topicID = buildData.substr(0, endLoc);
-    editURL = editorURL + '/test/' + topicID; 
+    var editURL = editorURL + '?skyneturl=' + skynetURL + '&topicid=' + topicID; 
     target.attr('href', editURL);
-    target.attr('target', '_new');
+    target.attr('target', 'new');
     target.addClass('edittopiclink');
     target.text('Edit');
 
