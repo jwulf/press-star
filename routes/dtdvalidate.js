@@ -1,3 +1,6 @@
+var fs = require('fs'),
+    exec = require('child_process').exec;
+
 exports.dtdvalidate = function (req, res){
     console.log("topicValidate handler called");
     if (!req.body.xml){res.send("Body format: {'xml' : '<xmltovalidate>'}");}
