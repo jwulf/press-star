@@ -753,7 +753,8 @@ function injectTemplate(){
       </para>\n\
    </formalpara>'};
   window.editor.replaceSelection(templates[this.id]);
-  makeValidityAmbiguous();        
+  makeValidityAmbiguous();  
+   updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
 function injectCodetabs(){
@@ -780,6 +781,7 @@ function injectCodetabs(){
 </variablelist>\n";
   window.editor.replaceSelection(codetabblock);
   makeValidityAmbiguous();
+   updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
 function injectCodetabsLite(){
@@ -795,6 +797,7 @@ function injectCodetabsLite(){
   { newcode= codetabblock1 + codetabblock2 + codetabblock3;}
   window.editor.replaceSelection(newcode);
   makeValidityAmbiguous();
+   updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
 
@@ -816,6 +819,7 @@ function doTagWrap(){
     tag = tag.replace('>', '');
     window.editor.replaceSelection('<'+tag+'>' + currenttext + '</' +closetag+'>');
     makeValidityAmbiguous();
+     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
   }
   return false;
 }

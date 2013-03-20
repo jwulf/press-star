@@ -1,6 +1,7 @@
+
 function indexRefresh(){
  window.refreshTimer = setInterval(function() {
-     $.get('/booklist', {}, function(result) {
+     $.get(window.sourceURL, {}, function(result) {
          $('#booklist').html(result);
      });
     }, 1000);   

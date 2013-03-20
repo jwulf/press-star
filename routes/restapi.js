@@ -33,6 +33,21 @@ function restroute (req, res){
     if (op ==='addbook') {addbook (req, res);}
     else
     if (op ==='xmlpreview') {xmlpreview.xmlPreview (req, res);}
+    else 
+    if (op =='remove') {removebook (req, res);}
+}
+
+function removebook(req,res){
+    var url = req.query.url,
+        id = req.query.id;
+    if (jsondb.Books[url])
+        if (jsondb.Books[url][id])
+            {
+                delete jsondb.Books[url][id];
+                jsondb.write();
+                return res.send({code:0, msg: 'Book deleted'});
+            }
+    res.send({code:1, msg: 'Book not found'});
 }
 
 function addbook(req, res){

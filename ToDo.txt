@@ -1,13 +1,17 @@
-Add Book
-
 Remove Book
+
+Figure out why publican-deathstar code tabs styling is off.
+
+Add codetabs js to the editor (in a maintainable fashion) 
+
+Add Book feedback using bootstrap styles
+
+Add book as pop-over dialog screen
 
 Figure out how to do the nice line feeds for the build log listener stream
 
 X Partial refresh on build request
-
 X Periodic partial refresh
-
 X Build Log hooked up
-
+X Add Book
 

@@ -7,10 +7,10 @@ a {
   text-decoration: none;
   border-bottom: 1px dotted;
 }
-.rebuilding-button a {
+.active-indicator-button a {
   color: #f00;
 }
-.rebuilding-button a:hover {
+.active-indicator-button a:hover {
   color: #f00;
   border-bottom: 1px dotted;
 }

@@ -260,6 +260,7 @@ function publicanBuildComplete(url, id, cb) {
                     jsondb.Books[url][id].buildID = null;                
                     jsondb.Books[url][id].locked = false;
                     delete exports.streams[jsondb.Books[url][id].buildID];
+                    delete jsondb.Books[url][id].buildlogStream;
                     jsondb.write();
                     return cb(); 
                 

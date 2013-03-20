@@ -60,6 +60,14 @@ app.get('/booklist', function (req, res) {
     res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, title: 'Death Star 2.0' });
 });
 
+app.get('/remove', function(req, res){
+    res.render('remove', { books: jsondb.sortedBooks, title: 'Death Star 2.0' });    
+});
+
+app.get('/removelist', function (req, res){
+    res.render('booklist-remove', {layout: false, books: jsondb.sortedBooks, title: 'Remove Books'})
+});
+
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
