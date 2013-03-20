@@ -6,12 +6,15 @@ var fs = require('fs'),
     carrier = require('carrier'),
     path = require('path'), 
     Stream = require('stream').Stream,
-    wrench = require('wrench');
+    wrench = require('wrench'),
+    humanize = require('humanize');
     
-var BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
+var MAX_SIMULTANEOUS_BUILDS = 2,
+    BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
     BUILDS_DIR = process.cwd() + '/public/builds/';
     
-exports.streams = { };    
+exports.streams = { }; 
+exports.streamHeader = {};
 exports.build = build;
 
 function build(url, id){
@@ -35,12 +38,15 @@ function buildBook(url, id) {
     // It can then be connected to a websocket to see what is happening
     exports.streams[uid] = new Stream();
     exports.streams[uid].writable = exports.streams[uid].readable = true;
+    exports.streamHeader[uid] = 'Build log for ' + url + ' Spec ID: ' + id + '\r\n' +
+        jsondb.Books[url][id].title + '\r\n' +
+        humanize.date('Y-m-d H:i:s') + '\r\n';
     exports.streams[uid].end = function(data){ if (data) console.log(data);
     console.log('That was the end of that part');};
     exports.streams[uid].write = function (data) {
         if (data)
             this.emit('data', data);
-            console.log('stream listener: ' + data);
+            // console.log('stream listener: ' + data);
         return true;
     };
     
@@ -48,15 +54,22 @@ function buildBook(url, id) {
     
     var buildlogURLPath = path.normalize('/' + jsondb.Books[url][id].bookdir + '/build.log');
     var buildlogFilepath = path.normalize(process.cwd() + '/' + buildlogURLPath)
-    jsondb.Books[url][id].buildlog = buildlogURLPath;
+    jsondb.Books[url][id].buildlog = buildlogFilepath;
     
     if (fs.existsSync(buildlogFilepath))
         fs.unlinkSync(buildlogFilepath);
         
+    console.log('Creating build log: ' + buildlogFilepath);
     jsondb.Books[url][id].buildlogStream = fs.createWriteStream(buildlogFilepath, {end: false});
 
     // Pipe the ephemeral stream into this filestream
     exports.streams[uid].pipe(jsondb.Books[url][id].buildlogStream);
+    
+    exports.streams[uid].write('Build log for ' + url + ' Spec ID: ' + id + '\r\n')
+    exports.streams[uid].write(jsondb.Books[url][id].title + '\r\n');
+    exports.streams[uid].write(humanize.date('Y-m-d H:i:s') + '\r\n');
+
+    console.log('Logging build to ' + buildlogFilepath);
  
     if (!fs.existsSync(directory))
     {
@@ -108,23 +121,29 @@ function buildBook(url, id) {
             q.push(bookIndex);
         }
     }); */
-    
+    exports.streamHeader[uid] = exports.streamHeader[uid] + 'Waiting in CSProcessor build queue... \r\n';
+    exports.streams[uid].write('Waiting in CSProcessor build queue... \r\n');
+    jsondb.Books[url][id].onQueue = true;
     csprocessorQueue.push({url: url,id: id});
 }
 
-var csprocessorQueue = async.queue(function(task, callback) {
+var csprocessorQueue = async.queue(function(task, cb) {
     var url = task.url, id = task.id, uid = jsondb.Books[url][id].buildID;
-    console.log(jsondb.Books[url][id]);
-    console.log(jsondb.Books[url][id].buildID);
-
+   
+   exports.streamHeader[uid] = exports.streamHeader[uid] + 'CSProcessor assembly initiated and in progress\r\n';
+        jsondb.Books[url][id].onQueue = false;
     var csprocessorBuildJob = spawn('csprocessor', ['build'], {
         cwd: path.normalize(process.cwd() + '/' + jsondb.Books[url][id]['bookdir'])
-    }).on('exit', function(err){unzipCSProcessorArtifact(url, id)});
+    }).on('exit', function(err){
+        exports.streamHeader[uid] = exports.streamHeader[uid] + 'Content Specification build task completed\r\n';
+        unzipCSProcessorArtifact(url, id, cb)
+    });
+    
     csprocessorBuildJob.stdout.setEncoding('utf8');
     csprocessorBuildJob.stdout.pipe(exports.streams[uid]);
-}, 1);
+}, MAX_SIMULTANEOUS_BUILDS);
 
-function unzipCSProcessorArtifact(url, id) {
+function unzipCSProcessorArtifact(url, id, cb) {
 
     var directory = path.normalize(process.cwd() + '/' + jsondb.Books[url][id].bookdir + '/assembly'),
         bookFilename = jsondb.Books[url][id].title.split(' ').join('_'),
@@ -145,7 +164,8 @@ function unzipCSProcessorArtifact(url, id) {
     var zipjob = spawn('unzip', ['-o', zipfile], {
         cwd: directory
     }).on('exit', function(err) {
-            customizePublicancfg(url,id);
+            exports.streamHeader[uid] = exports.streamHeader[uid] + 'CSProcessor assembled book unzipped\n'; 
+            customizePublicancfg(url,id, cb);
         });
 
     zipjob.stdout.setEncoding('utf8');
@@ -154,7 +174,7 @@ function unzipCSProcessorArtifact(url, id) {
     zipjob.stderr.pipe(exports.streams[uid])
 }
 
-function customizePublicancfg (url, id) {
+function customizePublicancfg (url, id, cb) {
     var publicanConfig = 
         'xml_lang: en-US \n' + 'type: Book\n' + 'brand: deathstar\n' + 
         'chunk_first: 0\n' + 'git_branch: docs-rhel-6\n' + 
@@ -178,8 +198,13 @@ function customizePublicancfg (url, id) {
                     console.log(err);
                 }
                 else {
+                    exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican.cfg file customized\r\n';
                     console.log('Saved publican.cfg: ' + publicanFile);
+                    exports.streamHeader[uid] = exports.streamHeader[uid] + 'Waiting in publican build queue... \r\n';
+                    exports.streams[uid].write('Waiting in publican build queue... \r\n');
+                    jsondb.Books[url][id].onQueue = true;
                     publicanQueue.push({url: url, id: id});
+                    return cb();
                 }
             });        
         }
@@ -187,49 +212,66 @@ function customizePublicancfg (url, id) {
     
 };
 
-var publicanQueue = async.queue(function(task, callback) {
+var publicanQueue = async.queue(function(task, cb) {
     var url = task.url, id = task.id,
     uid = jsondb.Books[url][id].buildID;
+    jsondb.Books[url][id].onQueue = false;
     console.log('Initiating Publican build');
     console.log(jsondb.Books[url][id].publicanDirectory);
+    exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican build initiated and in progress\r\n';
     var publicanBuild = spawn('publican', ['build', '--formats', 'html-single', '--langs', 'en-US'], {
         cwd: jsondb.Books[url][id].publicanDirectory
     }).on('exit', function(err) {
-        publicanBuildComplete(url, id)
+        exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican build complete\r\n';
+        publicanBuildComplete(url, id, cb)
     });
     publicanBuild.stdout.setEncoding('utf8');
     publicanBuild.stderr.setEncoding('utf8');
     publicanBuild.stdout.pipe(exports.streams[uid]);
     publicanBuild.stderr.pipe(exports.streams[uid]);
-}, 1)
+}, MAX_SIMULTANEOUS_BUILDS)
 publicanQueue.drain = buildingFinished;
 
-function publicanBuildComplete(url, id) {
+function publicanBuildComplete(url, id, cb) {
     exports.streams[jsondb.Books[url][id].buildID].write('Moving built book to public directory');
     wrench.copyDirRecursive(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename, 
         function mvCallback (err){
             if (err) { exports.streams[jsondb.Books[url][id].buildID].write(err) 
             } else {
+                
+                // Write skynetURL into javascript file for the deathstar brand to inject editor links
                 fs.writeFile(BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/Common_Content/scripts/skynetURL.js', 
                     'var skynetURL="' + url +'"', 'utf8',  function(err) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    exports.streams[jsondb.Books[url][id].buildID].write('Wrote skynetURL.js');
-                    publicanQueue.push({url: url, id: id});
-                }
-                jsondb.Books[url][id].buildID = null;                
-                jsondb.Books[url][id].locked = false;
-                delete exports.streams[jsondb.Books[url][id].buildID];
-                jsondb.write();
-            });        
+                    if (err) {
+                        exports.streams[jsondb.Books[url][id].buildID].write('Error writing skynetURL.js: ' + err);
+                        console.log(err);
+                    } else {                        
+                        exports.streams[jsondb.Books[url][id].buildID].write('Wrote skynetURL.js');
+                    }
+                     // Building is finished 
+                    exports.streams[jsondb.Books[url][id].buildID].write('Building finished for ' + url + ' ' + id);
+                    // Move build log to URL-accessible location
+                    var dest = BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/build.log';
+                    mv(jsondb.Books[url][id].buildlog, dest, function(err) {
+                        if (err) {console.log(err)}; 
+                        console.log('Moved ' + jsondb.Books[url][id].buildlog + ' to ' +  dest);
+                    });
+                   
+                    jsondb.Books[url][id].buildID = null;                
+                    jsondb.Books[url][id].locked = false;
+                    delete exports.streams[jsondb.Books[url][id].buildID];
+                    jsondb.write();
+                    return cb(); 
+                
+    
+                });        
 
             }
         });
+        
+
 }
 
 function buildingFinished(url, id) {
-    // Building is finished - now we need to construct the index page
-    exports.streams[jsondb.Books[url][id].buildID].write('Building is finished for ' + url + ' ' + id);
+   
 }

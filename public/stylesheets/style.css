@@ -3,8 +3,9 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
-  color: #00b7ff;
+  color: #00f;
   text-decoration: none;
+  border-bottom: 1px dotted;
 }
 .rebuilding-button a {
   color: #f00;
@@ -14,6 +15,9 @@ a {
   border-bottom: 1px dotted;
 }
 .action-button a {
+  color: Beige;
+}
+.action-button {
   color: Beige;
 }
 .action-button a:hover {

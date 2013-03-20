@@ -28,8 +28,10 @@ function getBuildLog(data, client){
         console.log('Stream does not exist - job finished?');
         client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
     } else {
-        var linereader = carrier.carry(builder.streams[data.buildID]);
-        linereader.on('line', function(line){client.emit('cmdoutput',line); console.log(line); });
+        client.emit('cmdoutput', builder.streamHeader[data.buildID]);
+        builder.streams[data.buildID].on('data', function (data){
+            client.emit('cmdoutput', data); 
+        });
     }
 }
 

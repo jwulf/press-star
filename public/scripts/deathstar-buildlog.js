@@ -17,8 +17,8 @@ function url_query( query ) {
 
 function onLoad(){
     var buildID = url_query('buildid');
-    $.getScript('/socket.io/socket.io.js', function(){cmdOutput('Socket.io loaded', true);});
-    socket || (socket = io.connect(window.location.origin));     
+    socket || (socket = io.connect(window.location.origin));
+    cmdOutput('Socket.io loaded', true);
 	socket && socket.emit('getBuildLog', {buildID: buildID} );
 	socket.on('connect', function () {
 		cmdOutput('Connected to server');

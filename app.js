@@ -9,9 +9,11 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     sockethandler = require('./routes/sockethandler'),
-    jsondb = require('./lib/jsondb').read(),
+    initJsondb = require('./lib/jsondb').initialize(),
+    jsondb = require('./lib/jsondb'),
     restapi = require('./routes/restapi'),
-    actions = require('./routes/actions');
+    actions = require('./routes/actions'), 
+    add = require('./routes/add').add;
 
 var app = express();
 
@@ -48,10 +50,15 @@ app.all('/*', function(req, res, next) {
 });
 
 app.get('/', routes.index);
+app.get('/add', add);
 app.get('/users', user.list);
 app.get('/action/:action', actions.route);
 app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
+
+app.get('/booklist', function (req, res) {
+    res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, title: 'Death Star 2.0' });
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

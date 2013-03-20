@@ -1,8 +1,13 @@
+Add Book
 
+Remove Book
 
-Build Log hooked up
+Figure out how to do the nice line feeds for the build log listener stream
 
-Partial refresh on build request
+X Partial refresh on build request
 
-Periodic partial refresh
+X Periodic partial refresh
+
+X Build Log hooked up
+
 
