@@ -3,9 +3,9 @@
        <tr> 
             <td>
                 <h3><% if (books[each].data.builtFilename) { %>
-            <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %></a> 
+            <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
             <% } else { %>
-            <%= books[each].title %>
+            <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= books[each].title %></span>
             <% } %>
                 </h3>
             </td>
