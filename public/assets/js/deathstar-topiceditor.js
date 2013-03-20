@@ -190,7 +190,7 @@ function serversideValidateTopic(editor, cb){
       }
   }
 
-  $.post(nodeServer + "/rest/1/dtdvalidate", {'xml': editor.getValue()},
+  $.post("/rest/1/dtdvalidate", {'xml': editor.getValue()},
     function(data){
       validationCallback(data, cb);
     })
