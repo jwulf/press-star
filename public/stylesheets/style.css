@@ -24,9 +24,3 @@ a {
   color: #f00;
   border-bottom: 1px dotted;
 }
-tr:nth-child(even) {
-  background: #ccc;
-}
-tr:nth-child(odd) {
-  background: #fff;
-}
