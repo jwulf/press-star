@@ -13,7 +13,8 @@ var express = require('express'),
     jsondb = require('./lib/jsondb'),
     restapi = require('./routes/restapi'),
     actions = require('./routes/actions'), 
-    add = require('./routes/add').add;
+    add = require('./routes/add').add,
+    publish = require('./routes/publish');
 
 var app = express();
 
@@ -50,6 +51,7 @@ app.all('/*', function(req, res, next) {
 });
 
 app.get('/', routes.index);
+app.get('/publish', publish.publish);
 app.get('/add', add);
 app.get('/users', user.list);
 app.get('/action/:action', actions.route);
@@ -61,7 +63,7 @@ app.get('/booklist', function (req, res) {
 });
 
 app.get('/remove', function(req, res){
-    res.render('remove', { books: jsondb.sortedBooks, title: 'Death Star 2.0' });    
+    res.render('remove', { books: jsondb.sortedBooks, title: 'Death Star 2.0', mode: 'remove' });    
 });
 
 app.get('/removelist', function (req, res){

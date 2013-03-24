@@ -1,25 +1,10 @@
-    <table>
-        <tr>
-            <td>
-                <h3><span class="action-btn"><a href="/add">Add Book | </a></span></h3>
-            </td>
-            <td>
-                <h3><span class="action-btn"><a href="/remove"; return false;">Remove Book |</a></span></h3>
-            </td>
-            <td></td>
-            <td>
-                <h5><span class="action-btn"><a href="/about.html">[About Deathstar 2.0]</a></span></h3>  
-            </td>
-        </tr>
-    </table>
-<hr>
-<table border="0" padding="10">
+<table border="0">
 <% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
        <tr> 
             <td>
                 <h3>
                 <% if (books[each].data.builtFilename) { %>
-                    <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
+                    <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="_blank"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
                 <% } else { %>
                     <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= books[each].title %> [<%= books[each].data.id %>]</span>
                 <% } %>

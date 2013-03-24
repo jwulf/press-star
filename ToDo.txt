@@ -1,15 +1,26 @@
-Remove Book
+Publish
+
+Passport.js integration
+ - books with owners
+ - profiles
+   - snippets
+   - kerb ID
 
 Figure out why publican-deathstar code tabs styling is off.
 
 Add codetabs js to the editor (in a maintainable fashion) 
+Add changelog js to the editor
 
-Add Book feedback using bootstrap styles
+<h2> style in bootstrap - currently overriding the Publican style
 
-Add book as pop-over dialog screen
+Add changelog injection macro to the editor
+
+Add-Book feedback using bootstrap styles
+Add-book as pop-over dialog screen
 
 Figure out how to do the nice line feeds for the build log listener stream
 
+X Remove Book
 X Partial refresh on build request
 X Periodic partial refresh
 X Build Log hooked up

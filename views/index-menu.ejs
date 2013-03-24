@@ -1,0 +1,29 @@
+<table>
+    <tr>
+        <td>
+            <h3><span class="action-btn"><a href="/add">Add Book | </a></span></h3>
+        </td>
+        <% if (mode =='remove') { %>
+        <td>
+            <h3><span class="active-indicator-button"><a href="/">Done | </a></span></h3>
+        </td>  
+        <% } else { %>
+        <td>
+            <h3><span class="action-btn"><a href="/remove"; return false;">Remove Book |</a></span></h3>
+        </td>
+        <% } %>
+        <% if (mode =='publish') { %>
+        <td>
+            <h3><span class="active-indicator-button"><a href="/">Done | </a></span></h3>
+        </td>  
+        <% } else { %>
+        <td>
+            <h3><span class="action-btn"><a href="/publish">Publish Book | </a></span></h3>
+        </td>    
+        <% } %>
+        <td>
+            <h5><span class="action-btn"><a href="/about.html">[About Deathstar 2.0]</a></span></h3>  
+        </td>
+    </tr>
+</table>
+<hr>

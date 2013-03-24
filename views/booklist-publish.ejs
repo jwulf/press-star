@@ -1,0 +1,22 @@
+<table border="0" padding="10">
+<% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
+       <tr> 
+            <td>
+                <h3>
+                    <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
+                </h3>
+            </td>
+            <td>    
+                <center>
+                    <h3>
+                        <% if (!books[each].data.publishing) { %>
+                        <span class="active-indicator-button"><a href="#" onClick="$.get('/rest/1/publish?url=<%= url%>&id=<%= id %>'); return false;">Publish</a></span>
+                        <% } else { %>
+                        <span class="active-indicator-button">Publishing...</span>
+                        <% } %>
+                    </h3>
+                </center>
+            </td>
+        </tr>
+    <% } %>
+</table>
