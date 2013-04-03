@@ -20,6 +20,8 @@ To deal with two, an RFE should be raised (or bumped) for the CSProcessor to wri
 
 This will make it available in the built HTML.
 
+Update: PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
+
 ## Phase Two
 
 The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 
@@ -29,6 +31,8 @@ Challenges for this include:
 1. Distinguishing between a local change and a remote change. The idea with this function is implement live edit updates on remote machines. This function will need to know when an edit is being handled by the local editor as per the functionality in phase one, and when an edit has been performed remotely.
 
 2. Fixed revision topics. These should not be updated when a topic is remotely updated.
+
+PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
 
 ## Phase Three
 
