@@ -1,0 +1,19 @@
+Off line operation
+
+Once live update editing is implemented, offline operation becomes possible.
+
+Rebuilding of the book is obviated by live update editing - the book is dynamically updated and does not require a rebuild. 
+
+## Phase One
+
+Note: Structural editing is not supported in Phase One.
+
+A book is taken offline. All the topics in the book are retrieved from the server and persisted to the local filesystem.
+
+When edits are performed in offline mode, the edits are persisted to the local filesystem, and the topic is set to dirty.
+
+When the book is taken back online, all dirty topics are pushed to the server, and a rebuild performed.
+
+And that's all there is to that.
+
+

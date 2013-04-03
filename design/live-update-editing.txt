@@ -1,0 +1,38 @@
+Live Update Editing
+
+
+## Phase One
+
+The editor is currently spawned from the built book page. Since it is a child, it can communicate back to the parent window.
+
+When the topic is saved in the editor, the editor should communicate back to the parent window with the updated preview HTML of the topic.
+
+The parent window should then insert the preview HTML in the correct place in the DOM, preserving any "Prerequistes" and "See Also" link sections. The parent window should persist the DOM to disk, effectively replacing the built book with an updated one.
+
+Challenges for this include: 
+
+1. Getting the section numbering right. Preview HTML also numbers the section as "1". The parent window will need to work out the correct section number, and amend the incoming HTML preview to reflect the correct section numbering.
+
+2. Fixed revision topics should not be updated.
+
+To deal with two, an RFE should be raised (or bumped) for the CSProcessor to write the topic revision into the <section> element of the topic as a role attribute, for example:
+<section role="pgccms-rev-XYZ">  
+
+This will make it available in the built HTML.
+
+## Phase Two
+
+The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 
+
+Challenges for this include: 
+
+1. Distinguishing between a local change and a remote change. The idea with this function is implement live edit updates on remote machines. This function will need to know when an edit is being handled by the local editor as per the functionality in phase one, and when an edit has been performed remotely.
+
+2. Fixed revision topics. These should not be updated when a topic is remotely updated.
+
+## Phase Three
+
+The book should listen to remote content spec push events on the server. When a push is detected, the book should lock itself and begin rebuilding. 
+
+Locking is necessary to prevent local changes to the book not being accounted for (because they were committed after the rebuild finished, but before the new HTML was presented to the user).
+
