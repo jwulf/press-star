@@ -1,0 +1,9 @@
+Spell Check in the Editor
+
+This Stack Overflow question describes client-side spell checking in the Code Mirror editor:
+
+http://stackoverflow.com/questions/12343922/codemirror-with-spell-checker
+
+using typo.js and a custom Code Mirror overlay
+
+My initial attempt to implement this has been unsuccessful. The XML mode overlay may be interfering with it. Needs more investigation. 
