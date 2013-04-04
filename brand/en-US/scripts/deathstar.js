@@ -85,7 +85,7 @@ function updateTopic (topicid, newContent) {
     $(target.find('h2')).html(title.html());
 	
 	// Restore injected content
-	if (prereq) prereq.prependTo(target);
+	if (prereq) prereq.insertAfter(target.find('hr'));
 	if (seealso) seealso.appendTo(target);
 	if (buglink) buglink.appendTo(target);
     
