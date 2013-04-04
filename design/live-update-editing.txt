@@ -13,15 +13,6 @@ Challenges for this include:
 
 1. Getting the section numbering right. Preview HTML also numbers the section as "1". The parent window will need to work out the correct section number, and amend the incoming HTML preview to reflect the correct section numbering.
 
-2. Fixed revision topics should not be updated.
-
-To deal with two, an RFE should be raised (or bumped) for the CSProcessor to write the topic revision into the <section> element of the topic as a role attribute, for example:
-<section role="pgccms-rev-XYZ">  
-
-This will make it available in the built HTML.
-
-Update: PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
-
 Upate: 04 April 2013
 
 Phase One is now partially implemented.
@@ -52,11 +43,26 @@ Challenges for this include:
 
 1. Distinguishing between a local change and a remote change. The idea with this function is implement live edit updates on remote machines. This function will need to know when an edit is being handled by the local editor as per the functionality in phase one, and when an edit has been performed remotely.
 
-2. Fixed revision topics. These should not be updated when a topic is remotely updated.
+The book brand should open a web socket with the Death Star server, and pass in it's pathURL. This pathURL can be used as an index to an array of streams. 
 
-PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
+When the persist method is called, the pathURL parameter is used to get the stream from the array, and send a reload event.
+
+When the book gets a reload event, it saves its current scroll location (or perhaps the element in view at the top of page - re-examine the code tabs default changing code to see how that anchors the view), then reloads its HTML via AJAX. 
+
+Care should be taken to avoid reloading the book when it is itself the persister. Perhaps call to persist should take a UUID as a parameter to allow books to identify whether they caused the reload broadcast.
 
 ## Phase Three
+
+2. Fixed revision topics should not be updated.
+
+To deal with two, an RFE should be raised (or bumped) for the CSProcessor to write the topic revision into the <section> element of the topic as a role attribute, for example:
+<section role="pgccms-rev-XYZ">  
+
+This will make it available in the built HTML.
+
+Update: PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
+
+## Phase Four
 
 The book should listen to remote content spec push events on the server. When a push is detected, the book should lock itself and begin rebuilding. 
 
