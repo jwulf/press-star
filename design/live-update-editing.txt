@@ -22,9 +22,31 @@ This will make it available in the built HTML.
 
 Update: PressGang RFE here: https://bugzilla.redhat.com/show_bug.cgi?id=861351
 
+Upate: 04 April 2013
+
+Phase One is now partially implemented.
+
+As a topic is edited in the Death Star editor, an HTML preview is periodically built on the Death Star server and sent back to the editor via AJAX.
+
+When "Save" is pressed in the editor, the Topic XML is sent to the PressGang server.
+
+On a successful save result from the PressGang server, the editor calls the "updateTopic" method of its parent window. 
+The parent window of the editor is the built book. The updateTopic method is in the publican-deathstar brand. 
+The editor passes the Topic ID and the built HTML preview from the Death Star server.
+When updateTopic is called, the book inserts the HTML preview to the correct section, preserving the Prereqs, See Also links, and also the Topic title with its section numbering and TOC anchor.
+The final step in updateTopic is an AJAX call to the Death Star server's REST API from the book, passing back the entire HTML of the book from the browser.
+
+The Death Star server then rewrites the built book on disk with the updated HTML from the browser. 
+
+Fixed revisions are not handled yet, as it relies on the PressGang RFE. This means that at the moment a fixed revision topic in a content spec can be edited in the Death Star editor, and will update in the built book - which is not an accurate reflection of the book.
+
+The publican-deathstar brand
+
 ## Phase Two
 
 The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 
+
+Note that this will only affect local Death Star instances. If everyone editing a book is using a hosted instance (ie: the same Death Star server), then all their changes will be reflected in the book they are all viewing.
 
 Challenges for this include: 
 

@@ -33,7 +33,7 @@ function extractURLParameters(){
 	nodeServer: '',
 	topicID: 0
 	};
-	url_params.nodeServer = url_query('nodeserver') || defaultNodeServer;
+	url_params.nodeServer = url_query('nodeserver') || '';
 	url_params.topicID = url_query('topicid');
   	skynetURL = url_query('skyneturl');
   	if (skynetURL && skynetURL.indexOf("http://") !== -1)    

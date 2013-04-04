@@ -3,6 +3,10 @@
   font-family: monospace;
 }
 
+.CodeMirror .cm-spell-error {
+     background: url(images/red-wavy-underline.gif) bottom repeat-x;
+}
+
 .CodeMirror-scroll {
   overflow: auto;
   height: 300px;

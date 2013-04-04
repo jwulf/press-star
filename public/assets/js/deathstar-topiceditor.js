@@ -4,7 +4,7 @@
 // 2. Add buttons to insert elements
 // 3. General usability enhancements like coloured state messages and action button locations
 
-defaultnodeServer="http://deathstar1.usersys.redhat.com:8888"
+defaultnodeServer="";
 
 previewRenderErrorMsg = '<p>Could not transform</p>'
 // window.previewserverurl="http://127.0.0.1:8888";
@@ -14,16 +14,15 @@ window.timerID=0;
 window.clientXSLFile="assets/xsl/docbook2html.xsl";
 // window.restProxy="http://127.0.0.1:8888/";
 window.mutex=0;
-validXML=false;
-var validationServerResponse;
-  var port;
-var urlpath;
-var serverURL;
-var topicID;
-var skynetURL;
-var helpHintsOn;
-
-
+var validXML=false,
+    validationServerResponse,
+    port,
+    urlpath,
+    serverURL,
+    topicID,
+    skynetURL,
+    sectionNum,
+    helpHintsOn;
 
 $(window).keypress(function(event) {
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
@@ -85,7 +84,6 @@ function handleHTMLPreviewResponse(preview, serverFunction){
 
   }
 }
-  
 
 function doValidate(me, callback)
 {
@@ -122,6 +120,9 @@ function doSave()
 
 function doActualSave()  
 {
+    // Grab the preview HTML now, when save is called.
+    var builtHTML = $('#div-preview-inline').html();
+    
   if (! validXML && validationServerResponse == 1)
   {
       alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
@@ -146,6 +147,10 @@ function doActualSave()
         showStatusMessage("Saved OK", '', 'alert-success');
         $("#save-button").prop("disabled", true);
         $("#revert-button").prop("disabled", true);
+        
+        // Call the parent (the book) to update itself and persist the changes to the server
+        window.opener.updateTopic(topicID, builtHTML);
+        
         if (! validXML) doValidate();
       }
       else
@@ -514,9 +519,45 @@ function initializeTopicEditPage(){
   var myHeight = getCookie('editor.height') || "300px";
   var myWidth = getCookie('editor.width') || "770px";
 
+    /* Spell checking from http://stackoverflow.com/questions/12343922/codemirror-with-spell-checker */
+
+    var AFF_DATA='assets/dictionaries/en_US/en_US.aff',
+        DIC_DATA='assets/dictionaries/en_US/en_US.dic';
+        
+    var typo = new Typo ("en_US", AFF_DATA, DIC_DATA, {
+        platform: 'any'
+    });
+    
+    var rx_word = "!\"#$%&()*+,-./:;<=>?@[\\\\\\]^_`{|}~";
+    
+    CodeMirror.defineMode ("myoverlay", function (config, parserConfig) {
+        var overlay = {
+            token: function (stream, state) {
+    
+                if (stream.match (rx_word) &&
+                    typo && !typo.check (stream.current ()))
+    
+                    return "spell-error"; //CSS class: cm-spell-error
+    
+                while (stream.next () != null) {
+                    if (stream.match (rx_word, false)) return null;
+                }
+    
+                return null;
+            }
+        };
+    
+        var mode = CodeMirror.getMode (
+            config, parserConfig.backdrop || "text/x-myoverlay"
+        );
+    
+        return CodeMirror.overlayMode (mode, overlay);
+    });
+
   // Create our Codemirror text editor
   window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         mode: 'text/html',
+       // mode: 'text/x-myoverlay',
     extraKeys: {
       "'>'": function(cm) { cm.closeTag(cm, '>'); },
       "'/'": function(cm) { cm.closeTag(cm, '/'); }
@@ -543,6 +584,8 @@ function initializeTopicEditPage(){
       disableSpellcheck: false,
             lineNumbers: true
   });
+
+
 
     // Toggle Close Tag
     $('#tagCloseToggle').click(toggleAutoCloseTag);
