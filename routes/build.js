@@ -232,8 +232,13 @@ var publicanQueue = async.queue(function(task, cb) {
 }, MAX_SIMULTANEOUS_BUILDS)
 publicanQueue.drain = buildingFinished;
 
+function streamWrite(url, id, msg){
+    if (exports.streams[jsondb.Books[url][id].buildID])
+        exports.streams[jsondb.Books[url][id].buildID].write(msg);
+}
+
 function publicanBuildComplete(url, id, cb) {
-    exports.streams[jsondb.Books[url][id].buildID].write('Moving built book to public directory');
+    streamWrite(url, id, 'Moving built book to public directory');
     wrench.copyDirRecursive(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename, 
         function mvCallback (err){
             if (err) { exports.streams[jsondb.Books[url][id].buildID].write(err) 
@@ -243,13 +248,13 @@ function publicanBuildComplete(url, id, cb) {
                 fs.writeFile(BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/Common_Content/scripts/skynetURL.js', 
                     'var skynetURL="' + url +'"', 'utf8',  function(err) {
                     if (err) {
-                        exports.streams[jsondb.Books[url][id].buildID].write('Error writing skynetURL.js: ' + err);
+                        streamWrite(url, id, 'Error writing skynetURL.js: ' + err);
                         console.log(err);
                     } else {                        
-                        exports.streams[jsondb.Books[url][id].buildID].write('Wrote skynetURL.js');
+                        streamWrite(url, id, 'Wrote skynetURL.js');
                     }
                      // Building is finished 
-                    exports.streams[jsondb.Books[url][id].buildID].write('Building finished for ' + url + ' ' + id);
+                    streamWrite(url, id, 'Building finished for ' + url + ' ' + id);
                     // Move build log to URL-accessible location
                     var dest = BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/build.log';
                     mv(jsondb.Books[url][id].buildlog, dest, function(err) {
