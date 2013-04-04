@@ -1,7 +1,10 @@
 var fs=require('fs'),
     spawn = require('child_process').spawn,
     carrier = require('carrier'),
-    builder = require('./build.js');
+    builder = require('./build.js'),
+    cylon = require('pressgang-cylon'),    
+    uuid = require('node-uuid'),
+    jsondb = require('./../lib/jsondb');
 
 exports.socketHandler = socketHandler;
 
@@ -36,8 +39,11 @@ function getBuildLog(data, client){
 }
 
 function pushSpec(data, client) {
+    var BUILD_SUCCEEDED = 0,
+        filenumber=1;
+    
     console.log('Received content spec push request: ' + data.command);
-    var filenumber=1;
+    
     while (fs.existsSync("/tmp/cspec"+ filenumber))
         filenumber++;
     var filename="/tmp/cspec"+filenumber;
@@ -83,6 +89,27 @@ function pushSpec(data, client) {
             // when the spawn child process exits, check if there were any errors 
             push.on('exit', function(code) {
                 client.emit('cmdexit', code);
+                console.log('Exiting Content Spec push with code: ' + code);
+                
+                // If the push succeeds, then we will spawn a rebuild of the book, if we're hosting it
+                if (code == BUILD_SUCCEEDED) {
+                    console.log('Initiating post-content-spec-push rebuild');
+                    cylon.stripMetadata('http://' + data.server, data.spec, function specMetadataCallback(err, md) {
+                        console.log(md);
+                        if (md){
+                            if (md.serverurl &&  md.id){
+                                console.log('Checking for book...');
+                                if (jsondb.Books[md.serverurl] && jsondb.Books[md.serverurl][md.id]) {
+                                    console.log('We got that book...');
+                                    jsondb.Books[md.serverurl][md.id].buildID = uuid.v1();
+                                    console.log(jsondb.Books[md.serverurl][md.id].buildID);
+                                    builder.build(md.serverurl, md.id);
+                                }
+                            }
+                        }   
+                    });
+                    
+                }
                 cmd_running = false;         
                 fs.unlink(filename, function(err)
                 {

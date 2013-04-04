@@ -11,7 +11,7 @@
     "stylus": "*",
     "carrier": "0.1.7",
     "pressgang-rest": "0.0.4",
-    "pressgang-cylon": "0.0.1",
+    "pressgang-cylon": "0.0.2",
     "restler": "2.0.1",
     "socket.io": "0.9.10",
     "mongoose": "3.3.1",
