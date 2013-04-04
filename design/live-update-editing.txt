@@ -33,15 +33,9 @@ Fixed revisions are not handled yet, as it relies on the PressGang RFE. This mea
 
 ## Phase Two
 
-The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 
+A book open in a browser should reflect live edits that were made by an instance of the book in another browser window or on another machine.
 
-Note that this will only affect local Death Star instances. If everyone editing a book is using a hosted instance (ie: the same Death Star server), then all their changes will be reflected in the book they are all viewing.
-
-Challenges for this include: 
-
-1. Distinguishing between a local change and a remote change. The idea with this function is implement live edit updates on remote machines. This function will need to know when an edit is being handled by the local editor as per the functionality in phase one, and when an edit has been performed remotely.
-
-The book brand should open a web socket with the Death Star server, and pass in it's pathURL. This pathURL can be used as an index to an array of streams. 
+The book brand should open a web socket with the Death Star server, and pass in its pathURL. This pathURL can be used as an index to an array of streams. 
 
 When the persist method is called, the pathURL parameter is used to get the stream from the array, and send a reload event.
 
@@ -66,3 +60,12 @@ The book should listen to remote content spec push events on the server. When a 
 
 Locking is necessary to prevent local changes to the book not being accounted for (because they were committed after the rebuild finished, but before the new HTML was presented to the user).
 
+## Phase Five
+
+The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 
+
+Note that this will only affect local Death Star instances. If everyone editing a book is using a hosted instance (ie: the same Death Star server), then all their changes will be reflected in the book they are all viewing.
+
+Challenges for this include: 
+
+1. Distinguishing between a local change and a remote change. The idea with this function is implement live edit updates on remote machines. This function will need to know when an edit is being handled by the local editor as per the functionality in phase one, and when an edit has been performed remotely.
