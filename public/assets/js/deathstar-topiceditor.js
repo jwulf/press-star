@@ -124,7 +124,7 @@ function doActualSave()
     
     // Grab the preview HTML now, when save is called.
     if ($('#div-preview-inline').find('.titlepage'))
-        builtHTML = $('#div-preview-inline');
+        builtHTML = $('#div-preview-inline').html();
     
   if (! validXML && validationServerResponse == 1)
   {
