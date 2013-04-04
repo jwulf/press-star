@@ -120,8 +120,11 @@ function doSave()
 
 function doActualSave()  
 {
+    var builtHTML;
+    
     // Grab the preview HTML now, when save is called.
-    var builtHTML = $('#div-preview-inline').html();
+    if ($('#div-preview-inline').find('.titlepage'))
+        builtHTML = $('#div-preview-inline');
     
   if (! validXML && validationServerResponse == 1)
   {
@@ -149,7 +152,8 @@ function doActualSave()
         $("#revert-button").prop("disabled", true);
         
         // Call the parent (the book) to update itself and persist the changes to the server
-        window.opener.updateTopic(topicID, builtHTML);
+        if (builtHTML)
+            window.opener.updateTopic(topicID, builtHTML);
         
         if (! validXML) doValidate();
       }
