@@ -31,8 +31,6 @@ The Death Star server then rewrites the built book on disk with the updated HTML
 
 Fixed revisions are not handled yet, as it relies on the PressGang RFE. This means that at the moment a fixed revision topic in a content spec can be edited in the Death Star editor, and will update in the built book - which is not an accurate reflection of the book.
 
-The publican-deathstar brand
-
 ## Phase Two
 
 The book should listen to the PressGang CCMS server for events that relate to topics in the book. When a topic in the book is saved on the server, the book should retrieve the topic XML and amend the built book. 

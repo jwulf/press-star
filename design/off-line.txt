@@ -1,5 +1,7 @@
 Off line operation
 
+Request from ekopalova
+
 Once live update editing is implemented, offline operation becomes possible.
 
 Rebuilding of the book is obviated by live update editing - the book is dynamically updated and does not require a rebuild. 
@@ -16,4 +18,9 @@ When the book is taken back online, all dirty topics are pushed to the server, a
 
 And that's all there is to that.
 
+When the editor is invoked, it asks the Death Star server if the book is offline mode. If it is, then the offline API is used for loading and saving the topic from the editor.
+
+That's pretty easy, actually.
+
+The offline API is a file system writer in the Death Star server, similar to the jsondb API used to store the book metadata locally.
 

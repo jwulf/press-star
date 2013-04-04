@@ -1,0 +1,7 @@
+External Editor Support
+
+Request from ekopalova
+
+The Firefox add-on "It's All Text" allows external editors to be used to edit text areas. 
+
+It should be possible to mimic whatever they are doing in the editor javascript. Look into it, and provide support for editing topics with an external editor.

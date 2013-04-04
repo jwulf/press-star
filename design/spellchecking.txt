@@ -1,5 +1,7 @@
 Spell Check in the Editor
 
+Request from aburden.
+
 This Stack Overflow question describes client-side spell checking in the Code Mirror editor:
 
 http://stackoverflow.com/questions/12343922/codemirror-with-spell-checker
