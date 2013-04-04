@@ -27,9 +27,20 @@ function deathstarItUp()
   // rewrite bug links as editor links
   $('.RoleCreateBugPara > a').each(function(){
 	var target = $(this);
+    
+    // Get the topic ID from the bug link data
     buildData = url_query('cf_build_id', target.attr('href')) || 'undefined-';
     endLoc = buildData.indexOf('-');
     topicID = buildData.substr(0, endLoc);
+
+    // Doing this by preserving the original <h2> element instead
+ /*   // Get the section number of the topic in the built book
+    var titlehtml = $(target.parents('.section')[0]).find('h2').html();
+    var sectionIndex = titlehtml.indexOf('</a>');
+    var titleWords = titlehtml.substr(sectionIndex + 4);
+    var sectionNumber = titleWords.substr(0, titleWords.indexOf('&nbsp;'));
+*/
+
     var editURL = editorURL + '?skyneturl=' + skynetURL + '&topicid=' + topicID; 
     target.attr('href', editURL);
     target.attr('target', 'new');
@@ -40,6 +51,7 @@ function deathstarItUp()
 	$(target.parents('.simplesect')).addClass('bug-link');
 	// Identify the div containing the Topic as a topic, and uniquely with the Topic ID
     $(target.parents('.section')[0]).addClass('sectionTopic sectionTopic' + topicID);
+    
 
   }); 
 }
@@ -63,11 +75,22 @@ function updateTopic (topicid, newContent) {
 	// Locate and preserve the bug link / edit child
 	var buglink = target.children('.bug-link').detach();
 	
+    // Get the title from the existing topic - this gets us the TOC anchor and correct section number
+    var title = target.find('h2');
+    
 	// Update the content
 	target.html(newContent);
+    
+    // Now replace the title to get the TOC anchor and the correct section numbering
+    $(target.find('h2')).html(title.html());
 	
 	// Restore injected content
 	if (prereq) prereq.prependTo(target);
 	if (seealso) seealso.appendTo(target);
 	if (buglink) buglink.appendTo(target);
+    
+    // Now make an AJAX call to the deathstar server to persist this book
+    $.post('http://' + window.location.host + '/rest/1/persist', { html: document.documentElement.outerHTML, 
+        url: window.location.pathname, skynetURL: skynetURL }, 
+    function(data){console.log(data);});
 }

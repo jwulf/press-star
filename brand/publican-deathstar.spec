@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.40
+Version:	0.41
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,10 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Thu Apr 04 2013 Joshua Wulf <jwulf@redhat.com> 0.41
+- Preserve TOC anchor and section number when doing a live update
+- Call the Death Star REST API to persist live updates
+
 * Mon Mar 17 2013 Joshua Wulf <jwulf@redhat.com> 0.40
 - Incorporated all the latest shizzle from redhat-video
 
