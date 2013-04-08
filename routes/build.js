@@ -317,6 +317,7 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
                 section = target.parent('.RoleCreateBugPara');
                 section.removeClass('RoleCreateBugPara');
                 section.addClass('fixedRevTopic');
+                target.attr('target', '_blank');
                 target.text('Rev: ' + fixedRevTopics[topicID]);
                 editURL = 'https://skynet.usersys.redhat.com:8443/TopicIndex/Topic.seam?topicTopicId=' 
                     + topicID + '&topicRevision=' + fixedRevTopics[topicID];
