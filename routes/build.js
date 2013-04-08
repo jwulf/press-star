@@ -11,7 +11,8 @@ var fs = require('fs'),
     jsdom = require('jsdom').jsdom,
     livePatch = require('./../lib/livePatch'), 
     cylon = require('pressgang-cylon'), 
-    url_query = require('./../lib/utils').url_query;
+    url_query = require('./../lib/utils').url_query,
+    uuid = require('node-uuid');
     
 var MAX_SIMULTANEOUS_BUILDS = 2,
     BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
@@ -28,6 +29,7 @@ function build(url, id){
     if (jsondb.Books[url] && jsondb.Books[url][id]){
         if (jsondb.Books[url][id].locked)
             return;
+        jsondb.Books[url][id].buildID = uuid.v1();
         jsondb.Books[url][id].locked = true;
         jsondb.Books[url][id].buildError = false;
         buildBook(url, id);
@@ -116,13 +118,14 @@ var csprocessorQueue = async.queue(function(task, cb) {
         if (err) {
             exports.streamHeader[uid] = exports.streamHeader[uid] + 'Content Spec build task exited with error: ' + err;
             exports.streamHeader[uid].write('Content Spec build task exited with error: ' + err);
-            finish
+            console.log('CSprocessor assemble finished for ' + uid);
         } else {
             unzipCSProcessorArtifact(url, id, cb)    
         } 
     });
     
     csprocessorBuildJob.stdout.setEncoding('utf8');
+    console.log('Piping CSProcessor assemble to ' + uid);
     csprocessorBuildJob.stdout.pipe(exports.streams[uid]);
 }, MAX_SIMULTANEOUS_BUILDS);
 
@@ -147,12 +150,14 @@ function unzipCSProcessorArtifact(url, id, cb) {
     var zipjob = spawn('unzip', ['-o', zipfile], {
         cwd: directory
     }).on('exit', function(err) {
+            console.log('Zip finished for ' + uid);
             exports.streamHeader[uid] = exports.streamHeader[uid] + 'CSProcessor assembled book unzipped\n'; 
             customizePublicancfg(url,id, cb);
         });
 
     zipjob.stdout.setEncoding('utf8');
     zipjob.stderr.setEncoding('utf8');
+    console.log('Piping zip job output to ' + uid);
     zipjob.stdout.pipe(exports.streams[uid])
     zipjob.stderr.pipe(exports.streams[uid])
 }
@@ -207,6 +212,7 @@ var publicanQueue = async.queue(function(task, cb) {
     }).on('exit', function(err) {
         exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican build complete\r\n';
         exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican exited with code: ' + err;
+         console.log('Finished Publican job for ' + uid);
         if (!err) { 
             publicanBuildComplete(url, id, cb) 
         } else { 
@@ -217,6 +223,7 @@ var publicanQueue = async.queue(function(task, cb) {
     });
     publicanBuild.stdout.setEncoding('utf8');
     publicanBuild.stderr.setEncoding('utf8');
+    console.log('Piping Publican output to ' + uid);
     publicanBuild.stdout.pipe(exports.streams[uid]);
     publicanBuild.stderr.pipe(exports.streams[uid]);
 }, MAX_SIMULTANEOUS_BUILDS);
@@ -414,6 +421,7 @@ function buildingFinished(url, id, err) {
     jsondb.Books[url][id].buildID = null;                
     jsondb.Books[url][id].locked = false;
     if (err) jsondb.Books[url][id].builderror = true;
+    console.log('Deleting stream for ' + jsondb.Books[url][id].buildID);
     delete exports.streams[jsondb.Books[url][id].buildID];
     delete jsondb.Books[url][id].buildlogStream;
     jsondb.write();
