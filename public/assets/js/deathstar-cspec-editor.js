@@ -234,7 +234,7 @@ function validateSpec() {
             }
             endServerTask();
         });
-        emitValidate();
+       // emitValidate();
     });
 }
 

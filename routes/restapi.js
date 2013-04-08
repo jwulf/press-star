@@ -5,6 +5,7 @@ var fs = require('fs'),
     xmlpreview = require('./xmlpreview'),
     dtdvalidate = require('./dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
+    builder = require('./build'),
     jsondb = require('./../lib/jsondb');
 
 exports.restroute = restroute;
@@ -38,6 +39,32 @@ function restroute (req, res){
     if (op =='remove') {removebook (req, res);}
     else
     if (op == 'patch') {patch (req, res);}
+    else
+    if (op == 'rebuildAll') {rebuildAll (req, res);}
+    else
+    if (op == 'build') {build (req, res);}
+}
+
+function build (req, res) {
+    var url = req.query.url,
+        id = req.query.id;
+    if (url && id) {
+        console.log('Received a build request for ' + url + ' ' + id);
+        builder.build(url, id);
+        res.send({code: 0, msg: 'Build requested'});
+    } else {
+        res.send({code:1, msg: 'Need to send a URL and an ID'});
+    }
+}
+
+function rebuildAll (req, res) {
+    var count = 0;
+    for (var url in jsondb.Books)
+        for (var id in jsondb.Books[url]) {
+            builder.build(url, id);
+            count ++;
+        }
+    res.send({code: 0, msg: 'Sent ' + count + ' books to the rebuilder'});
 }
 
 function patch (req, res){

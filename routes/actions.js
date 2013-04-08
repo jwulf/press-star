@@ -8,14 +8,6 @@ exports.route = route;
 function route (req, res) {
     var action = req.params.action;
     var url = req.query.url, id = req.query.id; 
-    if (action == 'rebuild') {
-        if (jsondb.Books[url][id]) {
-            jsondb.Books[url][id].buildID = uuid.v1();
-            console.log(jsondb.Books[url][id].buildID);
-            builder.build(req.query.url, req.query.id);
-            res.redirect('/'); 
-        }
-    } else 
     if (action == 'remove') {
         if (jsondb.Books[url][id]) {
             delete jsondb.Books[url][id];
