@@ -54,6 +54,10 @@ $(document).keydown(function(event) {
     return false;
 });
 
+function disable (selector) {
+    $(selector).prop("disabled", true);
+    $(selector).popover('hide');
+}
 
 function timedRefresh() {
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
@@ -112,7 +116,7 @@ function showSpinner(spinner) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if (!$("#save-button").prop('disabled')) {
+    if ($("#save-button").prop('disabled') === false) {
         disableSaveRevert();
         // if the validate button is enabled, then we'll call validation before saving
         if ($("#validate-button").prop('disabled') == false)
@@ -151,8 +155,8 @@ function doActualSave () {
 
             if (saveAjaxRequest.status == 200 || saveAjaxRequest.status == 304) {
                 showStatusMessage("Saved OK", '', 'alert-success');
-                $("#save-button").prop("disabled", true);
-                $("#revert-button").prop("disabled", true);
+                disable("#save-button");
+                disable("#revert-button");
 
                 // Send the topic HTML to the server for patching
                 if (builtHTML) {
@@ -210,7 +214,7 @@ function serversideValidateTopic(editor, cb) {
         if (data == "0") {
             showStatusMessage("Topic XML is valid Docbook 4.5", '', 'alert-success');
             validXML = true;
-            $("#validate-button").prop('disabled', true);
+            disable("#validate-button");
             if (cb && typeof(cb) == "function") cb();
         }
         else {
@@ -317,9 +321,9 @@ function generateRESTParameters() {
         }
     }
     else {
-        $('#save-button').prop('disabled', true);
-        $('#revert-button').prop('disabled', true);
-        $('#skynet-button').prop('disabled', true);
+        disable('#save-button');
+        disable('#revert-button');
+        disable('#skynet-button');
     }
 
 }
