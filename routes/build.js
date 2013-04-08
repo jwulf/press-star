@@ -285,6 +285,8 @@ function checkFixedRevisionTopics (url, id, bookPath, cb){
                 } 
             }
         }
+        console.log('Found ' + Object.getOwnPropertyNames(fixedRevTopics).length
+            + ' fixed revision topics.');
         deathStarItUp(url, id, bookPath, fixedRevTopics, cb);
         
     });
@@ -359,10 +361,6 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
         buildingFinished(skynetURL, id);
         if (cb) return cb();
     });
-    
-   
-    
-   
 }
 
 function persistHtml(skynetURL, bookID, html) {
