@@ -1,8 +1,12 @@
+var oldBookList;
 
-function indexRefresh(){
+function indexRefresh (){
  window.refreshTimer = setInterval(function() {
      $.get(window.sourceURL, {}, function(result) {
-         $('#booklist').html(result);
+         if (result != oldBookList) {
+             $('#booklist').html(result);
+             oldBookList = result;
+         }
      });
     }, 1000);   
 }
