@@ -4,7 +4,8 @@ var fs = require('fs'),
     PressGangCCMS = require('pressgang-rest').PressGangCCMS,
     xmlpreview = require('./xmlpreview'),
     dtdvalidate = require('./dtdvalidate'),
-    jsondb = require('./../lib/jsondb.js');
+    livePatch = require('./../lib/livePatch'),
+    jsondb = require('./../lib/jsondb');
 
 exports.restroute = restroute;
 exports.checkout = checkout;
@@ -36,18 +37,32 @@ function restroute (req, res){
     else 
     if (op =='remove') {removebook (req, res);}
     else
-    if (op == 'persist') {persistbook (req, res);}
+    if (op == 'patch') {patch (req, res);}
 }
 
+function patch (req, res){
+    var skynetURL = req.body.skynetURL,
+        html = req.body.html,
+        topicID = req.body.topicID;
+        
+    if (skynetURL && html && topicID)
+        livePatch.patch(skynetURL, topicID, html, function (err) {
+           if (err) {res.send({code:1, msg: err});} else {res.send({code:0, msg: 'Patch completed OK'});}
+        });
+}
+
+
+// Updated books are now patched and persisted in livePatch.patch.
+/*
 function persistbook(req, res){
 
 // Used to persist an updated HTML version of a book
 // Called from a book when it is updated by an editor
 
-    /* 
-        Example pathURL:
-        /builds/8025-Messaging_Programming_Reference/     
-     */
+     
+    //  Example pathURL:
+    //  /builds/8025-Messaging_Programming_Reference/     
+    
      
     var pathURL = req.body.url,
         html = req.body.html,
@@ -75,6 +90,7 @@ function persistbook(req, res){
         } else res.send({code:1, msg:'No book found with ID ' + bookID});
     } else res.send({code:1, msg:'No books found for ' + skynetURL});
 }
+*/
 
 function removebook(req,res){
     var url = req.query.url,

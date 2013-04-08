@@ -20,6 +20,7 @@ var validXML=false,
     urlpath,
     serverURL,
     topicID,
+    sectionNum,
     skynetURL,
     sectionNum,
     helpHintsOn;
@@ -120,7 +121,7 @@ function doSave()
 
 function doActualSave()  
 {
-    var builtHTML;
+    var builtHTML, skynizzleURL;
     
     // Grab the preview HTML now, when save is called.
     if ($('#div-preview-inline').find('.titlepage'))
@@ -151,9 +152,19 @@ function doActualSave()
         $("#save-button").prop("disabled", true);
         $("#revert-button").prop("disabled", true);
         
-        // Call the parent (the book) to update itself and persist the changes to the server
-        if (builtHTML)
-            window.opener.updateTopic(topicID, builtHTML);
+        // Send the topic HTML to the server for patching
+        if (builtHTML) {
+            skynizzleURL =  (skynetURL.indexOf('http://') != 0) ?  'http://' + skynetURL : skynetURL;
+            $.post('http://' + window.location.host + '/rest/1/patch', 
+                { 
+                    html: builtHTML, 
+                    skynetURL: skynizzleURL,
+                    topicID: topicID
+                }, 
+                function (data){ console.log(data);}
+            );
+        }
+//            window.opener.updateTopic(topicID, builtHTML);
         
         if (! validXML) doValidate();
       }
@@ -262,6 +273,7 @@ function generateRESTParameters()
   skynetURL = params.skynetURL;
   nodeServer = params.nodeServer;
   topicID = params.topicID;
+  sectionNum = params.sectionNum;
 
   // Take off the leading "http://", if it exists
   if (! skynetURL === false)  {
@@ -314,7 +326,7 @@ function serversideUpdateXMLPreview(cm, serverFunction){
     if (window.mutex == 0)
     {  
 
-      $.post(nodeServer + "/rest/1/xmlpreview", {xml :   cm },
+      $.post(nodeServer + "/rest/1/xmlpreview", {xml : cm, sectionNum: sectionNum },
         function(data){
           handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;

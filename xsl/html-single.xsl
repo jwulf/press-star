@@ -14,6 +14,26 @@
 
 <xsl:param name="html.append"/>
 
+<!-- 
+Section numbering parameterization
+From: https://lists.oasis-open.org/archives/docbook-apps/201304/msg00029.html 
+-->
+
+<xsl:param name="start.numbering.at" select="0"/>
+
+<xsl:template match="section" mode="label.markup">
+  <xsl:choose>
+    <xsl:when test="$start.numbering.at != 0 and not(ancestor::section)">
+      <xsl:value-of select="$start.numbering.at"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-imports/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- End section numbering parameterization -->
+
 <!--
 From: xhtml/docbook.xsl
 Reason: add TOC div for web site

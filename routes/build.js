@@ -7,7 +7,11 @@ var fs = require('fs'),
     path = require('path'), 
     Stream = require('stream').Stream,
     wrench = require('wrench'),
-    humanize = require('humanize');
+    humanize = require('humanize'),
+    jsdom = require('jsdom').jsdom,
+    livePatch = require('./../lib/livePatch'), 
+    cylon = require('pressgang-cylon'), 
+    url_query = require('./../lib/utils').url_query;
     
 var MAX_SIMULTANEOUS_BUILDS = 2,
     BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
@@ -91,36 +95,6 @@ function buildBook(url, id) {
         return;
     }
 
-    // Read the csprocessor and add the spec ID and product name to the book object
-    
-    // This style of reading config files I used here:
-    // https://github.com/jwulf/node-pressgang-cylon-processor/blob/master/index.js
-    
- /*   var csprocessorCfgSchema= [
-        {attr: 'serverURL', rule: /^SERVER_URL[ ]*((=.*)|$)/i},
-        {attr: 'specID', rule: /^SPEC_ID[ ]*((=.*)|$)/i}
-        ];
-        
-    var contentspec = fs.readFileSync(directory + '/csprocessor.cfg', 'utf8').split("\n");
-    var spec = {};
-    
-    for (var line = 0; line < contentspec.length; line ++) {
-        for (var rules = 0; rules < csprocessorCfgSchema.length; rules ++) {
-            if (contentspec[line].match(csprocessorCfgSchema[rules].rule))
-                spec[csprocessorCfgSchema[rules].attr] = contentspec[line].split('=')[1].replace(/^\s+|\s+$/g,'');
-        }
-    }
-    
-    console.log('Got server: ' + spec.serverURL + ' spec ID: ' + spec.specID );
-    cylon.getSpecMetadata(spec.serverURL, spec.specID, function (err, md)
-    {
-        if (err) {
-            console.log(err); 
-        } else {
-            books[bookIndex].metadata = md;
-            q.push(bookIndex);
-        }
-    }); */
     exports.streamHeader[uid] = exports.streamHeader[uid] + 'Waiting in CSProcessor build queue... \r\n';
     exports.streams[uid].write('Waiting in CSProcessor build queue... \r\n');
     jsondb.Books[url][id].onQueue = true;
@@ -229,8 +203,8 @@ var publicanQueue = async.queue(function(task, cb) {
     publicanBuild.stderr.setEncoding('utf8');
     publicanBuild.stdout.pipe(exports.streams[uid]);
     publicanBuild.stderr.pipe(exports.streams[uid]);
-}, MAX_SIMULTANEOUS_BUILDS)
-publicanQueue.drain = buildingFinished;
+}, MAX_SIMULTANEOUS_BUILDS);
+
 
 function streamWrite(url, id, msg){
     if (exports.streams[jsondb.Books[url][id].buildID])
@@ -238,46 +212,175 @@ function streamWrite(url, id, msg){
 }
 
 function publicanBuildComplete(url, id, cb) {
+    var pathURLAbsolute = BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename,
+        pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
+    
     streamWrite(url, id, 'Moving built book to public directory');
-    wrench.copyDirRecursive(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename, 
-        function mvCallback (err){
-            if (err) { exports.streams[jsondb.Books[url][id].buildID].write(err) 
-            } else {
+    wrench.copyDirRecursive(jsondb.Books[url][id].publicanDirectory + BUILT_PUBLICAN_DIR, pathURLAbsolute, 
+    function mvCallback (err){
+        if (err) { exports.streams[jsondb.Books[url][id].buildID].write(err) 
+        } else {
+            
+            // Write skynetURL and ID into javascript file for the deathstar brand to inject editor links
+            // and for REST API calls related to this book
+
+            var bookMetadata = 'var skynetURL="' + url +'", thisBookID = ' + id + ';';            
+            fs.writeFile(pathURLAbsolute + '/Common_Content/scripts/skynetURL.js', 
+                bookMetadata, 'utf8',  function(err) {
+                if (err) {
+                    streamWrite(url, id, 'Error writing skynetURL.js: ' + err);
+                    console.log(err);
+                } else {                        
+                    streamWrite(url, id, 'Wrote skynetURL.js');
+                }
+                // Check for fixed revision topics
+                checkFixedRevisionTopics(url, id, pathURLAbsolute, function () {
+                    livePatch.scanBook(url, id, pathURL, pathURLAbsolute);    
+                });
                 
-                // Write skynetURL into javascript file for the deathstar brand to inject editor links
-                fs.writeFile(BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/Common_Content/scripts/skynetURL.js', 
-                    'var skynetURL="' + url +'"', 'utf8',  function(err) {
-                    if (err) {
-                        streamWrite(url, id, 'Error writing skynetURL.js: ' + err);
-                        console.log(err);
-                    } else {                        
-                        streamWrite(url, id, 'Wrote skynetURL.js');
-                    }
-                     // Building is finished 
-                    streamWrite(url, id, 'Building finished for ' + url + ' ' + id);
-                    // Move build log to URL-accessible location
-                    var dest = BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename + '/build.log';
-                    mv(jsondb.Books[url][id].buildlog, dest, function(err) {
-                        if (err) {console.log(err)}; 
+                 // Building is finished 
+                streamWrite(url, id, 'Building finished for ' + url + ' ' + id);
+                // Move build log to URL-accessible location
+                var dest = pathURLAbsolute + '/build.log';
+                mv(jsondb.Books[url][id].buildlog, dest, function(err) {
+                        if (err) return console.log(err); 
                         console.log('Moved ' + jsondb.Books[url][id].buildlog + ' to ' +  dest);
                     });
                    
-                    jsondb.Books[url][id].buildID = null;                
-                    jsondb.Books[url][id].locked = false;
-                    delete exports.streams[jsondb.Books[url][id].buildID];
-                    delete jsondb.Books[url][id].buildlogStream;
-                    jsondb.write();
-                    return cb(); 
+                jsondb.write();
                 
-    
-                });        
+                return cb(); 
+            });        
 
-            }
-        });
-        
+        }
+    });
+    
 
 }
 
+function checkFixedRevisionTopics (url, id, bookPath, cb){
+    console.log('Figuring out which topics are fixed revision');
+    cylon.getSpec(url, id, function (err, spec) {
+        
+        if (err) return console.log('Error getting spec: ' + err);
+        
+        console.log('Got the content spec');
+        
+        var fixedRevTopic,
+            fixedRevision,
+            contentspec = spec.split("\n"),
+            fixedRevTopics = {},
+            line;
+        
+        for (var lines = 0; lines < contentspec.length; lines ++) {
+            line = contentspec[lines];
+            if (line.indexOf('#')  !== 0) { // ignore commented lines
+                if (line.indexOf(', rev: ') !== -1) {     
+                    fixedRevision = line.substring(line.indexOf(', rev:') + 7, line.length - 1);
+                    var startLoc = line.indexOf('[') + 1,
+                    offset = line.indexOf(', rev:') - startLoc;
+                    fixedRevTopic = line.substr(startLoc, offset);
+                    console.log('Found a fixed rev topic: ' + fixedRevTopic);
+                    fixedRevTopics[fixedRevTopic] = fixedRevision;
+                } 
+            }
+        }
+        deathStarItUp(url, id, bookPath, fixedRevTopics, cb);
+        
+    });
+}
+
+function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
+    var buildData, endLoc, topicID, editorURL, section,editURL;
+    jsdom.env(bookPath + '/index.html', [process.cwd() + '/public/scripts/jquery-1.9.1.min.js'], function (err, window){
+        // Now go through and modify the fixedRevTopics links
+        // And deathstar it up while we're at it
+        
+        console.log('Death Starring it up in here!');
+        var $ = window.$;
+        editorURL = '/edit.html';  
+        // skynetURL is provided by skynetURL.js
+        
+        console.log(fixedRevTopics);
+        
+        // rewrite bug links as editor links
+        $('.RoleCreateBugPara > a').each(function () {
+            var target = $(this);
+        
+            // Get the topic ID from the bug link data
+            buildData = url_query('cf_build_id', target.attr('href')) || 'undefined-';
+            endLoc = buildData.indexOf('-');
+            topicID = buildData.substr(0, endLoc);
+            
+            if (fixedRevTopics[topicID]) { // This is a Fixed Revision Topic
+            
+                //console.log('Fixed Rev topic: ' + topicID);
+                
+                section = target.parent('.RoleCreateBugPara');
+                section.removeClass('RoleCreateBugPara');
+                section.addClass('fixedRevTopic');
+                target.text('Rev: ' + fixedRevTopics[topicID]);
+                editURL = 'https://skynet.usersys.redhat.com:8443/TopicIndex/Topic.seam?topicTopicId=' 
+                    + topicID + '&topicRevision=' + fixedRevTopics[topicID];
+                target.attr('href', editURL);
+                
+                // Identify the bug link, to allow us to preserve it when updating the DOM
+                $(target.parents('.simplesect')).addClass('bug-link');
+                // Identify the div containing the Topic as a topic, and uniquely with the Topic ID
+                $(target.parents('.section')[0]).addClass('sectionTopic sectionTopic' + topicID);            
+            } else {
+             /*
+                Get the section number of the topic in the built book.
+                This is done to pass to the editor. The editor passes it to the HTML preview service.
+                The HTML preview service passes it to xsltproc, which uses it to render the HTML
+                preview with the correct section number for the book.
+            */
+                
+                var titlehtml = $(target.parents('.section')[0]).find('.title').html(),
+                    sectionIndex = titlehtml.indexOf('</a>'),
+                    titleWords = titlehtml.substr(sectionIndex + 4),
+                    sectionNumber = titleWords.substr(0, titleWords.indexOf('&nbsp;'));
+        
+                editURL = editorURL + '?skyneturl=' + skynetURL + '&topicid=' + topicID
+                    + '&sectionNum=' + sectionNumber; 
+                target.attr('href', editURL);
+                target.attr('target', 'new');
+                target.addClass('edittopiclink');
+                target.text('Edit');
+            
+                // Identify the bug link, to allow us to preserve it when updating the DOM
+                $(target.parents('.simplesect')).addClass('bug-link');
+                // Identify the div containing the Topic as a topic, and uniquely with the Topic ID
+                $(target.parents('.section')[0]).addClass('sectionTopic sectionTopic' + topicID);            
+            }         
+        });
+        // Remove the jsdom script tag
+        $('.jsdom').remove();
+        persistHtml(skynetURL, id, window.document.outerHTML);
+    });
+    
+    buildingFinished(skynetURL, id);
+    
+    if (cb) return cb();
+}
+
+function persistHtml(skynetURL, bookID, html) {
+    var filePath = process.cwd() + '/public/builds/' + bookID + '-' + jsondb.Books[skynetURL][bookID].title.split(' ').join('_') + '/index.html';
+        
+    // If the book is not rebuilding, then write the html to path
+
+    fs.writeFile(filePath, html, function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log('Updated ' + filePath);
+        }
+    }); 
+}
+
 function buildingFinished(url, id) {
-   
+    jsondb.Books[url][id].buildID = null;                
+    jsondb.Books[url][id].locked = false;
+    delete exports.streams[jsondb.Books[url][id].buildID];
+    delete jsondb.Books[url][id].buildlogStream;
 }

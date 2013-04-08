@@ -20,7 +20,8 @@
     "node-uuid": "1.4.0",
     "async": "0.2.6",
     "wrench": "1.4.4",
-    "humanize": "0.0.6"
+    "humanize": "0.0.6",
+    "jsdom": "0.5.5"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",

@@ -4,7 +4,9 @@ var fs=require('fs'),
     builder = require('./build.js'),
     cylon = require('pressgang-cylon'),    
     uuid = require('node-uuid'),
-    jsondb = require('./../lib/jsondb');
+    jsondb = require('./../lib/jsondb'),
+    Stream = require('stream').Stream,
+    livePatch = require('./../lib/livePatch');
 
 exports.socketHandler = socketHandler;
 
@@ -19,6 +21,21 @@ function socketHandler(client){
     }); 
     client.on('pushspec', function(data){pushSpec(data, client);});
     client.on('getBuildLog', function(data) {getBuildLog(data, client);});
+    
+    client.on('patchSubscribe', function(data) { 
+        var specID = data.id;
+        console.log('Patch Subscription for Spec ID: ' + data.id);
+        if (data.id  && data.skynetURL)
+            if (livePatch.patchStreams[data.skynetURL][data.id]) {
+                var myPatchStream = new Stream();
+                myPatchStream.readable = myPatchStream.writable = true;
+                myPatchStream.on('data', function (topicPatchData){
+                    console.log('Pushing patch for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
+                    client.emit('patchBookinBrowser', topicPatchData); 
+                });
+                livePatch.patchStreams[data.skynetURL][data.id].pipe(myPatchStream);
+            }
+    });
     
     client.on('disconnect', function() {
         console.log('Bye client :(');
@@ -92,7 +109,7 @@ function pushSpec(data, client) {
                 console.log('Exiting Content Spec push with code: ' + code);
                 
                 // If the push succeeds, then we will spawn a rebuild of the book, if we're hosting it
-                if (code == BUILD_SUCCEEDED) {
+                if (code == BUILD_SUCCEEDED && data.command == 'push') {
                     console.log('Initiating post-content-spec-push rebuild');
                     cylon.stripMetadata('http://' + data.server, data.spec, function specMetadataCallback(err, md) {
                         console.log(md);

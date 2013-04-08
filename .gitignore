@@ -2,3 +2,4 @@ public/builds/*
 books/*
 node_modules/*
 lib/the.keytab
+tmp

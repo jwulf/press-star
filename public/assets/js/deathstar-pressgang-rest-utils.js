@@ -35,6 +35,7 @@ function extractURLParameters(){
 	};
 	url_params.nodeServer = url_query('nodeserver') || '';
 	url_params.topicID = url_query('topicid');
+    url_params.sectionNum = url_query('sectionNum');
   	skynetURL = url_query('skyneturl');
   	if (skynetURL && skynetURL.indexOf("http://") !== -1)    
       skynetURL = skynetURL.substring(7);

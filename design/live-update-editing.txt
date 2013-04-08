@@ -35,9 +35,67 @@ Fixed revisions are not handled yet, as it relies on the PressGang RFE. This mea
 
 A book open in a browser should reflect live edits that were made by an instance of the book in another browser window or on another machine.
 
-The book brand should open a web socket with the Death Star server, and pass in its pathURL. This pathURL can be used as an index to an array of streams. 
+Immediately when a book is succesfully built, it is scanned on the server using the same technique the Edit link injector uses. An array of the topics in it is created, indexed on the pathURL. 
 
-When the persist method is called, the pathURL parameter is used to get the stream from the array, and send a reload event.
+topics: {
+    'http:skynet.something.com:8080/TopicIndex/': {
+        6543: {'builds/6453-Whatever': true, 'builds/345-Something_Else': true}
+        ...
+    }
+}
+
+function afterBuildTopicDependencyScanner () {
+    $each('.BugRolePara') {
+        // get topicID
+        if (! topics.skynetURL)
+            topics.skynetURL = {};
+        if (! topics.skynetURL['topic-' + topicID]) 
+            topics['topic-' + topicID] = {};
+    
+        topics['topic-' + topicID][pathURL] = true 
+    }            
+}
+
+The book brand opens a web socket with the Death Star server, and passes in its pathURL. This pathURL is used as an index to an array of streams. The stream is connected to the websocket. 
+
+patchStreams: {
+    'http:skynet.something.com:8080/TopicIndex/': {
+        6453: <stream>,
+        3454: <stream>
+    }
+}
+
+(The patch stream is created whenever the jsondb.Books is initialised, and is checked whenever a book is built, to make sure that one exists for that build).
+
+socketHandler.js:
+client.on('patchSubscribe', function(data) { 
+    if (data.pathURL && patchStreams[data.pathURL]) {
+        var myPatchStream = new Stream();
+        myPatchStream.readable = myPatchStream.writable = true;
+        myPatchStream.on('data', function (data){
+            client.emit('cmdoutput', data); 
+        });
+        myPatchStream.pipe(patchStreams[data.pathURL]);
+    }
+}
+
+When a topic is edited and saved, the editor calls the server patch method with the skynetURL, topicID, and new HTML.
+
+On the server, the topicID and skynetURL is used to retrieve the list of pathURLs relying on that topic.
+
+buildsThatUseThisPatch = topics[skynetURL]['topic-' + topicID];
+for (build in buildsThatUseThisPatch)
+    patchBook(build, topicID, html);
+
+function patchBook (build, topicID, html) {
+    // Patch the book
+    patchStreams.build.write({topicID: topicID, html: myPatchedHtml});
+}
+
+
+Each pathURL book is patched on the server, preserving the appropriate section header and relationship links, then sent into the stream for that book. The websocket listening to that stream then emits a 'patch' event with the appropriate replacement HTML.
+
+the pathURL parameter is used to get the stream from the array, and send a reload event.
 
 When the book gets a reload event, it saves its current scroll location (or perhaps the element in view at the top of page - re-examine the code tabs default changing code to see how that anchors the view), then reloads its HTML via AJAX. 
 
