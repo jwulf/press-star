@@ -299,15 +299,13 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
         console.log('Death Starring it up in here!');
         var $ = window.$;
         editorURL = '/edit.html';  
-        // skynetURL is provided by skynetURL.js
-        
-        console.log(fixedRevTopics);
         
         // rewrite bug links as editor links
         $('.RoleCreateBugPara > a').each(function () {
             var target = $(this);
         
             // Get the topic ID from the bug link data
+            //console.log(target.attr('href'));
             buildData = url_query('cf_build_id', target.attr('href')) || 'undefined-';
             endLoc = buildData.indexOf('-');
             topicID = buildData.substr(0, endLoc);
@@ -357,11 +355,13 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
         // Remove the jsdom script tag
         $('.jsdom').remove();
         persistHtml(skynetURL, id, window.document.outerHTML);
+        buildingFinished(skynetURL, id);
+        if (cb) return cb();
     });
     
-    buildingFinished(skynetURL, id);
+   
     
-    if (cb) return cb();
+   
 }
 
 function persistHtml(skynetURL, bookID, html) {

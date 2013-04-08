@@ -29,10 +29,12 @@ function socketHandler(client){
             if (livePatch.patchStreams[data.skynetURL][data.id]) {
                 var myPatchStream = new Stream();
                 myPatchStream.readable = myPatchStream.writable = true;
-                myPatchStream.on('data', function (topicPatchData){
-                    console.log('Pushing patch for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
+                myPatchStream.write = function (topicPatchData) {
+                    console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
+                    this.emit('data', data);
                     client.emit('patchBookinBrowser', topicPatchData); 
-                });
+                    return true;
+                }
                 livePatch.patchStreams[data.skynetURL][data.id].pipe(myPatchStream);
             }
     });
