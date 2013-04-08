@@ -16,14 +16,15 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 <!-- Inject a div.skynetBookID with Product_Name/Book_Name
   This is used for cookies for the book -->
 <xsl:template name="user.footer.content">
-   <div class="skynetBookID"><xsl:value-of select="//productname[1]"/>/<xsl:value-of select="//title[1]"/></div>
-   <script src="Common_Content/scripts/modernizr.js"></script>
-   <script src="Common_Content/scripts/jquery-1.4.2.min.js"></script>
-   <script src="Common_Content/scripts/code-lang-switcher.js"></script>
-   <script src="Common_Content/scripts/skynet-book.js"></script>
+    <div class="skynetBookID"><xsl:value-of select="//productname[1]"/>/<xsl:value-of select="//title[1]"/></div>
+    <script src="Common_Content/scripts/modernizr.js"></script>
+    <script src="Common_Content/scripts/jquery-1.4.2.min.js"></script>
+    <script src="Common_Content/scripts/code-lang-switcher.js"></script>
+    <script src="Common_Content/scripts/skynet-book.js"></script>
     <script src="Common_Content/scripts/skynetURL.js"></script>
     <script src="Common_Content/scripts/utils.js"></script>
-   <script src="Common_Content/scripts/deathstar.js"></script>
+    <script src="Common_Content/scripts/deathstar.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </xsl:template>
 
 <!-- set the onload of the page -->
