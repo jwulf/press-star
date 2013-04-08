@@ -16,9 +16,10 @@ exports.xmlPreview = function (req, res){
                 sectionNum = sectionNum.substr(0, sectionNum.length - 1);
         }
         //preview = xslt.transform(req.app.settings.xslt, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0']); }
-        //if (sectionNum) {
-        if (false) {
-            preview = xslt.transform(stylesheet, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0', 'start.numbering.at', sectionNum]); 
+        if (sectionNum) {
+        //if (false) {
+            preview = xslt.transform(stylesheet, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0', 'start.numbering.at',
+                                        "'" + sectionNum + "'"]); 
         } else {
             preview = xslt.transform(stylesheet, xmldocument, ['body.only', '1', 'tablecolumns.extension', '0']);        
         }  
