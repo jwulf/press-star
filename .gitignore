@@ -3,3 +3,6 @@ books/*
 node_modules/*
 lib/the.keytab
 tmp
+err.log
+out.log
+screenlog.0
