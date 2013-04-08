@@ -17,7 +17,8 @@ function pageSetup () {
 
 function rebuild (url, id) {
     $.get('/rest/1/build', {url: url, id: id}, function (result){
-        console.log(result); 
+        console.log(result);
+        return false;
     });
 }
 
@@ -25,4 +26,5 @@ function rebuildAll () {
     $.get('/rest/1/rebuildAll', {}, function(result){
         console.log(result);
     });
+    return false;
 }

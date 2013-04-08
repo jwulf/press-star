@@ -256,7 +256,7 @@ function publicanBuildComplete(url, id, cb) {
                 
                  
                 
-                return cb(); 
+                if (cb) return cb(); 
             });        
 
         }

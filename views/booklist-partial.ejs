@@ -35,7 +35,7 @@
                             <span class="action-button btn-log">Build Log</span>
                         <% } else { %>
                             <% if (books[each].data.builtFilename) { %>
-                                <span class="action-button btn-rebuild"><a href="#" onclick="rebuild('<%=url%>', '<%=id%>')">Rebuild Book</a></span>
+                                <span class="action-button btn-rebuild"><a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">Rebuild Book</a></span>
                                 </h3></center></td><td><center><h3>
                                 <% if (books[each].data.buildError) { %>
                                     <span class="active-indicator-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/build.log'%>">Build Error</a></span>
