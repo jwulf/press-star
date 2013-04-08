@@ -70,7 +70,7 @@ exports.dtdvalidate = function (req, res){
                                         return false;
                                 } else {
                                     count++;
-                                    if ( count == total - 1)
+                                    if ( count == total )
                                         res.send('0');
                                 }
                         });     
