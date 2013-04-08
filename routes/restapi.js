@@ -78,53 +78,17 @@ function patch (req, res){
         });
 }
 
-
-// Updated books are now patched and persisted in livePatch.patch.
-/*
-function persistbook(req, res){
-
-// Used to persist an updated HTML version of a book
-// Called from a book when it is updated by an editor
-
-     
-    //  Example pathURL:
-    //  /builds/8025-Messaging_Programming_Reference/     
-    
-     
-    var pathURL = req.body.url,
-        html = req.body.html,
-        skynetURL = req.body.skynetURL,
-        bookID = pathURL.substr(8, pathURL.indexOf('-') - 8),
-        filePath = process.cwd() + '/public' + pathURL ;
-        
-    // If the book is not rebuilding, then write the html to path
-
-    if (jsondb.Books[skynetURL]) {
-        if (jsondb.Books[skynetURL][bookID]) {
-            if (!jsondb.Books[skynetURL][bookID].locked) {
-                jsondb.Books[skynetURL][bookID].locked = true;
-                fs.writeFile(filePath + 'index.html', html, function(err) {
-                    jsondb.Books[skynetURL][bookID].locked = false;
-                    if(err) {
-                        console.log(err);
-                        res.send({code: 1, msg:'Error writing file on server: ' + err})
-                    } else {
-                        console.log('Updated ' + pathURL);
-                        res.send({code: 0, msg: 'All good baby!'});
-                    }
-                }); 
-            } else res.send({code: 1, msg: 'Book currently rebuilding on server'});
-        } else res.send({code:1, msg:'No book found with ID ' + bookID});
-    } else res.send({code:1, msg:'No books found for ' + skynetURL});
-}
-*/
-
 function removebook(req,res){
     var url = req.query.url,
         id = req.query.id;
     if (jsondb.Books[url])
         if (jsondb.Books[url][id])
             {
+                var pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
+                // Nuke all the current subscriptions for this book
+                if (livePatch.Topics[url])
+                    for (var topic in livePatch.Topics[url])
+                        if (topic[pathURL]) delete topic[pathURL];   
                 delete jsondb.Books[url][id];
                 jsondb.write();
                 return res.send({code:0, msg: 'Book deleted'});

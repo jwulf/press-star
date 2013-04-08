@@ -77,18 +77,7 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
-        if (section !== null) {
-            
-            // Failed attempt to fake the section number - don't know why, but the first ' ' is not a space!
-           /* var titleLine = $(section[0]).find('.title')[0];
-            
-            if (titleLine) {
-                var id = $($(section[0]).find('.title')[0]).attr('id');
-                var titleHtml = $(section[0]).find('#' + id).html();
-                var newHtml = sectionNum + ' ' + titleHtml.substr(titleHtml.indexOf(' '))
-                $(section[0]).find('#' + id).html(newHtml);
-            } */
-            
+        if (section !== null) {    
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
         }

@@ -1,15 +1,23 @@
 var fs = require('fs'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    jsdom = require('jsdom').jsdom,
+    dtdstring=('<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"\n' +
+        '"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\" []>'),
+        kateLanguages = ['C', 'C++', 'C#', 'Java', 'Python', 'Javascript'],
+        kateURL = "http://search.cpan.org/~szabgab/Syntax-Highlight-Engine-Kate-0.06/lib/Syntax/Highlight/Engine/Kate.pm#ATTRIBUTES";
+
+// Kate Syntax Highlighting Languages: 
+// http://search.cpan.org/~szabgab/Syntax-Highlight-Engine-Kate-0.06/lib/Syntax/Highlight/Engine/Kate.pm#PLUGINS
 
 exports.dtdvalidate = function (req, res){
+    
     console.log("topicValidate handler called");
     if (!req.body.xml){res.send("Body format: {'xml' : '<xmltovalidate>'}");}
     else
     {
         //console.log(req.body.xml);
-        var dtdstring=('<?xml version="1.0" encoding="UTF-8"?>\n' +
-            '<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"\n' +
-            '"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\" []>');
+ 
         var filenumber=1;
         while (fs.existsSync("/tmp/topic"+ filenumber))
             filenumber++;
@@ -31,12 +39,44 @@ exports.dtdvalidate = function (req, res){
         
             if (exitcode===0)
             {
-                res.send('0');
-                console.log('sent: 0');
+                // dtdvalidation passed, so let's check now for the programlisting languages
+                jsdom.env(filename, [process.cwd() + '/public/scripts/jquery-1.9.1.min.js'], function (err, window){
+                    if (err) { 
+                        console.log('Error loading topic as DOM: ' + err);
+                        res.send('0');
+                         deleteTempFile(filename);     
+                    } else {
+                        var $ = window.$,
+                        lang,
+                            count = 0,
+                            total = $('programlisting').length;
+                            
+                        $('programlisting').each( function () {
+                            lang = $(this).attr('language');
+                            console.log(lang);
+                            console.log($(this).innerHTML);
+                            if (lang)
+                                if (kateLanguages.indexOf(lang) == -1) {
+                                    res.send('&lt;programlisting language="<span class="text-error"><strong>' 
+                                        + lang + '</strong></span>"&gt; is not a recognized ' +
+                                        'Kate Highlighting Syntax language. Is it ' +
+                                        '<a href="'+kateURL+'" target="_blank">capitalized correctly?</a>');
+                                        return false;
+                                } else {
+                                    count++;
+                                    if ( count == total - 1)
+                                        res.send('0');
+                                }
+                        });     
+                        console.log('sent: 0');
+                        deleteTempFile(filename);
+                    }
+                });
             }
             else
             {
                 res.send(errorText);
+                deleteTempFile(filename);
                 console.log('sent: ' + errorText);
             }
         }
@@ -46,13 +86,14 @@ exports.dtdvalidate = function (req, res){
         child.on("exit", function(code,signal){
             console.log("Exit code: "+ code);
             exitcode = code;
-             fs.unlink(filename, function(err)
-            {
-                if (err) {console.log(err);}
-                else{console.log("Successfully deleted "+ filename);}
-            });
-        
-            
         });
     }        
+}
+
+function deleteTempFile (filename) {
+    fs.unlink(filename, function(err)
+        {
+            if (err) {console.log(err);}
+            else{console.log("Successfully deleted "+ filename);}
+        });
 }
