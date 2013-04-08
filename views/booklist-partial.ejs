@@ -22,9 +22,9 @@
                     <h3>
                         <% if (books[each].data.locked) { %>
                             <% if (books[each].data.onQueue) { %>
-                                <span class="active-indicator-button"><a target="log" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Queued</a></span>
+                                <span class="active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Queued</a></span>
                             <% } else { %>
-                                <span class="active-indicator-button"><a target="log" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Rebuilding</a></span>
+                                <span class="active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= books[each].data.buildID %>">Rebuilding</a></span>
                             <% } %>
                             </h3><center></td>
                             <td><center><h3>
@@ -33,7 +33,11 @@
                             <% if (books[each].data.builtFilename) { %>
                                 <span class="action-button btn-rebuild"><a href="/action/rebuild?url=<%= url%>&id=<%= id %>">Rebuild Book</a></span>
                                 </h3></center></td><td><center><h3>
-                                <span class="action-button btn-log"><a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/build.log'%>">Build Log</a></span>
+                                <% if (books[each].data.buildError) { %>
+                                    <span class="active-indicator-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/build.log'%>">Build Error</a></span>
+                                <% } else { %>
+                                    <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/build.log'%>">Build Log</a></span>
+                                <% } %>
                             <% } else { %>
                                 <span class="active-indicator-button"><a href="/action/rebuild?url=<%= url%>&id=<%= id %>">Build Book</a></span>
                                 </h3></center></td><td><center><h3>

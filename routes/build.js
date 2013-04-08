@@ -15,7 +15,8 @@ var fs = require('fs'),
     
 var MAX_SIMULTANEOUS_BUILDS = 2,
     BUILT_PUBLICAN_DIR = '/tmp/en-US/html-single',
-    BUILDS_DIR = process.cwd() + '/public/builds/';
+    BUILDS_DIR = process.cwd() + '/public/builds/',
+    BUILD_ERROR = true;
     
 exports.streams = { }; 
 exports.streamHeader = {};
@@ -27,6 +28,7 @@ function build(url, id){
         if (jsondb.Books[url][id].locked)
             return;
         jsondb.Books[url][id].locked = true;
+        jsondb.Books[url][id].buildError = false;
         buildBook(url, id);
     } else {
         console.log('This book seems to have disappeared! Check it out again');
@@ -110,7 +112,13 @@ var csprocessorQueue = async.queue(function(task, cb) {
         cwd: path.normalize(process.cwd() + '/' + jsondb.Books[url][id]['bookdir'])
     }).on('exit', function(err){
         exports.streamHeader[uid] = exports.streamHeader[uid] + 'Content Specification build task completed\r\n';
-        unzipCSProcessorArtifact(url, id, cb)
+        if (err) {
+            exports.streamHeader[uid] = exports.streamHeader[uid] + 'Content Spec build task exited with error: ' + err;
+            exports.streamHeader[uid].write('Content Spec build task exited with error: ' + err);
+            finish
+        } else {
+            unzipCSProcessorArtifact(url, id, cb)    
+        } 
     });
     
     csprocessorBuildJob.stdout.setEncoding('utf8');
@@ -203,7 +211,7 @@ var publicanQueue = async.queue(function(task, cb) {
         } else { 
             console.log('Publican build error ' + err);
             exports.streams[uid].write('Publican build error ' + err)
-            buildingFinished(url, id); 
+            buildingFinished(url, id, BUILD_ERROR); 
         }
     });
     publicanBuild.stdout.setEncoding('utf8');
@@ -245,31 +253,25 @@ function publicanBuildComplete(url, id, cb) {
                     livePatch.scanBook(url, id, pathURL, pathURLAbsolute);    
                 });
                 
-                 // Building is finished 
-                streamWrite(url, id, 'Building finished for ' + url + ' ' + id);
-                // Move build log to URL-accessible location
-                var dest = pathURLAbsolute + '/build.log';
-                mv(jsondb.Books[url][id].buildlog, dest, function(err) {
-                        if (err) return console.log(err); 
-                        console.log('Moved ' + jsondb.Books[url][id].buildlog + ' to ' +  dest);
-                    });
-                   
-                jsondb.write();
+                 
                 
                 return cb(); 
             });        
 
         }
     });
-    
-
 }
 
 function checkFixedRevisionTopics (url, id, bookPath, cb){
     console.log('Figuring out which topics are fixed revision');
     cylon.getSpec(url, id, function (err, spec) {
-        
-        if (err) return console.log('Error getting spec: ' + err);
+       var uid = jsondb.Books[url][id].uid;
+       
+        if (err) {
+            exports.streamHeader[uid].write('Error retrieving Content Spec for Fixed Revision analysis: ' + err);  
+            console.log('Error getting spec: ' + err);
+            return buildingFinished(url, id, BUILD_ERROR);
+        }
         
         console.log('Got the content spec');
         
@@ -294,8 +296,7 @@ function checkFixedRevisionTopics (url, id, bookPath, cb){
         }
         console.log('Found ' + Object.getOwnPropertyNames(fixedRevTopics).length
             + ' fixed revision topics.');
-        deathStarItUp(url, id, bookPath, fixedRevTopics, cb);
-        
+        deathStarItUp(url, id, bookPath, fixedRevTopics, cb); 
     });
 }
 
@@ -305,6 +306,12 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
         // Now go through and modify the fixedRevTopics links
         // And deathstar it up while we're at it
         
+        var uid = jsondb.Books[skynetURL][id].uid;
+        if (err) {
+            exports.streamHeader[uid].write('Error parsing HTML: '  + err);  
+            console.log('Error parsing html: ' + err);
+            return buildingFinished(skynetURL, id, BUILD_ERROR);
+        }
         console.log('Death Starring it up in here!');
         var $ = window.$;
         editorURL = '/edit.html';  
@@ -384,9 +391,22 @@ function persistHtml(skynetURL, bookID, html) {
     }); 
 }
 
-function buildingFinished(url, id) {
+function buildingFinished(url, id, err) {
+    var pathURLAbsolute = BUILDS_DIR + id + '-' + jsondb.Books[url][id].builtFilename
+    // Building is finished 
+    jsondb.Books[url][id].buildError = err;
+    streamWrite(url, id, 'Building finished for ' + url + ' ' + id);
+    // Move build log to URL-accessible location
+    var dest = pathURLAbsolute + '/build.log';
+    mv(jsondb.Books[url][id].buildlog, dest, function(err) {
+            if (err) return console.log(err); 
+            console.log('Moved ' + jsondb.Books[url][id].buildlog + ' to ' +  dest);
+        });
+               
     jsondb.Books[url][id].buildID = null;                
     jsondb.Books[url][id].locked = false;
+    if (err) jsondb.Books[url][id].builderror = true;
     delete exports.streams[jsondb.Books[url][id].buildID];
     delete jsondb.Books[url][id].buildlogStream;
+    jsondb.write();
 }
