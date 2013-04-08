@@ -21,6 +21,7 @@ var MAX_SIMULTANEOUS_BUILDS = 2,
 exports.streams = { }; 
 exports.streamHeader = {};
 exports.build = build;
+exports.streamWrite = streamWrite;
 
 function build(url, id){
     console.log('building: ' + url + ' ' + id);
@@ -264,6 +265,7 @@ function publicanBuildComplete(url, id, cb) {
 
 function checkFixedRevisionTopics (url, id, bookPath, cb){
     console.log('Figuring out which topics are fixed revision');
+    streamWrite(url, id, 'Checking for Fixed Revision Topics');
     cylon.getSpec(url, id, function (err, spec) {
        var uid = jsondb.Books[url][id].uid;
        
@@ -294,6 +296,8 @@ function checkFixedRevisionTopics (url, id, bookPath, cb){
                 } 
             }
         }
+        streamWrite(url, id, 'Found ' + Object.getOwnPropertyNames(fixedRevTopics).length
+            + ' fixed revision topics.');
         console.log('Found ' + Object.getOwnPropertyNames(fixedRevTopics).length
             + ' fixed revision topics.');
         deathStarItUp(url, id, bookPath, fixedRevTopics, cb); 
@@ -302,6 +306,7 @@ function checkFixedRevisionTopics (url, id, bookPath, cb){
 
 function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
     var buildData, endLoc, topicID, editorURL, section,editURL;
+    streamWrite(skynetURL, id, 'Rewriting Editor links');
     jsdom.env(bookPath + '/index.html', [process.cwd() + '/public/scripts/jquery-1.9.1.min.js'], function (err, window){
         // Now go through and modify the fixedRevTopics links
         // And deathstar it up while we're at it
@@ -372,7 +377,6 @@ function deathStarItUp(skynetURL, id, bookPath, fixedRevTopics, cb) {
         // Remove the jsdom script tag
         $('.jsdom').remove();
         persistHtml(skynetURL, id, window.document.outerHTML);
-        buildingFinished(skynetURL, id);
         if (cb) return cb();
     });
 }
@@ -385,8 +389,12 @@ function persistHtml(skynetURL, bookID, html) {
     fs.writeFile(filePath, html, function(err) {
         if(err) {
             console.log(err);
+            streamWrite(skynetURL, bookID, 'Error writing HTML to disk');
+            return buildingFinished(skynetURL, bookID, BUILD_ERROR);
         } else {
             console.log('Updated ' + filePath);
+            streamWrite(skynetURL, bookID, 'Wrote updated HTML to disk\r\n');
+            return buildingFinished(skynetURL, bookID);
         }
     }); 
 }
