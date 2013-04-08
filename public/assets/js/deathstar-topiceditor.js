@@ -24,7 +24,8 @@ var validXML = false,
     sectionNum,
     helpHintsOn,
     editorPlainText, 
-    editor;
+    editor,
+    oldVal;
 
 $(window).keypress(function(event) {
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
@@ -701,8 +702,23 @@ function togglePlainText() {
                 }
         });
         editorPlainText = true;
+        oldVal = $('#code').val();
+        setTimer();
+
     }
 }
+
+function setTimer(){
+    setTimeout(function(){
+        if($('#code').val() != oldVal){
+            makeValidityAmbiguous();
+            enableSaveRevert();
+            updateXMLPreviewRoute($('#code').val(), document.getElementsByClassName("div-preview"));
+            oldVal = $('#code').val();
+        }
+        if (editorPlainText) setTimer();
+    }, 500);
+};
 
 function doFindNext() {
     CodeMirror.commands.findNext(editor);
