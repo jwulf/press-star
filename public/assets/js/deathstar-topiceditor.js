@@ -72,8 +72,19 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
-        section = doc.getElementsByClassName("section");
+        var section = doc.getElementsByClassName("section");
         if (section !== null) {
+            
+            // Failed attempt to fake the section number - don't know why, but the first ' ' is not a space!
+           /* var titleLine = $(section[0]).find('.title')[0];
+            
+            if (titleLine) {
+                var id = $($(section[0]).find('.title')[0]).attr('id');
+                var titleHtml = $(section[0]).find('#' + id).html();
+                var newHtml = sectionNum + ' ' + titleHtml.substr(titleHtml.indexOf(' '))
+                $(section[0]).find('#' + id).html(newHtml);
+            } */
+            
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
         }
@@ -116,7 +127,7 @@ function doSave() {
     return false;
 }
 
-function doActualSave() {
+function doActualSave () {
     var builtHTML, skynizzleURL, xmlText;
 
     // Grab the preview HTML now, when save is called.
@@ -133,7 +144,7 @@ function doActualSave() {
 
     requestURL = "/seam/resource/rest/1/topic/update/json";
 
-    saveAjaxRequest = new XMLHttpRequest();
+    var saveAjaxRequest = new XMLHttpRequest();
     saveAjaxRequest.global = true;
     saveAjaxRequest.onreadystatechange = function() {
         if (saveAjaxRequest.readyState == 4) {
@@ -181,7 +192,7 @@ function doActualSave() {
     var updateObject = {
         'id': topicID,
         'configuredParameters': ['xml'],
-        'xml': editor.getValue()
+        'xml': xmlText
     };
     updateString = JSON.stringify(updateObject);
 

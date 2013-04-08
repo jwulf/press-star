@@ -197,7 +197,14 @@ var publicanQueue = async.queue(function(task, cb) {
         cwd: jsondb.Books[url][id].publicanDirectory
     }).on('exit', function(err) {
         exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican build complete\r\n';
-        publicanBuildComplete(url, id, cb)
+        exports.streamHeader[uid] = exports.streamHeader[uid] + 'Publican exited with code: ' + err;
+        if (!err) { 
+            publicanBuildComplete(url, id, cb) 
+        } else { 
+            console.log('Publican build error ' + err);
+            exports.streams[uid].write('Publican build error ' + err)
+            buildingFinished(url, id); 
+        }
     });
     publicanBuild.stdout.setEncoding('utf8');
     publicanBuild.stderr.setEncoding('utf8');
