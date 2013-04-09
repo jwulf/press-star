@@ -364,3 +364,19 @@ span.remark{
   display: none;
 }
 
+.notify-rebuilt {
+    z-index: 99;
+    position: fixed;
+    background-color: yellow;
+    padding: 10px;
+    color: green;
+    font-weight: bold;
+    font-size: 18; 
+    left: 40%;
+}
+
+.notify-rebuilt a:hover {
+    border-bottom: 1px dotted; 
+}
+
+

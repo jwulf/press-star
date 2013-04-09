@@ -26,7 +26,17 @@ function deathstarItUp()
     });
     
     socket.on('patchBookinBrowser', patchTopic);
+    
+    socket.on('bookRebuiltNotification', bookRebuiltNotification);
   
+}
+
+function bookRebuiltNotification () {
+    $('.notify-rebuilt').removeClass('invisible');    
+}
+
+function reload () {
+    location.reload(true);
 }
 
 // Invoked via websocket from the server

@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.42
+Version:	0.43
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,10 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Tue Apr 09 2013 Joshua Wulf <jwulf@redhat.com> 0.43
+- Added rebuilt notification div and socket handler
+- Book can now notify user when it has been rebuilt on the server
+
 * Mon Apr 08 2013 Joshua Wulf <jwulf@redhat.com> 0.42
 - Styling for Fixed Revision Topics
 - Patching via websocket from server

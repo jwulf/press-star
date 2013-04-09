@@ -33,6 +33,11 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
   <xsl:attribute name="onLoad">skynetBookLoad()</xsl:attribute>
 </xsl:template>
 
+<!-- Rebuilt Notification -->
+<xsl:template name="user.header.content">
+  <div class="notify-rebuilt invisible"><center><a href="javascript:;" onclick="reload()">Update available. Hit F5 to Refresh.</a></center></div>
+</xsl:template>
+
 <!-- depth of section labelling -->
 <xsl:param name="section.autolabel.max.depth" select="2"/>
 
