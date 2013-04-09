@@ -4,7 +4,7 @@ var fs = require('fs'),
     dtdstring=('<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"\n' +
         '"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\" []>'),
-        kateLanguages = ['C', 'C++', 'C#', 'Java', 'Python', 'Javascript', 'Perl', 'Ruby', 'HTML', 'XML'],
+        kateLanguages = ['Bash', 'C', 'C++', 'C#', 'Java', 'Python', 'Javascript', 'Perl', 'Ruby', 'HTML', 'XML'],
         kateURL = "http://search.cpan.org/~szabgab/Syntax-Highlight-Engine-Kate-0.06/lib/Syntax/Highlight/Engine/Kate.pm#ATTRIBUTES";
 
 // Kate Syntax Highlighting Languages: 
