@@ -421,6 +421,7 @@ function buildingFinished(url, id, err) {
     jsondb.Books[url][id].buildID = null;                
     jsondb.Books[url][id].locked = false;
     if (err) jsondb.Books[url][id].builderror = true;
+    livePatch.patchStreams[url][id].write({bookRebuilt: true});
     console.log('Deleting stream for ' + jsondb.Books[url][id].buildID);
     delete exports.streams[jsondb.Books[url][id].buildID];
     delete jsondb.Books[url][id].buildlogStream;
