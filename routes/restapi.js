@@ -6,7 +6,8 @@ var fs = require('fs'),
     dtdvalidate = require('./../lib/dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
     builder = require('./../lib/build'),
-    jsondb = require('./../lib/jsondb');
+    jsondb = require('./../lib/jsondb'),
+    publisher = require('./../lib/publisher');
 
 exports.restroute = restroute;
 exports.checkout = checkout;
@@ -43,6 +44,22 @@ function restroute (req, res){
     if (op == 'rebuildAll') {rebuildAll (req, res);}
     else
     if (op == 'build') {build (req, res);}
+    else 
+    if (op == 'publish') {publish (req, res);}
+}
+
+function publish (req, res) {
+    var url = req.query.url,
+        id = req.query.id,
+        kerbid = req.query.kerbid,
+        kerbpwd = req.query.kerbpwd;
+    if (url && id && kerbid && kerbpwd) {
+        console.log('Received a publish request for ' + url + ' ' + id);
+        publisher.build(url, id, kerbid, kerbpwd);
+        res.send({code: 0, msg: 'Publish requested'});
+    } else {
+        res.send({code:1, msg: 'Need to send a URL and an ID'});
+    }
 }
 
 function build (req, res) {

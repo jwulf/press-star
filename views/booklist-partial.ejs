@@ -43,7 +43,7 @@
                                     <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/build.log'%>">Build Log</a></span>
                                 <% } %>
                             <% } else { %>
-                                <span class="active-indicator-button"><a href="/action/rebuild?url=<%= url%>&id=<%= id %>">Build Book</a></span>
+                                <span class="active-indicator-button"><a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">Build Book</a></span>
                                 </h3></center></td><td><center><h3>
                                 <span class="action-button btn-log">Build Log</span>
                             <% } %>

@@ -13,7 +13,6 @@ var express = require('express'),
     initTopicDependencies = require('./lib/livePatch').initialize(),
     jsondb = require('./lib/jsondb'),
     restapi = require('./routes/restapi'),
-    actions = require('./routes/actions'), 
     add = require('./routes/add').add,
     publish = require('./routes/publish');
 
@@ -55,7 +54,6 @@ app.get('/', routes.index);
 app.get('/publish', publish.publish);
 app.get('/add', add);
 app.get('/users', user.list);
-app.get('/action/:action', actions.route);
 app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
 
