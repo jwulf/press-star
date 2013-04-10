@@ -7,6 +7,9 @@ a {
   text-decoration: none;
   border-bottom: 1px dotted;
 }
+.menu-button a {
+  color: #008000;
+}
 .active-indicator-button a {
   color: #f00;
 }

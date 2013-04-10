@@ -7,7 +7,7 @@
                     <% if (books[each].data.buildError) { %>
                         <span class="active-indicator-button"><a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="_blank"><%= books[each].title %> [<%= books[each].data.id %>]</a></span>
                     <% } else { %>
-                        <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="_blank"><%= books[each].title %> [<%= books[each].data.id %>]</a>
+                        <span class="book-title"><a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="_blank"><%= books[each].title %> [<%= books[each].data.id %>]</a></span>
                     <% } %>
                 <% } else { %>
                     <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= books[each].title %> [<%= books[each].data.id %>]</span>
