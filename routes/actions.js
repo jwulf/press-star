@@ -1,4 +1,4 @@
-var builder = require('./build.js'),
+var builder = require('./../lib/build.js'),
     index = require('./index.js'),
     jsondb = require('./../lib/jsondb'),
     uuid = require('node-uuid');

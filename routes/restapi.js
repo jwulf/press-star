@@ -2,10 +2,10 @@ var fs = require('fs'),
     exec = require('child_process').exec,
     cylon = require('pressgang-cylon'),
     PressGangCCMS = require('pressgang-rest').PressGangCCMS,
-    xmlpreview = require('./xmlpreview'),
-    dtdvalidate = require('./dtdvalidate'),
+    xmlpreview = require('./../lib/xmlpreview'),
+    dtdvalidate = require('./../lib/dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
-    builder = require('./build'),
+    builder = require('./../lib/build'),
     jsondb = require('./../lib/jsondb');
 
 exports.restroute = restroute;

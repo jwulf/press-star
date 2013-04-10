@@ -1,7 +1,7 @@
 var fs=require('fs'),
     spawn = require('child_process').spawn,
     carrier = require('carrier'),
-    builder = require('./build.js'),
+    builder = require('./../lib/build.js'),
     cylon = require('pressgang-cylon'),    
     uuid = require('node-uuid'),
     jsondb = require('./../lib/jsondb'),
