@@ -6,7 +6,8 @@ var fs=require('fs'),
     uuid = require('node-uuid'),
     jsondb = require('./../lib/jsondb'),
     Stream = require('stream').Stream,
-    livePatch = require('./../lib/livePatch');
+    livePatch = require('./../lib/livePatch'),
+    ephemeral = require('./../lib/ephemeralStreams');
 
 exports.socketHandler = socketHandler;
 
@@ -49,19 +50,23 @@ function socketHandler(client){
 }
 
 function getBuildLog(data, client){
+    
+    
     console.log('Build Log requested via websocket for ' + data.buildID);
-    if (! builder.streams[data.buildID]) {
+    if (! ephemeral.streams[data.buildID]) {
         console.log('Stream does not exist - job finished?');
         client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
     } else {
-        client.emit('cmdoutput', builder.streamHeader[data.buildID]);
-        builder.streams[data.buildID].on('data', function (data){
+        client.emit('cmdoutput', ephemeral.streams[data.buildID].header);
+        
+        ephemeral.streams[data.buildID].stream.on('data', function (data){
             client.emit('cmdoutput', data); 
         });
     }
 }
 
 function pushSpec(data, client) {
+    var Books = jsondb.Books;
     var BUILD_SUCCEEDED = 0,
         filenumber=1;
     
@@ -122,10 +127,10 @@ function pushSpec(data, client) {
                         if (md){
                             if (md.serverurl &&  md.id){
                                 console.log('Checking for book...');
-                                if (jsondb.Books[md.serverurl] && jsondb.Books[md.serverurl][md.id]) {
+                                if (Books[md.serverurl] && Books[md.serverurl][md.id]) {
                                     console.log('We got that book...');
-                                    jsondb.Books[md.serverurl][md.id].buildID = uuid.v1();
-                                    console.log(jsondb.Books[md.serverurl][md.id].buildID);
+                                    Books[md.serverurl][md.id].buildID = uuid.v1();
+                                    console.log(Books[md.serverurl][md.id].buildID);
                                     builder.build(md.serverurl, md.id);
                                 }
                             }
