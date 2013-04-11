@@ -18,10 +18,10 @@ function url_query( query ) {
 function onLoad(){
     var buildID = url_query('buildid');
     socket || (socket = io.connect(window.location.origin));
-    cmdOutput('Socket.io loaded', true);
+    cmdOutput('Socket.io loaded\n\n');
 	socket && socket.emit('getBuildLog', {buildID: buildID} );
 	socket.on('connect', function () {
-		cmdOutput('Connected to server');
+		cmdOutput('Connected to server\n\n');
 
 		socket.on('cmdoutput', function (msg){
 			cmdOutput(msg);
@@ -29,17 +29,13 @@ function onLoad(){
 	});
 }
 
-function cmdOutput(text, newline, cmdclass){
-    var pretext='', posttext='';
-	if (cmdclass) {
-		pretext = '<span class="' + cmdclass + '">';
-		posttext = '</span>'
-	}
-	var eol = newline ? '<br><br>' : '<br>';
+function cmdOutput(text, newline){
+    //var pretext='<pre>', posttext='</pre>';
+    var pretext = '', posttext = '';
 	var myDiv = document.getElementById('div-preview-inline');
 	var s = myDiv.innerHTML;
 	var anchor='<a id="end"></a>'
-	var news = s.substring(0, s.indexOf(anchor)) + pretext + text + posttext + eol + anchor;
+	var news = s.substring(0, s.indexOf(anchor)) + pretext + text + posttext + anchor;
 	myDiv.innerHTML = news;
 	document.getElementById('end').scrollIntoView();
 //	myDiv.innerHTML += pretext + text + posttext + eol + '<a id="end"/>';
