@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.43
+Version:	0.44
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Thu Apr 11 2013 Joshua Wulf <jwulf@redhat.com> 0.44
+- Adding flashing window title when book is rebuilt on server (Steve Gordon's idea)
+
 * Tue Apr 09 2013 Joshua Wulf <jwulf@redhat.com> 0.43
 - Added rebuilt notification div and socket handler
 - Book can now notify user when it has been rebuilt on the server

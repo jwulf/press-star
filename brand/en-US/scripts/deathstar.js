@@ -32,7 +32,11 @@ function deathstarItUp()
 }
 
 function bookRebuiltNotification () {
-    $('.notify-rebuilt').removeClass('invisible');    
+    var original = document.title,
+        newMsg = 'Updated - please reload';
+    
+    $('.notify-rebuilt').removeClass('invisible');   
+    setInterval(function () { document.title = (document.title == original) ? newMsg : original; }, 500)
 }
 
 function reload () {
