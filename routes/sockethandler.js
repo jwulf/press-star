@@ -34,9 +34,9 @@ function socketHandler (client){
                     if (topicPatchData.bookRebuilt) {
                         client.emit('bookRebuiltNotification','The book was rebuilt');    
                     } else 
-                    if (topicPatchData.bookPublished) {
+                    if (topicPatchData.notification) {
                         console.log('sending notification');
-                        client.emit ('notification', topicPatchData.msg);
+                        client.emit ('notification', topicPatchData.data);
                     } else 
                     {
                         console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
