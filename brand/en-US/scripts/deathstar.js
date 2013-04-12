@@ -37,9 +37,9 @@ function deathstarItUp()
   
 }
 
-function displayNotification (msg) {
-   flashTitle('Your attention please');
-   $('.notifier').html(msg);
+function displayNotification (data) {
+   flashTitle(data.title);
+   $('.notifier').html(data.msg);
    $('.notifier').removeClass('invisible');
 }
 
