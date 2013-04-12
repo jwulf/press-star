@@ -36,7 +36,6 @@ function clickToPublish(url, id) {
     return false;
 }
 
-
 function indexRefresh (){
  window.refreshTimer = setInterval(function() {
      $.get(window.sourceURL, {}, function(result) {
@@ -81,7 +80,7 @@ function publish (e) {
             $('#mask , .login-popup').fadeOut(300 , function() {
                 $('#mask').remove();  
             });  
-            $('input').each(function(){console.log(this.value='')});
+            $('.wipe-me').each(function(){console.log(this.value='')});
         }
     });       
 }

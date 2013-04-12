@@ -116,3 +116,18 @@ form.signin input:-webkit-input-placeholder {
   font: 12px;
   width: 214px;
 }
+@-webkit-keyframes blinker {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+.css3-blink {
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(1, 0, 0, 1);
+  -webkit-animation-duration: 2s;
+}

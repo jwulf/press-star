@@ -33,12 +33,17 @@ function socketHandler (client){
                 myPatchStream.write = function (topicPatchData) {
                     if (topicPatchData.bookRebuilt) {
                         client.emit('bookRebuiltNotification','The book was rebuilt');    
-                    } else {
+                    } else 
+                    if (topicPatchData.bookPublished) {
+                        console.log('sending notification');
+                        client.emit ('notification', topicPatchData.msg);
+                    } else 
+                    {
                         console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
                         this.emit('data', data);
                         client.emit('patchBookinBrowser', topicPatchData); 
                         return true;
-                    }
+                    } 
                 }
                 livePatch.patchStreams[data.skynetURL][data.id].pipe(myPatchStream);
             }
