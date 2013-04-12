@@ -382,22 +382,35 @@ function injectPreviewLink() {
     $("#preview-link").html('<a href="preview.html?skyneturl=http://' + skynetURL + '&topicid=' + topicID + '">Preview Link</a>');
 }
 
-// This function loads the topic xml via JSONP, without a proxy
+
 function loadSkynetTopic() {
-    if (topicID && skynetURL) {
-        loadSkynetTopicJsonP(topicID, skynetURL, function(json) {
-            if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
-            if (pageIsEditor) {
-                window.editor.setValue(json.xml);
-                disableSaveRevert();
-                doValidate();
-                injectPreviewLink();
-            }
-            setPageTitle(json.title);
-            updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
-            window.title = json.title;
-        });
+    if (alwaysUseServerToLoadTopics || editingOffline)
+    {
+        loadTopicViaServer();
+    } else {
+        // This function loads the topic xml via JSONP, without a proxy        
+        // It requires your web browser to have a connection to the PressGang server (VPN?)
+        // but lessens the load on the server
+        if (topicID && skynetURL) {
+            loadSkynetTopicJsonP(topicID, skynetURL, function(json) {
+                if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
+                if (pageIsEditor) {
+                    window.editor.setValue(json.xml);
+                    disableSaveRevert();
+                    doValidate();
+                    injectPreviewLink();
+                }
+                setPageTitle(json.title);
+                updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+                window.title = json.title;
+            });
+        }
     }
+}
+
+function newTopicXML () {
+  // Update the page for new Topic XML wherever it came from
+  // Account for both the plain text and the Code Mirror editors
 }
 
 function onPreviewPageLoad() {
@@ -415,15 +428,6 @@ function serverTopicLoadCallback(topicAjaxRequest) {
             updateXMLPreviewRoute(editor, document.getElementsByClassName("div-preview"));
             editorTitle = document.getElementById("page-title");
             setEditorTitle(topicTitle[0].firstChild.nodeValue);
-
-            /*          if (editorTitle)
-      {
-        editorTitle.innerHTML=topicID+": ";
-        topicTitle=topicAjaxRequest.responseXML.getElementsByTagName("title");
-        if (topicTitle)
-          editorTitle.innerHTML=editorTitle.innerHTML+topicTitle[0].firstChild.nodeValue;
-      }
-*/
         }
     }
 
