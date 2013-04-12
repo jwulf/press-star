@@ -396,6 +396,7 @@ function loadSkynetTopic() {
                 if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
+                    $('#code').each(function(){this.value = json.xml;});
                     disableSaveRevert();
                     doValidate();
                     injectPreviewLink();
@@ -464,9 +465,10 @@ function doRevert() {
     loadSkynetTopic();
 }
 
-function toggleHelpHints() {
+function toggleHelpHints(e) {
     helpHintsOn = !helpHintsOn;
     toggleButton('#helpHintToggle', helpHintsOn);
+    
     if (helpHintsOn) {
         $('.btn').popover({
             'trigger': 'hover'
@@ -477,7 +479,7 @@ function toggleHelpHints() {
         $('.btn').popover('disable')
     }
 
-    setCookie('helpHintsOn', helpHintsOn, 365);
+    if (e) setCookie('helpHintsOn', helpHintsOn, 365);
     return false;
 }
 
@@ -580,9 +582,10 @@ function initializeTopicEditPage() {
 
     // Toggle Help Hints
     $('#helpHintToggle').click(toggleHelpHints);
-    helpHintsOn = false;
+    
+    helpHintsOn = true;
+    toggleHelpHints();
     if (getCookie('helpHintsOn') == 'true') {
-        helpHintsOn = true;
         $('#helpHintsToggle').button('toggle');
         toggleHelpHints();
     }
