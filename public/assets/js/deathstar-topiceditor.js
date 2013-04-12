@@ -23,7 +23,7 @@ var validXML = false,
     skynetURL,
     sectionNum,
     helpHintsOn,
-    editorPlainText, 
+    editorPlainText,
     editor,
     oldVal;
 
@@ -54,7 +54,7 @@ $(document).keydown(function(event) {
     return false;
 });
 
-function disable (selector) {
+function disable(selector) {
     $(selector).prop("disabled", true);
     $(selector).popover('hide');
 }
@@ -77,7 +77,7 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
-        if (section !== null) {    
+        if (section !== null) {
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
         }
@@ -120,7 +120,7 @@ function doSave() {
     return false;
 }
 
-function doActualSave () {
+function doActualSave() {
     var builtHTML, skynizzleURL, xmlText;
 
     // Grab the preview HTML now, when save is called.
@@ -456,25 +456,13 @@ function enableSaveRevert() {
     }
 }
 
-
-
 function doRevert() {
     loadSkynetTopic();
 }
 
-
-function ajaxStart() {
-    //$('#loadingDiv').show();
-    ajaxLoader.start();
-}
-
-function ajaxStop() {
-    //  $('#loadingDiv').hide();
-    ajaxLoader.stop();
-}
-
 function toggleHelpHints() {
     helpHintsOn = !helpHintsOn;
+    toggleButton('#helpHintToggle', helpHintsOn);
     if (helpHintsOn) {
         $('.btn').popover({
             'trigger': 'hover'
@@ -484,17 +472,17 @@ function toggleHelpHints() {
     else {
         $('.btn').popover('disable')
     }
-    toggleButton('#helpHintsToggle', helpHintsOn);
 
     setCookie('helpHintsOn', helpHintsOn, 365);
+    return false;
 }
 
-function toggleButton(btn, state) {
+function toggleButton (btn, state) {
     if (state) {
-        $(btn).removeClass('btn-primary').addClass('btn-danger');
+        $(btn).removeClass('btn-primary').addClass('btn-danger').addClass('active');
     }
     else {
-        $(btn).removeClass('btn-danger').addClass('btn-primary');
+        $(btn).removeClass('btn-danger').addClass('btn-primary').removeClass('active');
     }
 
 }
@@ -506,32 +494,35 @@ function toggleAutoCloseTag() {
     toggleButton('#tagCloseToggle', newState);
 }
 
+function resizePanes() {
+
+    var paneSize;
+    // resize codemirror editor width
+    paneSize = $('.ui-layout-center').width();
+    $('.CodeMirror, .CodeMirror-scroll').css('width', paneSize - 15);
+    $('#code').css('width', paneSize - 15);
+
+    // resize preview tab 
+    $('#div-preview-pane').width(paneSize - 15);
+
+    // resize codemirror editor height
+    paneSize = $('.ui-layout-center').height();
+    $('.CodeMirror, .CodeMirror-scroll').css('height', paneSize - 250);
+    $('#code').css('height', paneSize - 270);
+
+    $('.CodeMirror').trigger("resize");
+
+    // resize preview east pane
+    paneSize = $('.ui-layout-east').width();
+    $('#div-preview-inline').width(paneSize - 15);
+}
+
 // This is the onload function for the editor page
 function initializeTopicEditPage() {
 
-    function resizePanes() {
-
-        var paneSize;
-        // resize codemirror editor width
-        paneSize = $('.ui-layout-center').width();
-        $('.CodeMirror, .CodeMirror-scroll').css('width', paneSize - 15);
-
-        // resize preview tab 
-        $('#div-preview-pane').width(paneSize - 15);
-
-        // resize codemirror editor height
-        paneSize = $('.ui-layout-center').height();
-        $('.CodeMirror, .CodeMirror-scroll').css('height', paneSize - 160);
-
-        $('.CodeMirror').trigger("resize");
-
-        // resize preview east pane
-        paneSize = $('.ui-layout-east').width();
-        $('#div-preview-inline').width(paneSize - 15);
-    }
 
     editorPlainText = true;
-    togglePlainText();
+    togglePlainText(false);
 
     window.mutex = 0;
 
@@ -591,7 +582,7 @@ function initializeTopicEditPage() {
         $('#helpHintsToggle').button('toggle');
         toggleHelpHints();
     }
-
+    
 
     //    $("#auto-complete-toggle, #validate-button, #save-button, #revert-button, #skynet-button, #codetabs-button, #tagwrap-button, #codetabs-lite-button").button ();
     $("#validate-button").click(doValidate);
@@ -602,7 +593,10 @@ function initializeTopicEditPage() {
     $("#tagwrap-button").click(doTagWrap);
     $("#codetabs-lite-button").click(injectCodetabsLite);
     $("#auto-complete-toggle").click(toggleAutoCloseTag);
+    
     $("#plainTextToggle").click(togglePlainText);
+    if (getCookie('editorPlainText') == 'true') togglePlainText();
+    
     $("#find-button").click(doFind);
     $("#replace-button").click(doReplace);
     $("#find-next-button").click(doFindNext);
@@ -652,7 +646,7 @@ function initializeTopicEditPage() {
     skynetButtonURL = "http://" + skynetURL + "/TopicEdit.seam?topicTopicId=" + topicID;
 }
 
-function togglePlainText() {
+function togglePlainText (e) {
 
     if (editorPlainText) {
         var myHeight = getCookie('editor.height') || "300px";
@@ -690,31 +684,35 @@ function togglePlainText() {
             disableSpellcheck: false,
             lineNumbers: true
         });
+        resizePanes();
     }
     else {
         window.editor.toTextArea();
-        $('#code').change(function () {
+        $('#code').change(function() {
+            enableSaveRevert();
+            makeValidityAmbiguous();
+        });
+        $('#code').keydown(function(e) {
+            if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
+            k = e.keyCode;
+            if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
                 enableSaveRevert();
                 makeValidityAmbiguous();
-            });
-        $('#code').keydown(function (e) {
-            if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
-                k = e.keyCode;
-                if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                    enableSaveRevert();
-                    makeValidityAmbiguous();
-                }
+            }
         });
         editorPlainText = true;
         oldVal = $('#code').val();
         setTimer();
 
     }
+    toggleButton('#plainTextToggle', editorPlainText);
+    if (e) setCookie('editorPlainText', editorPlainText, 365);
+    return false;
 }
 
-function setTimer(){
-    setTimeout(function(){
-        if($('#code').val() != oldVal){
+function setTimer() {
+    setTimeout(function() {
+        if ($('#code').val() != oldVal) {
             makeValidityAmbiguous();
             enableSaveRevert();
             updateXMLPreviewRoute($('#code').val(), document.getElementsByClassName("div-preview"));
