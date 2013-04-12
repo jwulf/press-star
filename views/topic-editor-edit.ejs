@@ -1,0 +1,116 @@
+<div class="tab-pane fade active in" id="edit">
+    <div class="btn-toolbar" id="toolbuttons">
+
+        <!-- Start Toolbar buttons -->
+
+        <div class="btn-group">
+            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"
+            rel="popover" data-content="Insert Docbook templates" data-original-title="Insert Docbook">
+                       Insert Docbook
+                       <span class="caret"></span>
+                       </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="#" class="inject-template" id="inject-changelog">Change Log</a>
+                </li>
+                <li>
+                    <a href="#" rel="popover" data-content="Inject a template for a code example with multiple programming language versions"
+                    data-original-title="Code Tabs" id="codetabs-button">Code Tabs</a>
+                </li>
+                <li>
+                    <a href="#" rel="popover" data-content="Inject a template for a code example with a single programming language version"
+                    data-original-title="Code Tabs Lite" id="codetabs-lite-button">Code Tabs-lite</a>
+                </li>
+                <li>
+                    <a href="#" class="inject-template" id="inject-picture">Skynet Image</a>
+                </li>
+                <li>
+                    <a href="#" class="inject-template" id="inject-procedure">&lt;procedure&gt;</a>
+                </li>
+                <li>
+                    <a href="#" class="inject-template" id="inject-twocolumntable">&lt;table&gt; (2-col)</a>
+                </li>
+                <li>
+                    <a href="#" class="inject-template" id="inject-threecolumntable">&lt;table&gt; (3-col)</a>
+                </li>
+                <li>
+                    <a href="#" class="inject-template" id="inject-varlistentry" rel="popover"
+                    data-content="Inject a template for a &lt;varlistentry&gt;" data-original-title="&lt;varlistentry&gt;">&lt;varlistentry&gt;</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-mini" rel="popover" data-content="Wrap a text selection in an XML tag. Hotkey: Ctrl-Shift-D"
+            data-original-title="XML Tag Wrap Selection" id="tagwrap-button">XML Tag Wrap</span>
+        </div>
+
+        <!-- Find and Replace -->
+        <div class="btn-group">
+            <button class="btn btn-mini" rel="popover" data-content="Find Previous. Hot Key: Shift-Ctrl-F / Cmd-Option-F"
+            data-original-title="Find Previous" id="find-previous-button">&lt;</button>
+            <button class="btn btn-mini" rel="popover" data-content="Find text in the current topic. Hotkey: Ctrl-F / Cmd-F"
+            data-original-title="Find" id="find-button">Find</button>
+            <button class="btn btn-mini" rel="popover" data-content="Find Next. Hot Key: Ctrl-G / Cmd-G"
+            data-original-title="Find Next" id="find-next-button">&gt;</button>
+            <button class="btn btn-mini" rel="popover" data-content="Replace text in the current topic. Hotkey: Shift-Ctrl-F / Cmd-Option-F. | Replace All - Hot key: Shift-Ctrl-R / Shift-Cmd-Option-F"
+            data-original-title="Replace" id="replace-button">Replace</button>
+            <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="#" id="replace-all-button">Replace All</a>
+                </li>
+            </ul>
+        </div>
+        <!-- End Toolbar buttons -->
+        <!-- Start Toggles -->
+        <div class="btn-group" data-toggle="buttons-checkbox">
+            <button id="tagCloseToggle" class="btn btn-mini btn-primary" rel="popover"
+                data-content="Toggle automatic XML tag closure on/off" data-original-title="Close XML Tags">
+                Close XML Tags
+            </button>
+            <button class="btn btn-mini btn-primary" rel="popover"
+                data-content="Toggle interface help hints on/off" data-original-title="Show Help Hints"
+                id="helpHintToggle">
+                Show Hints
+            </button>
+            <button class="btn btn-mini btn-primary" rel="popover"
+                    data-content="Toggle editor to plain text mode. Use with the Firefox extension 'It's All Text' to edit topics in your favorite editor." data-original-title="Plain Text Mode"
+                    id="plainTextToggle">
+                Plain Text Editor
+            </button>
+        </div>  <!-- End Toggles -->
+
+        <div class="btn-group">
+            <a class="btn btn-mini" href="#"><i class="icon-user icon-white"></i> User</a>
+            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="#"><i class="icon-pencil"></i> Edit</a></li>
+                <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
+                <li><a href="#"><i class="icon-ban-circle"></i> Ban</a></li>
+                <li class="divider"></li>
+                <li><a href="#"><i class="i"></i> Make admin</a></li>
+            </ul>
+        </div>
+
+    </div>
+    <form>
+        <textarea id="code" name="code"></textarea>
+    </form>
+    <div id="validation-toggle" class="validation-toggle">
+        <a id="status-message" href="#"></a>
+    </div>
+    <div id="div-validation" class="div-validation"></div>
+    <div class="btn-toolbar" id="editor-buttons">
+        <button id="validate-button" class="btn" rel="popover" data-original-title="Validate"
+        data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
+        <button class="btn" id="save-button" rel="popover" data-original-title="Save"
+        data-content="Save the editor content back to the server">Save</button>
+        <button class="btn" id="revert-button" rel="popover" data-original-title="Revert"
+        data-content="Reload the editor content from the server">Revert</button>
+        <button class="btn" id="skynet-button" rel="popover" data-original-title="Open in Skynet"
+        data-content="Open the topic in the Skynet editor">Open in Skynet</button>
+    </div>
+</div>

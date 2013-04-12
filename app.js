@@ -57,6 +57,10 @@ app.get('/users', user.list);
 app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
 
+app.get('/edit', function (req, res) {
+    res.render('topic-editor', {layout:false});    
+});
+
 app.get('/booklist', function (req, res) {
     res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, title: 'Death Star 2.0' });
 });

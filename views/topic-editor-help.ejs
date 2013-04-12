@@ -1,0 +1,131 @@
+<div class="tab-pane fade" id="help">
+    <b>Death Star Editor</b>
+    <ul>
+        <li>
+            <a href="#features">Features</a>
+        </li>
+        <li>
+            <a href="#known-issues">Known Issues</a>
+        </li>
+    </ul>
+    <p>This is an in-browser Docbook editor with a live HTML preview, Docbook
+        DTD validation, and save/load support for Skynet topics via the Skynet
+        REST interface.</p>
+    <p>It uses a multi-pane layout that allows you to customise your view. The
+        layout is persistent using a cookie, so once you set it up on a browser,
+        that browser will remember your layout.</p>
+    <p id="features">
+        <b>Features</b>
+    </p>
+    <p>
+        <b>Use as Standalone Docbook Editor</b>
+    </p>
+    <p>You can use this as a standalone Docbook editor, taking advantage of the
+        live preview, tag closure, and DTD validation features (when you have a
+        connection to the node.js validation server). In this use-case you would
+        cut and paste your Docbook into and out of the editor. Note that the editor
+        requires a root element of &lt;section&gt;</p>
+    <p>
+        <b>Use as Skynet Topic Editor</b>
+    </p>
+    <p>This is where the editor really shines. It can load and save topics from
+        a Skynet instance. Supply arguments to the editor like this:
+        <span class="command">/index.html?skyneturl=http://skynet.usersys.redhat.com:8080/TopicIndex&topicid=8160</span>.
+        This allows you to load any topic ID from any Skynet instance via the Skynet
+        REST interface. Currently, saving back requires a connection to the node.js
+        server, although this will soon change to allow you to save back using
+        only the browser.</p>
+    <p>Usually you will generate these urls using a script, to integrate the
+        editor with a workflow.</p>
+    <p>
+        <b>Docbook Section</b>
+    </p>
+    <p>The editor works on a Docbook &lt;section&gt;. This is the root element
+        you must use to get the live preview functionality.</p>
+    <p>
+        <b>Side-by-Side vs Tabbed Preview</b>
+    </p>
+    <p>By default the editor uses
+        <i>side-by-side</i>preview. In side-by-side preview layout, the live HTML
+        preview of your Docbook appears in the right-hand pane, alongside the editor.
+        You can switch this to
+        <i>tabbed preview</i>by clicking the center of the right-hand pane handle.
+        This causes the preview pane to collapse. Now you can use the "Preview"
+        tab to switch between the editor and a preview of your work whenever you
+        want.</p>
+    <p>
+        <b>Docbook DTD validation</b>
+    </p>
+    <p>The editor can perform Docbook DTD Validation. The
+        <b>Validate</b>button under the editor sends the contents of the editor to
+        a node.js server, which performs validation and returns the result. The
+        validation report appears in the bottom pane. If there are errors, the
+        error report can be collapsed and expanded by clicking on the report message
+        in the bottom pane. If the node.js server is unreachable or is down you
+        will receive a message informing you that validation could not be performed.</p>
+    <p>
+        <b>Tag Closure</b>
+    </p>
+    <p>The editor performs
+        <i>automatic tag closure</i>- when you open an XML tag, the editor automatically
+        writes the closing tag. This feature, along with DTD validation in the
+        editor, avoids many of the gotcha bugs that can otherwise make writing
+        and debugging Docbook a exercise in anger management. You can toggle the
+        Tag Closure on and off using the
+        <b>Close Tags</b>button above the editor.</p>
+    <p>
+        <b>Tag Wrap</b>
+    </p>
+    <p>The
+        <i>Tag Wrap</i>feature allows you to select text in the editor and wrap it
+        in an XML tag. You can use this to good effect when cutting and pasting
+        text from outside sources and formatting it into Docbook in the editor.
+        Select the text you would like to wrap in an XML tag and then click the
+        <b>Tag Wrap</b>button above the editor, or use the hot-key
+        <b>Ctrl-Shift-D</b>. A dialog appears where you enter the text of a tag (no
+        angle brackets). Your selection is then wrapped with that XML tag.</p>
+    <p>
+        <b>Code Tabs</b>
+    </p>
+    <p>The
+        <b>redhat-video</b>brand contains Javascript that renders program listings
+        with multiple code language variations in a tabbed view, and allows a reader
+        to select their preferred programming language for the book. The
+        <i>Code Tabs</i>button injects a template based on variablelist that produces
+        these tabbed dialogs when using the redhat-video brand, and displays as
+        a sequence of titled programlistings when using other brands.</p>
+    <p>Code Tabs-lite produces a stripped down template for code listings with
+        only one programming language.</p>
+    <p>
+        <b>Find and Replace</b>
+    </p>
+    <p>Ctrl-F / Cmd-F = Start searching</p>
+    <p>Ctrl-G / Cmd-G = Find next</p>
+    <p>Shift-Ctrl-G / Shift-Cmd-G = Find previous</p>
+    <p>Shift-Ctrl-F / Cmd-Option-F = Replace</p>
+    <p>Shift-Ctrl-R / Shift-Cmd-Option-F = Replace all</p>
+    <p>
+        <b>Open in Skynet</b>
+    </p>
+    <p>To edit the title of a Skynet topic, you need to open it in Skynet. Click
+        on the topic title above the editor or the
+        <b>Open in Skynet</b>button beneath the editor to do that. Make sure you
+        save all local changes first. Reload the editor page to view any changes
+        you make in Skynet.</p>
+    <p id="known-issues">
+        <b>Known Issues:</b>
+    </p>
+    <b>Scroll bars</b>
+    <p>When you resize the editor pane down to a smaller area, scroll bars may
+        appear. This only occurs when resizing the editor to a smaller area, so
+        you can work around this by resizing down to a smaller area than you desire,
+        then resizing
+        <i>up</i>to the size you want. This will get rid of the scroll bars.</p>
+    <b>&lt;command&gt; tag</b>
+    <p>The &lt;command&gt; tag is currently not supported by the syntax highlighting.
+        When you use this tag the syntax highlighter will indicate an error.</p>
+    <b>Live preview in Firefox</b>
+    <p>Stylesheets are very strict in Firefox. As you type the preview will disappear
+        until you have valid XML. Chrome seems more lax, and displays something
+        when the XML is still invalid.</p>
+</div>
