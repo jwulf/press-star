@@ -21,7 +21,9 @@
     "async": "0.2.6",
     "wrench": "1.4.4",
     "humanize": "0.0.6",
-    "jsdom": "0.5.5"
+    "jsdom": "0.5.5",
+    "nexpect": "0.2.4",
+    "node-krb5": "0.0.3"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",

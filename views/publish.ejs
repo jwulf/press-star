@@ -7,8 +7,10 @@
     <script src="/scripts/index.js"></script>
     <script>window.sourceURL="publishlist"</script>
   </head>
-  <body onload="indexRefresh()">
-    <h1><%= title %></h1>
+  <body onload="pageSetup()">
+ <div><h1>Death Star 2.0 <span style="font-size: smaller; color: gray;">beta</span> <iframe style="float:right;" src="http://ghbtns.com/github-btn.html?user=jwulf&repo=node-deathstar&type=fork&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="82" height="30"></iframe></h1>  
+</div>
 
     <% include index-menu.ejs %>
 
@@ -16,5 +18,33 @@
         <% include booklist-publish.ejs %>
    </div>
 
+    <!-- Login form from: http://www.alessioatzeni.com/blog/login-box-modal-dialog-window-with-css-and-jquery/ -->
+    <div id="login-box" class="login-popup">
+        <a href="#" class="close"><img src="close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
+        <form class="signin" action="">
+            <fieldset class="textbox">
+            <label class="username">
+                <span>Kerberos ID</span>
+                <input id="username" name="kerbid" value="" type="text" autocomplete="on" placeholder="Kerberos ID">
+            </label>
+            
+            <label class="password">
+            <span>Kerberos Password</span>
+            <input id="password" name="kerbpwd" value="" type="password" placeholder="Kerberos Password">
+            </label>
+            
+            <label class="commit-message">
+                <span>Commit message</span>
+                <input id="commitmsg" name="commitmsg" value="" type="text" autocomplete="on" placeholder="Commit Message">
+            </label>
+            <button id="publish-button" class="submit button" type="button">Publish</button>
+            
+            <p>
+            Your credentials will not be stored.
+            </p>
+            
+            </fieldset>
+      </form>
+    </div>
   </body>
 </html>

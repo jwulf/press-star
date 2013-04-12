@@ -6,6 +6,15 @@ Once live update editing is implemented, offline operation becomes possible.
 
 Rebuilding of the book is obviated by live update editing - the book is dynamically updated and does not require a rebuild. 
 
+
+Step One:
+Move topic loading and saving to the server. The browser asks the server for the topic load/save action, and the server carries it out in either online or off-line mode.
+This makes it transparent to the client in the browser.
+
+
+
+
+
 ## Phase One
 
 Note: Structural editing is not supported in Phase One.

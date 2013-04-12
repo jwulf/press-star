@@ -38,16 +38,15 @@
     
   <body onload="commenceFiringSequence()">
   
-  <div class="ui-layout-north">
-    <div class="titlediv navbar"> 
-      <div class="navbar-inner"> 
-        <span id="page-title" class="brand">Deathstar Editor</span>
-      </div> 
-    </div> 
-  </div>
+  
   <!--  <div class="container"> -->
       
-  <div class="ui-layout-center">    
+  <div class="ui-layout-center">  
+        <div>
+            <div class="titlediv navbar"> 
+                <span id="page-title" class="brand">Deathstar Editor</span>
+            </div>
+        </div>
       <div class="subnav">
         <ul id="myTab" class="nav nav-tabs">
           <li class="active">
@@ -122,6 +121,11 @@
               
              <form><textarea id="code" name="code"></textarea></form>
 
+ <div id="validation-toggle" class="validation-toggle">
+       <a id="status-message" href="#"></a>
+    </div>
+    <div id="div-validation" class="div-validation"></div>
+  </div>
               <div class="btn-toolbar" id="editor-buttons">
                  
                  <button id="validate-button" class="btn" rel="popover" data-original-title="Validate" data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
@@ -195,12 +199,7 @@
     <div id="div-preview-inline" class="div-preview"></div>
   </div>
 
-  <div class="ui-layout-south">
-    <div id="validation-toggle" class="validation-toggle">
-       <a id="status-message" href="#"></a>
-    </div>
-    <div id="div-validation" class="div-validation"></div>
-  </div>
+ <!-- <div class="ui-layout-south"> --> 
     <!--</div>-->
   </body>
 </html>

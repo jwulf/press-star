@@ -1,0 +1,19 @@
+==Kerb password entry==
+
+1. Create css classes
+
+2. Trigger on click of Publish
+
+3. Collect kerbid and twice-typed kerb password
+
+4. Trigger publish
+
+==Page Design==
+
+5. Design publish page - 'publish' 'publishing' 'on queue' 'publish log'
+
+6. Link to publish stream
+
+== Debugging and Testing ==
+
+7. Test

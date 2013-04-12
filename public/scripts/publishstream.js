@@ -16,10 +16,10 @@ function url_query( query ) {
 }
 
 function onLoad(){
-    var buildID = url_query('buildid');
+    var publishID = url_query('publishid');
     socket || (socket = io.connect(window.location.origin));
     cmdOutput('Socket.io loaded\n\n');
-	socket && socket.emit('getStream', {streamID: buildID} );
+	socket && socket.emit('getStream', {streamID: publishID} );
 	socket.on('connect', function () {
 		cmdOutput('Connected to server\n\n');
 

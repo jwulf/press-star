@@ -7,7 +7,11 @@ var fs = require('fs'),
     livePatch = require('./../lib/livePatch'),
     builder = require('./../lib/build'),
     jsondb = require('./../lib/jsondb'),
-    publisher = require('./../lib/publisher');
+    publisher = require('./../lib/publisher'),
+    krb5 = require('node-krb5'),
+    ephemeral = require('./../lib/ephemeralStreams'),
+    LOG_HEADER = ephemeral.LOG_HEADER,
+    LOG_CONSOLE = ephemeral.LOG_CONSOLE;
 
 exports.restroute = restroute;
 exports.checkout = checkout;
@@ -46,19 +50,45 @@ function restroute (req, res){
     if (op == 'build') {build (req, res);}
     else 
     if (op == 'publish') {publish (req, res);}
+    else
+    if (op == 'stopPublish') {stopPublish (req, res);}
+}
+
+function stopPublish (req, res) {
+    var uid = req.query.uid;
+    if (publisher.publishJobs && publisher.publishJobs[uid]) {
+        ephemeral.write(uid, 'User requested SIGTERM for publish job', [LOG_HEADER, LOG_CONSOLE]);
+        publisher.publishJobs[uid].kill('SIGTERM');        
+        return res.send({code: 0, msg: 'Kill signal sent to job'});
+    } else {
+        console.log('Publish job not found for Stop Publish');
+        return res.send({code: 1, msg: 'Publish job not found'});
+    }
+    res.send({code: 1, msg: "I'm confused."});
 }
 
 function publish (req, res) {
     var url = req.query.url,
         id = req.query.id,
         kerbid = req.query.kerbid,
-        kerbpwd = req.query.kerbpwd;
+        kerbpwd = req.query.kerbpwd,
+        commitmsg = req.query.commitmsg;
     if (url && id && kerbid && kerbpwd) {
-        console.log('Received a publish request for ' + url + ' ' + id);
-        publisher.build(url, id, kerbid, kerbpwd);
-        res.send({code: 0, msg: 'Publish requested'});
+        console.log('Received a publish request for ' + url + ' ' + id + ' ' + commitmsg);
+        
+        krb5.authenticate(kerbid + '@REDHAT.COM', kerbpwd, function(err) {
+            if (err) {
+                console.log("Error: " + err);
+                res.send({code: 1, msg: 'Kerberos authentication failed.'});
+            } else {
+                console.log("Kerb credentials OK");
+                publisher.publish(url, id, kerbid, kerbpwd, commitmsg);
+                res.send({code: 0, msg: 'Publish requested'});
+            }
+        });
+
     } else {
-        res.send({code:1, msg: 'Need to send a URL and an ID'});
+        res.send({code: 1, msg: 'Did you send a username and password?'});
     }
 }
 
@@ -134,11 +164,10 @@ function addbook(req, res){
                 }
                 else
                 {
-                    res.send({'code' : 1, 'msg' : err});
+                    res.send({'code' : 1, 'msg' : 'Error checking out book ' + err});
                 }
             }
-        );
-            
+        );        
 }
     
 function checkout (pg, specID, dir, cb){

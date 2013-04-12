@@ -13,7 +13,7 @@ exports.socketHandler = socketHandler;
 
 var cmd_running = false;    
 
-function socketHandler(client){
+function socketHandler (client){
 
     console.log('Client connected');
     client.send('{"success": 1}');
@@ -21,7 +21,7 @@ function socketHandler(client){
         console.log('Client just sent:', data); 
     }); 
     client.on('pushspec', function(data){pushSpec(data, client);});
-    client.on('getBuildLog', function(data) {getBuildLog(data, client);});
+    client.on('getStream', function(data) {getStream(data, client);});
     
     client.on('patchSubscribe', function(data) { 
         var specID = data.id;
@@ -49,23 +49,21 @@ function socketHandler(client){
     }); 
 }
 
-function getBuildLog(data, client){
-    
-    
-    console.log('Build Log requested via websocket for ' + data.buildID);
-    if (! ephemeral.streams[data.buildID]) {
+function getStream (data, client){
+    console.log('Websocket requested for ephemeral stream ' + data.streamID);
+    if (! ephemeral.streams[data.streamID]) {
         console.log('Stream does not exist - job finished?');
         client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
     } else {
-        client.emit('cmdoutput', ephemeral.streams[data.buildID].header);
+        client.emit('cmdoutput', ephemeral.streams[data.streamID].header);
         
-        ephemeral.streams[data.buildID].stream.on('data', function (data){
+        ephemeral.streams[data.streamID].stream.on('data', function (data){
             client.emit('cmdoutput', data); 
         });
     }
 }
 
-function pushSpec(data, client) {
+function pushSpec (data, client) {
     var Books = jsondb.Books;
     var BUILD_SUCCEEDED = 0,
         filenumber=1;
@@ -89,13 +87,15 @@ function pushSpec(data, client) {
             var command = 'csprocessor';
             var server = data.server;
             client.emit('cmdstart','started');
+            
             console.log('Commencing ' + data.command + ' operation');
             var msg = 'Commencing ' + data.command;
 			if (data.opts) msg = msg + data.opts;
 			msg = msg + ' operation against ' + server;
             client.emit('cmdoutput', msg);
             client.emit('cmdoutput','');
-			var cmd = [];
+			
+            var cmd = [];
 			cmd.push(data.command);
 			if (data.opts) cmd.push(data.opts);
 			cmd.push('-u');

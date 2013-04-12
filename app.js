@@ -65,6 +65,10 @@ app.get('/remove', function(req, res){
     res.render('remove', { books: jsondb.sortedBooks, title: 'Death Star 2.0', mode: 'remove' });    
 });
 
+app.get('/publishlist', function (req, res){
+    res.render('booklist-publish', {layout: false, books: jsondb.sortedBooks});    
+});
+
 app.get('/removelist', function (req, res){
     res.render('booklist-remove', {layout: false, books: jsondb.sortedBooks, title: 'Remove Books'})
 });

@@ -10,10 +10,27 @@
                 <center>
                     <h3>
                         <% if (!books[each].data.publishing) { %>
-                        <span class="active-indicator-button"><a href="#" onClick="$.get('/rest/1/publish?url=<%= url%>&id=<%= id %>'); return false;">Publish</a></span>
+                            <span class="active-indicator-button login-window"><a class="login-window" href="javascript:;" onClick="clickToPublish('<%= url%>', '<%= id %>'); return false;">Publish</a></span>
                         <% } else { %>
-                        <span class="active-indicator-button">Publishing...</span>
+                            <%if (books[each].data.onPublishQueue) { %>
+                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= books[each].data.publishID %>">Queued</a></span>
+                            <% } else { %>
+                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= books[each].data.publishID %>">Publishing</a></span>
+                            <% } %>
                         <% } %>
+                    </h3>
+                </center>
+            </td>
+            <td>
+                <center>
+                    <h3>
+                    <% if (books[each].data.publishing) { %>
+                        <span class="action-button btn-log"><a href="javascript:;" onclick="$.get('/rest/1/stopPublish?uid=<%= books[each].data.publishID %>', function(result){console.log(result);});">End Publish Job</a></span>    
+                    <% } else { %>
+                        <% if (books[each].data.hasPublishLog) { %>
+                            <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/publish.log'%>">Publish Log</a></span>
+                        <% } %>
+                    <% } %>
                     </h3>
                 </center>
             </td>
