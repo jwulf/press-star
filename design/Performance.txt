@@ -1,0 +1,15 @@
+
+
+atm clients poll the server twice a second for changes. Changed pages are rendered to html on the server, and then sent to the client.
+
+Better would be:
+
+1. Client-side rendering from JSON.
+
+Instead of server-side rendering, use underscore.js to do the rendering on the client. 
+
+At the moment pages are re-rendered based on the current state of the books object. Would it be more efficient to send the books object to the client and have the client render the page?
+
+2. Get rid of polling.
+
+Clients open a websocket and pass back the name of the page they are registering to. When something on the server changes, a change is pushed to the client.

@@ -7,6 +7,27 @@ Once live update editing is implemented, offline operation becomes possible.
 Rebuilding of the book is obviated by live update editing - the book is dynamically updated and does not require a rebuild. 
 
 
+
+Questions: 
+
+1. Where do you go offline? 
+
+In:
+
+(a) The control panel (the book list)?
+(b) A book? 
+(c) In the Topic Editor?
+(d) All Three?
+
+2. What do you take offline?
+
+(a) Everything?
+(b) Selected Books?
+
+Version 1.0 will be 1 (a) and 2 (a).
+
+Version 2.0 will enable 1 (d) and 2 (b).
+
 Step One:
 Move topic loading and saving to the server. The browser asks the server for the topic load/save action, and the server carries it out in either online or off-line mode.
 This makes it transparent to the client in the browser.

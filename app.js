@@ -14,7 +14,9 @@ var express = require('express'),
     jsondb = require('./lib/jsondb'),
     restapi = require('./routes/restapi'),
     add = require('./routes/add').add,
-    publish = require('./routes/publish');
+    publish = require('./routes/publish'),
+    state = require('./lib/appstate'),
+    initializeAppState = require('./lib/appstate').initialize();
 
 var app = express();
 
@@ -33,7 +35,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
-  app.use(express.session());
+//  app.use(express.session());
   app.use(app.router);
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
@@ -58,11 +60,14 @@ app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
 
 app.get('/edit', function (req, res) {
-    res.render('topic-editor', {layout:false});    
+    res.render('topic-editor', {layout:false, 
+        alwaysUseServerToLoadTopics: state.appstate.alwaysUseServerToLoadTopics || false, 
+        offline: state.appstate.offline || false
+    });    
 });
 
 app.get('/booklist', function (req, res) {
-    res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, title: 'Death Star 2.0' });
+    res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, app: state.appstate, title: 'Death Star 2.0' });
 });
 
 app.get('/remove', function(req, res){
