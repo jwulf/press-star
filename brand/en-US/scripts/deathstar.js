@@ -1,3 +1,5 @@
+var flash, original;
+
 function url_query( query, url ) {
   // Parse URL Queries
   // from http://www.kevinleary.net/get-url-parameters-javascript-jquery/
@@ -28,15 +30,38 @@ function deathstarItUp()
     socket.on('patchBookinBrowser', patchTopic);
     
     socket.on('bookRebuiltNotification', bookRebuiltNotification);
+    
+    socket.on('notification', displayNotification);
+    
+    $('.notifier').click(clearNotifier);
   
 }
 
+function displayNotification (msg) {
+   flashTitle('Your attention please');
+   $('.notifier').html(msg);
+   $('.notifier').removeClass('invisible');
+}
+
+function clearNotifier () {
+    clearInterval(flash);
+    document.title = original;
+    $('.notifier').addClass('invisible');
+    return true;
+}
+
+function flashTitle (msg) {
+    original = document.title;  
+
+    flash = setInterval(function () { 
+        document.title = (document.title == original) ? msg : original; 
+        }, 500);    
+}
+
 function bookRebuiltNotification () {
-    var original = document.title,
-        newMsg = 'Updated - please reload';
-    
+    flashTitle('Updated');
     $('.notify-rebuilt').removeClass('invisible');   
-    setInterval(function () { document.title = (document.title == original) ? newMsg : original; }, 500)
+
 }
 
 function reload () {

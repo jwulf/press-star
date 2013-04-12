@@ -401,6 +401,22 @@ span.remark{
     border-bottom: 1px dotted; 
 }
 
+.notifier {
+    z-index: 99;
+    position: fixed;
+    font-weight: bold;
+    background-color: rgb(249, 237, 190);
+    border-bottom-color: rgb(240, 195, 109);
+    border-left-color: rgb(240, 195, 109);
+    border-right-color: rgb(240, 195, 109);
+    border-top-color: rgb(240, 195, 109);
+    padding: 5px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 .invisible {
     display: none;   
 }
+
+

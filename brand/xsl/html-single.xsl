@@ -36,6 +36,7 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 <!-- Rebuilt Notification -->
 <xsl:template name="user.header.content">
   <div class="notify-rebuilt invisible"><center><a href="javascript:;" onclick="reload()">Update available. Hit F5 to Refresh.</a></center></div>
+    <div class="notifier invisible"></div>
 </xsl:template>
 
 <!-- depth of section labelling -->

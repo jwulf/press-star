@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.44
+Version:	0.45
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,10 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Sat Apr 13 2013 Joshua Wulf <jwulf@redhat.com> 0.45
+- Added generic notifier for server push events
+- Refactor title flash to independent function
+
 * Thu Apr 11 2013 Joshua Wulf <jwulf@redhat.com> 0.44
 - Adding flashing window title when book is rebuilt on server (Steve Gordon's idea)
 
