@@ -81,6 +81,7 @@ function publish (e) {
                 $('#mask').remove();  
             });  
             $('.wipe-me').each(function(){console.log(this.value='')});
+            
         }
     });       
 }

@@ -4,7 +4,7 @@ var fs=require('fs'),
     builder = require('./../lib/build.js'),
     cylon = require('pressgang-cylon'),    
     uuid = require('node-uuid'),
-    jsondb = require('./../lib/jsondb'),
+    Library = require('./../lib/Books'),
     Stream = require('stream').Stream,
     livePatch = require('./../lib/livePatch'),
     ephemeral = require('./../lib/ephemeralStreams');
@@ -14,7 +14,8 @@ exports.socketHandler = socketHandler;
 var cmd_running = false;    
 
 function socketHandler (client){
-
+    var Books = Library.Books; // Got to do this here, because it's dynamically populated
+    
     console.log('Client connected');
     client.send('{"success": 1}');
     client.on('msg', function(data) {
@@ -24,10 +25,22 @@ function socketHandler (client){
     client.on('getStream', function(data) {getStream(data, client);});
     
     client.on('patchSubscribe', function(data) { 
-        var specID = data.id;
+        var id = data.id, url = data.skynetURL;
         console.log('Patch Subscription for Spec ID: ' + data.id);
-        if (data.id  && data.skynetURL)
-            if (livePatch.patchStreams[data.skynetURL][data.id]) {
+        if (id  && url)
+            
+            /* Hook into the Book event emitter. This is fired whenever the Book
+             metadata is updated. It allows client-side templating to use the 
+             new JSON data to reactively re-render a real-time view of the state of the book
+             */
+            if (Books[url] && Books[url][id]) {
+                console.log('Subscribing to book state change');
+                Books[url][id].on('change', function (data) { 
+                    client.emit('statechange', {md : Books[url][id].getAll()});
+                });
+            }
+            
+            if (livePatch.patchStreams[url][id]) {
                 var myPatchStream = new Stream();
                 myPatchStream.readable = myPatchStream.writable = true;
                 myPatchStream.write = function (topicPatchData) {
@@ -39,7 +52,7 @@ function socketHandler (client){
                         client.emit ('notification', topicPatchData.data);
                     } else 
                     {
-                        console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + specID);
+                        console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + id);
                         this.emit('data', data);
                         client.emit('patchBookinBrowser', topicPatchData); 
                         return true;

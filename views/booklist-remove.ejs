@@ -1,17 +1,17 @@
 <table border="0" padding="10">
-<% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
+<% for (var each in books) { var id = books[each].id, title = books[each].title, url = books[each].url, thisBook = data[url][id] %>
        <tr> 
             <td>
                 <h3>
-                <% if (books[each].data.builtFilename) { %>
-                    <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
+                <% if (thisBook.builtFilename) { %>
+                    <a href="<%= 'builds/' + id + '-' + thisBook.builtFilename %>" target="book"><%= title %> [<%= id %>]</a> 
                 <% } else { %>
-                    <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= books[each].title %> [<%= books[each].data.id %>]</span>
+                    <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= title %> [<%= id %>]</span>
                 <% } %>
                 </h3>
             </td>
                 <td><center><h3>
-                    <% if (!books[each].data.locked) { %>
+                    <% if (! thisBook.locked) { %>
                     <span class="active-indicator-button"><a href="#" onClick="$.get('/rest/1/remove?url=<%= url%>&id=<%= id %>'); return false;">Remove</a></span>
                     <% } else { %>
                     <span class="action-button">Building...</span>

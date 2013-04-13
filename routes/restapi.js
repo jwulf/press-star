@@ -6,7 +6,7 @@ var fs = require('fs'),
     dtdvalidate = require('./../lib/dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
     builder = require('./../lib/build'),
-    jsondb = require('./../lib/jsondb'),
+    jsondb = require('./../lib/Books'),
     publisher = require('./../lib/publisher'),
     krb5 = require('node-krb5'),
     ephemeral = require('./../lib/ephemeralStreams'),
@@ -63,7 +63,7 @@ function getBookmd (req, res) {
         
     if (url && id) {
         if (Books[url] && Books[url][id]) {
-            res.send({md: Books[url][id]});
+            res.send(Books[url][id].getAll());
         }
         else res.send({code:1, msg: 'Book not found'});
     }
@@ -201,6 +201,7 @@ function checkout (pg, specID, dir, cb){
                 // If everything went ok, update the database
                 if (!err) {
                     jsondb.addBook(md, cb);
+                    livePatch.generateStreams();
                     console.log('Checked out OK');
                 }
                 else

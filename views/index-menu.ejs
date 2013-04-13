@@ -1,8 +1,14 @@
 <table>
     <tr>
+        <% if (mode =='add') { %>
+        <td>
+            <h3><span class="active-indicator-button"><a href="/">Done | </a></span></h3>
+        </td>  
+        <% } else { %>
         <td>
             <h3><span class="menu-button"><a href="/add">Add Book | </a></span></h3>
         </td>
+        <% } %>
         <% if (mode =='remove') { %>
         <td>
             <h3><span class="active-indicator-button"><a href="/">Done | </a></span></h3>

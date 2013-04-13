@@ -1,38 +1,40 @@
 <table border="0" padding="10">
-<% for (var each in books) { var id = books[each].data.id, url = books[each].data.url %>
+<% for (var each in books) { var id = books[each].id, url = books[each].url, title = books[each].title, my = data[url][id] %>
        <tr> 
             <td>
                 <h3>
-                    <a href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename %>" target="book"><%= books[each].title %> [<%= books[each].data.id %>]</a> 
+                    <a href="<%= 'builds/' + id + '-' + my.builtFilename %>" target="book"><%= title %> [<%= id %>]</a> 
                 </h3>
             </td>
             <td>    
                 <center>
                     <h3>
-                        <% if (!books[each].data.publishing) { %>
+                        <% if (! my.publishing && ! my.locked) { %>
                             <span class="active-indicator-button login-window"><a class="login-window" href="javascript:;" onClick="clickToPublish('<%= url%>', '<%= id %>'); return false;">Publish</a></span>
-                        <% } else { %>
-                            <% if (books[each].data.inBrew) { %>
-                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= books[each].data.publishID %>">In Brew</a></span>
-                            <% } else { %>
-                            <%if (books[each].data.onPublishQueue) { %>
-                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= books[each].data.publishID %>">Queued</a></span>
-                            <% } else { %>
-                                <span class="css3-blink active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= books[each].data.publishID %>">Publishing</a></span>
+                        <% } else {%>
+                            <% if (my.inBrew) { %>
+                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">In Brew</a></span>
+                            <% } else  %>
+                            <% if (my.onPublishQueue) { %>
+                                <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Queued</a></span>
+                            <% } else  %>
+                            <% if (my.locked) { %>
+                                <span class="css3-blink active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= my.buildID %>">Building</a></span>
+                            <% } else if (my.publishing) { %>
+                                <span class="css3-blink active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Publishing</a></span>
                             <% } %>
                         <% } %>
-                    <% } %>
                     </h3>
                 </center>
             </td>
             <td>
                 <center>
                     <h3>
-                    <% if (books[each].data.publishing) { %>
-                        <span class="action-button btn-log"><a href="javascript:;" onclick="$.get('/rest/1/stopPublish?uid=<%= books[each].data.publishID %>', function(result){console.log(result);});">End Publish Job</a></span>    
+                    <% if (my.publishing) { %>
+                        <span class="action-button btn-log"><a href="javascript:;" onclick="$.get('/rest/1/stopPublish?uid=<%= my.publishID %>', function(result){console.log(result);});">End Publish Job</a></span>    
                     <% } else { %>
-                        <% if (books[each].data.hasPublishLog) { %>
-                            <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + books[each].data.id + '-' + books[each].data.builtFilename + '/publish.log'%>">Publish Log</a></span>
+                        <% if (my.hasPublishLog) { %>
+                            <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + id + '-' + my.builtFilename + '/publish.log'%>">Publish Log</a></span>
                         <% } %>
                     <% } %>
                     </h3>
@@ -41,11 +43,11 @@
             <td>
                 <center>
                     <h3>
-                    <% if (books[each].data.brewTask) { %>
-                        <% if (books[each].data.publishing) { %>
-                            <span class="active-indicator-button btn-log"><a href="<%= books[each].data.brewTask %>" target="_blank">Brew Task</a></span>    
+                    <% if (my.brewTask) { %>
+                        <% if (my.publishing) { %>
+                            <span class="active-indicator-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>    
                         <% } else { %>
-                            <span class="action-button btn-log"><a href="<%= books[each].data.brewTask %>" target="_blank">Brew Task</a></span>    
+                            <span class="action-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>    
                         <% } %>
                     <% } %>
                     </h3>
