@@ -1,4 +1,4 @@
-var flash, original;
+var flash, original, bookmd, buildLinkURL = 'rebuild';
 
 function url_query( query, url ) {
   // Parse URL Queries
@@ -19,6 +19,11 @@ function url_query( query, url ) {
 function deathstarItUp()
 {
     var editorURL, injectorURL, buildData, endLoc, topicID, socket;
+
+    $('#rebuild-link').click(clickBuild);
+    $('#edit-structure').click(clickEditStructure);
+    $('#click-publish').click(clickPublish);
+    $('#go-home').click(clickGoHome);
     
     socket || (socket = io.connect()); 
     
@@ -28,13 +33,76 @@ function deathstarItUp()
     });
     
     socket.on('patchBookinBrowser', patchTopic);
-    
-    socket.on('bookRebuiltNotification', bookRebuiltNotification);
-    
-    socket.on('notification', displayNotification);
+    socket.on('bookRebuiltNotification', bookRebuiltNotification); 
+    socket.on('notification', routeNotification);
+
+    getBookmd();
     
     $('.notifier').click(clearNotifier);
-  
+}
+
+function getBookmd () {
+    $.get('/rest/1/getBookmd', {url: skynetURL, id: thisBookID},
+        function (result) {
+            if (result.md) bookmd = result.md; 
+            if (bookmd.buildID) {
+                $('#rebuild-link').html('Rebuilding...');
+                $('#rebuild-link').addClass('css3-blink');
+                buildLinkURL = '/buildlog.html?buildid=' + bookmd.buildID;
+            }
+    });  
+}
+
+function clickGoHome (e) {
+    e.preventDefault();
+    window.open('/', '_deathstar'); 
+    return false;    
+}
+
+function routeNotification (data) {
+    if (data.buildnotification) {
+        buildNotification(data); 
+    } else {
+        displayNotification(data);
+    }
+}
+
+function buildNotification (data) {
+    if (data.linkURL) buildLinkURL = data.linkURL;
+    $('#rebuild-link').html(data.msg);    
+    if (data.blink) {
+        $('#rebuild-link').addClass('css3-blink');
+    } else {
+        $('#rebuild-link').removeClass('css3-blink');
+    }
+}
+
+function clickBuild (e) {
+    e.preventDefault();
+    if (buildLinkURL == 'rebuild') {
+        $.get('/rest/1/build', {url: skynetURL, id: thisBookID}, function (result){
+            console.log(result);
+            return false;
+        });
+    } else 
+        if (buildLinkURL == 'reload') { location.reload(true); }
+        else
+    {
+     window.open(buildLinkURL, '_blank');
+     return false;
+    }
+}
+
+function clickPublish (e) {
+    e.preventDefault();
+    window.open('/publish','_deathstar');
+    return false;
+}
+
+function clickEditStructure (e) {
+    e.preventDefault();
+    window.open('/cspec-editor.html?skyneturl=' + skynetURL + '&topicid=' + thisBookID);
+    return false;
 }
 
 function displayNotification (data) {
@@ -61,7 +129,8 @@ function flashTitle (msg) {
 function bookRebuiltNotification () {
     flashTitle('Updated');
     $('.notify-rebuilt').removeClass('invisible');   
-
+    buildLinkURL = 'reload';
+    $('#rebuild-link').html('Reload');
 }
 
 function reload () {

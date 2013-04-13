@@ -33,10 +33,16 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
   <xsl:attribute name="onLoad">skynetBookLoad()</xsl:attribute>
 </xsl:template>
 
-<!-- Rebuilt Notification -->
+<!-- Notification divs and Control Buttons -->
 <xsl:template name="user.header.content">
   <div class="notify-rebuilt invisible"><center><a href="javascript:;" onclick="reload()">Update available. Hit F5 to Refresh.</a></center></div>
     <div class="notifier invisible"></div>
+    <div class="control-panel">
+        <div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
+        <div class="ctrl-btn rebuild-btn"><a id="rebuild-link" href="#">Rebuild Book</a></div>
+        <div class="ctrl-btn edit-structure-btn"><a href="#" id="edit-structure">Edit Structure</a></div>
+        <div class="ctrl-btn publish-btn"><a href="#" id="click-publish">Publish</a></div>
+    </div>
 </xsl:template>
 
 <!-- depth of section labelling -->
@@ -59,77 +65,51 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 <xsl:template match="section[@role = 'skynet-defaultcodeselector']"  mode="toc" />
 
 <!-- Simple target names in html - no section / chapter numbers -->
+<!-- http://www.sagehill.net/docbookxsl/CustomXrefs.html#XrefGentext -->
 <xsl:param name="local.l10n.xml" select="document('')"/>
 <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="section" style="simpletarget" text="%t"/>
-    </l:context>
-  </l:l10n>
+    <l:l10n language="en">
+        <l:context name="xref">
+            <l:template name="section" text="%t"/>
+            <l:template name="chapter" text="%t"/> 
+        </l:context>
+        <l:context name="xref-number-and-title">
+            <l:template name="section" text="%t"/>
+            <l:template name="chapter" text="%t"/>
+            <l:template name="section" style="simpletarget" text="%t"/>
+            <l:template name="chapter" style="simpletarget" text="%t"/>
+            <l:template name="chapter" style="simpletarget" text="%t"/>  
+            <l:template name="section" style="see-also" text="%t"/>  
+            <l:template name="chapter" style="see-also" text="%t"/>   
+            <l:template name="section" style="prereq" text="%t"/>  
+            <l:template name="chapter" style="prereq" text="%t"/>    
+            <l:template name="section" style="link-list" text="%t"/>
+            <l:template name="chapter" style="link-list" text="%t"/>
+        </l:context>
+    </l:l10n>
 </l:i18n>
 
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="chapter" style="simpletarget" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
+<!-- Customising cross reference typography -->
+<!-- http://www.schemacentral.com/sc/fo11/t-fo_font-style.html -->
+<!-- http://www.sagehill.net/docbookxsl/CustomXrefs.html#XrefGentext -->
+<!-- <xsl:template  match="sect1|sect2|sect3|sect4|sect5|section"  
+               mode="insert.title.markup">
+  <xsl:param name="purpose"/>
+  <xsl:param name="xrefstyle"/>
+  <xsl:param name="title"/>
 
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="section" style="see-also" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
 
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="chapter" style="see-also" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
-
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="section" style="prereq" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
-
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="chapter" style="prereq" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
-
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="section" style="link-list" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
-
-<xsl:param name="local.l10n.xml" select="document('')"/>
-<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-  <l:l10n language="en">
-    <l:context name="xref-number-and-title">
-      <l:template name="chapter" style="link-list" text="%t"/>
-    </l:context>
-  </l:l10n>
-</l:i18n>
+  <xsl:choose>
+    <xsl:when test="$purpose = 'xref'">
+      <fo:inline font-style="regular">
+        <xsl:copy-of select="$title"/>
+      </fo:inline>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:copy-of select="$title"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template> -->
 
 <xsl:param name="generate.toc">
 set toc
