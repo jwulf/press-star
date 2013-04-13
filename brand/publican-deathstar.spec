@@ -58,6 +58,8 @@ rm -rf $RPM_BUILD_ROOT
 - Refactor title flash to independent function
 - Removed section and chapter numbering for xrefs
 - Added embedded Death Star control panel
+- Better notifications system to integrate with event-emitting Books on the server
+- Lost socket connection notification ala gmail
 
 * Thu Apr 11 2013 Joshua Wulf <jwulf@redhat.com> 0.44
 - Adding flashing window title when book is rebuilt on server (Steve Gordon's idea)
