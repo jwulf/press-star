@@ -1,0 +1,37 @@
+<div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
+
+<div class="ctrl-btn rebuild-btn">
+    <% if (bookmd.locked) { %>
+        <a id="rebuild-link" rel="/buildlog.html?buildid=<%= bookmd.buildID %>" href="#">
+            <% if (bookmd.onQueue) { %>
+                <span class="css3-blink">On Queue...</span>
+            <% } else { %>
+                <span class="css3-blink">Rebuilding...</span>
+            <% } %>
+        </a>
+    <% } else { %>
+        <a id="rebuild-link" rel="rebuild" href="#">
+            Rebuild Book
+        </a>
+    <% } %>
+</div>
+
+<div class="ctrl-btn edit-structure-btn">
+    <a href="#" id="edit-structure">
+        Edit Structure
+    </a>
+</div>
+
+<div class="ctrl-btn publish-btn">
+    <% if (bookmd.publishing) { %>
+        <% if (bookmd.inBrew) { %>
+            <span class="css3-blink"><a href="#" id="click-publish" rel="<%= bookmd.brewTask %>">In Brew...</a></span>
+        <% } else { %>
+            <span class="css3-blink"><a id="click-publish" href="#" rel="/publishstream?publishID=<%= bookmd.publishID %>">Publishing...</a></span>
+        <% } %>
+    <% } else { %>
+    <a href="#" rel="/publish" id="click-publish">
+        Publish
+    </a>
+    <% } %>
+</div>

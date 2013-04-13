@@ -452,6 +452,7 @@ span.remark{
   to { opacity: 0.0; }
 }
 .css3-blink {
+  color: red;
   -webkit-animation-name: blinker;  
   -webkit-animation-iteration-count: infinite;  
   -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);

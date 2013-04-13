@@ -254,7 +254,7 @@ function setUpCodeTabs()
     
     // The document has resized. If the user opened it on a named anchor, take
     // them to the new location for that point
-    if (currentNamedAnchor && currentNamedAnchor != '#' && $(currentNamedAnchor)) $('html, body').animate({
+    if (currentNamedAnchor && currentNamedAnchor != '#' && $(currentNamedAnchor) && $(currentNamedAnchor).offset()) $('html, body').animate({
         scrollTop: $(currentNamedAnchor).offset().top
     }, 'slow');
 

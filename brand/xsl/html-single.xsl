@@ -17,12 +17,12 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
   This is used for cookies for the book -->
 <xsl:template name="user.footer.content">
     <div class="skynetBookID"><xsl:value-of select="//productname[1]"/>/<xsl:value-of select="//title[1]"/></div>
-    <script src="Common_Content/scripts/modernizr.js"></script>
     <script src="Common_Content/scripts/jquery-1.4.2.min.js"></script>
     <script src="Common_Content/scripts/code-lang-switcher.js"></script>
     <script src="Common_Content/scripts/skynet-book.js"></script>
     <script src="Common_Content/scripts/skynetURL.js"></script>
     <script src="Common_Content/scripts/utils.js"></script>
+    <script src="Common_Content/scripts/ejs_production.js"></script>
     <script src="Common_Content/scripts/deathstar.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </xsl:template>
@@ -37,11 +37,11 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 <xsl:template name="user.header.content">
   <div class="notify-rebuilt invisible"><center><a href="javascript:;" onclick="reload()">Update available. Hit F5 to Refresh.</a></center></div>
     <div class="notifier invisible"></div>
-    <div class="control-panel">
-        <div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
+    <div id="ds-control-panel" class="control-panel">
+      <!-- <div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
         <div class="ctrl-btn rebuild-btn"><a id="rebuild-link" href="#">Rebuild Book</a></div>
         <div class="ctrl-btn edit-structure-btn"><a href="#" id="edit-structure">Edit Structure</a></div>
-        <div class="ctrl-btn publish-btn"><a href="#" id="click-publish">Publish</a></div>
+        <div class="ctrl-btn publish-btn"><a href="#" id="click-publish">Publish</a></div> -->
     </div>
 </xsl:template>
 

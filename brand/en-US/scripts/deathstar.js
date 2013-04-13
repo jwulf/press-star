@@ -1,4 +1,4 @@
-var flash, original, bookmd, buildLinkURL = 'rebuild';
+var flash, originalTitle, bookmd, socketConnected = false, NO_FLASH = false, retries, beenConnected;
 
 function url_query( query, url ) {
   // Parse URL Queries
@@ -18,39 +18,96 @@ function url_query( query, url ) {
 
 function deathstarItUp()
 {
-    var editorURL, injectorURL, buildData, endLoc, topicID, socket;
-
-    $('#rebuild-link').click(clickBuild);
-    $('#edit-structure').click(clickEditStructure);
-    $('#click-publish').click(clickPublish);
-    $('#go-home').click(clickGoHome);
+    var editorURL, injectorURL, buildData, endLoc, topicID;
     
-    socket || (socket = io.connect()); 
-    
-    socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
-        console.log('Websocket connected to server');
-        socket.emit('patchSubscribe', {skynetURL: skynetURL, id: thisBookID})
-    });
-    
-    socket.on('patchBookinBrowser', patchTopic);
-    socket.on('bookRebuiltNotification', bookRebuiltNotification); 
-    socket.on('notification', routeNotification);
+    retries = 0;
+    beenConnected = false;
+    originalTitle = document.title;
+    connectSocket();
 
     getBookmd();
     
     $('.notifier').click(clearNotifier);
 }
 
+function disconnectedNotifier () {
+    var _text;
+    
+    if (!socketConnected) {
+        retries ++;
+        displayNotification('Attempting to contact server... lost connection ' + (retries * 5) + ' seconds ago', NO_FLASH);
+        setTimeout(disconnectedNotifier, 5000); // retry the socket connection every 1 second    
+    } else {
+        _text = $('.notifier').html();
+        if (_text.indexOf('Attempting to contact') != -1 || _text.indexOf('Lost connection to server') != -1) 
+            clearNotifier();
+    }
+}
+
+function connectSocket () {
+    var socket;
+    
+    // This code handles disconnection events (for example a server bounce, or the client switching networks)
+    if (! socketConnected) {
+        if (!beenConnected) {
+            socket = io.connect(); 
+        
+            socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
+                socketConnected = true;
+                if (retries > 0) clearNotifier();
+                retries = 0;
+                beenConnected = true;
+                console.log('Websocket connected to server');
+                socket.emit('patchSubscribe', {skynetURL: skynetURL, id: thisBookID});
+                
+                socket.on('disconnect', function () { 
+                    displayNotification('Lost connection to server...', NO_FLASH);
+                    setTimeout(disconnectedNotifier, 5000); 
+                    socketConnected = false;
+                    retries = 0;
+                });
+            });
+            
+            /* 
+             
+            */
+            
+            socket.on('patchBookinBrowser', patchTopic);
+            socket.on('bookRebuiltNotification', bookRebuiltNotification); 
+            socket.on('notification', routeNotification);
+            
+            /* State change is sent every time the book's metadata structure changes on the
+             server. It is used to update client-side views of building / publishing / error status
+             
+             The Death Star Control Panel uses client-side Embedded JavaScript Templating in 
+             conjunction with this event to maintain a real-time view of the book's activity on the
+             server.
+             */
+             
+            socket.on('statechange', processStateChange);
+        }
+    }
+}
+
+function processStateChange(data) {
+    if (data.md)    
+        updateControlPanel(data.md);
+}
+
 function getBookmd () {
     $.get('/rest/1/getBookmd', {url: skynetURL, id: thisBookID},
         function (result) {
-            if (result.md) bookmd = result.md; 
-            if (bookmd.buildID) {
-                $('#rebuild-link').html('Rebuilding...');
-                $('#rebuild-link').addClass('css3-blink');
-                buildLinkURL = '/buildlog.html?buildid=' + bookmd.buildID;
-            }
+            updateControlPanel(result);
     });  
+}
+
+function updateControlPanel (md) {
+    new EJS({url: 'Common_Content/scripts/control-panel.ejs'}).update('ds-control-panel', {bookmd: md}); 
+    
+    $('#rebuild-link').click(clickBuild);
+    $('#edit-structure').click(clickEditStructure);
+    $('#click-publish').click(clickPublish);
+    $('#go-home').click(clickGoHome);
 }
 
 function clickGoHome (e) {
@@ -68,7 +125,6 @@ function routeNotification (data) {
 }
 
 function buildNotification (data) {
-    if (data.linkURL) buildLinkURL = data.linkURL;
     $('#rebuild-link').html(data.msg);    
     if (data.blink) {
         $('#rebuild-link').addClass('css3-blink');
@@ -79,23 +135,33 @@ function buildNotification (data) {
 
 function clickBuild (e) {
     e.preventDefault();
-    if (buildLinkURL == 'rebuild') {
-        $.get('/rest/1/build', {url: skynetURL, id: thisBookID}, function (result){
-            console.log(result);
-            return false;
-        });
-    } else 
-        if (buildLinkURL == 'reload') { location.reload(true); }
-        else
-    {
-     window.open(buildLinkURL, '_blank');
-     return false;
+    if (e) {
+        var url = $(this).attr('rel');    
+    
+        if ( url == 'rebuild') {
+            $.get('/rest/1/build', {url: skynetURL, id: thisBookID}, function (result){
+                console.log(result);
+                return false;
+            });
+        } else if ( url == 'reload' ) {
+            reload() 
+        } else {
+         window.open(url, '_blank');
+         return false;
+        }
     }
 }
 
 function clickPublish (e) {
+    var _url, _target;
+    
     e.preventDefault();
-    window.open('/publish','_deathstar');
+    _target = '_blank';
+    _url = $(this).attr('rel');
+
+    if (_url == '/publish') _target = '_deathstar';
+    
+    window.open(_url, _target);
     return false;
 }
 
@@ -105,31 +171,41 @@ function clickEditStructure (e) {
     return false;
 }
 
-function displayNotification (data) {
-   flashTitle(data.title);
-   $('.notifier').html(data.msg);
+function displayNotification (data, flash) {
+    var _flash, _msg, _title = 'Notification';
+    
+    if ("string" == typeof data) _msg = data;
+    if ("object" == typeof data) {
+        _msg = data.msg;
+        if (data.title) _title = data.title;
+    }
+    
+    _flash = (flash !== false); // means true unless flash is really set to false, not just null
+    
+   if (_flash) flashTitle(_title);
+   
+   $('.notifier').html(_msg);
    $('.notifier').removeClass('invisible');
 }
 
 function clearNotifier () {
     clearInterval(flash);
-    document.title = original;
+    document.title = originalTitle;
     $('.notifier').addClass('invisible');
     return true;
 }
 
 function flashTitle (msg) {
-    original = document.title;  
 
     flash = setInterval(function () { 
-        document.title = (document.title == original) ? msg : original; 
+        document.title = (document.title == originalTitle) ? msg : originalTitle; 
         }, 500);    
 }
 
 function bookRebuiltNotification () {
     flashTitle('Updated');
     $('.notify-rebuilt').removeClass('invisible');   
-    buildLinkURL = 'reload';
+    $('#rebuild-link').attr('rel', 'reload');
     $('#rebuild-link').html('Reload');
 }
 
