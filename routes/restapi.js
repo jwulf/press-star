@@ -52,6 +52,22 @@ function restroute (req, res){
     if (op == 'publish') {publish (req, res);}
     else
     if (op == 'stopPublish') {stopPublish (req, res);}
+    else
+    if (op == 'getBookmd') {getBookmd (req, res);}
+}
+
+function getBookmd (req, res) {
+    var url = req.query.url,
+        id = req.query.id,
+        Books = jsondb.Books;
+        
+    if (url && id) {
+        if (Books[url] && Books[url][id]) {
+            res.send({md: Books[url][id]});
+        }
+        else res.send({code:1, msg: 'Book not found'});
+    }
+    else res.send({code:1, msg: "Didn't get a url and an ID"});
 }
 
 function stopPublish (req, res) {
