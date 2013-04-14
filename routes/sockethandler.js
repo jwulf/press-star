@@ -82,7 +82,7 @@ function getStream (data, client){
 }
 
 function pushSpec (data, client) {
-    var Books = jsondb.Books;
+    var Books = Library.Books;
     var BUILD_SUCCEEDED = 0,
         filenumber=1;
     
