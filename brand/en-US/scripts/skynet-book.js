@@ -1,4 +1,5 @@
-function skynetBookLoad(){
-  setUpCodeTabs();
-  deathstarItUp();
+function skynetBookLoad() {
+    setUpCodeTabs();
+    setUpChangeLogs();
+    deathstarItUp();
 }
