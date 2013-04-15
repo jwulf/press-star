@@ -11,27 +11,31 @@
         <td>
             <% var buttonClass = { home: 'menu-button', add: 'menu-button', remove: 'menu-button', publish: 'menu-button'}
                 if (mode && buttonClass[mode]) buttonClass[mode] = 'active-indicator-button'; %>
-            <h3>
+            <h4>
             <span class="<%= buttonClass.home %>">
-            <a href="/">Home |</span> </a></h3>
+            <a href="/">Home |</span> </a>
+        </h4>
         </td>  
         <td>
-            <h3>
-            <span class="<%= buttonClass.add %>"><a href="/add">Add Book |</span> </a></h3>
+            <h4>
+                <span class="<%= buttonClass.add %>"><a href="/add">Add Book |</span> </a>
+            </h4>
         </td>  
         <td>
-            <h3>
-            <span class="<%= buttonClass.remove %>"><a href="/remove">Remove Book |</span> </a></h3>
+            <h4>
+                <span class="<%= buttonClass.remove %>"><a href="/remove">Remove Book |</span> </a>
+            </h4>
         </td>
         <td>
-            <h3>
-            <span class="<%= buttonClass.publish %>"><a href="/publish">Publish Book |</span> </a></h3>
+            <h4>
+                <span class="<%= buttonClass.publish %>"><a href="/publish">Publish Book |</span> </a>
+            </h4>
         </td>    
         <td>
-            <h3><span class="action-button"><a href="javascript:;" onclick="rebuildAll()">Rebuild All | </a></span></h3>
+            <h4><span class="action-button"><a href="javascript:;" onclick="rebuildAll()">Rebuild All | </a></span></h4>
         </td>    
         <td>
-            <h5><span class="menu-button"><a href="/about.html">About Deathstar 2.0 |</a></span></h3>  
+            <h5><span class="menu-button"><a href="/about.html">About Deathstar 2.0 |</a></span></h5>  
         </td>
 
     </tr>
