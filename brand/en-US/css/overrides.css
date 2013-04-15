@@ -88,7 +88,10 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
 .RoleCreateBugPara a {
   display:inline-block;
   border: 1px dotted red;
-  padding:.333em 1em;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color:white;
   margin:0em .5em;
   /*border-radius*/
