@@ -2,13 +2,13 @@
 <% for (var each in books) { var id = books[each].id, url = books[each].url, title = books[each].title, my = data[url][id] %>
        <tr> 
             <td>
-                <h3>
+                <h4>
                     <a href="<%= 'builds/' + id + '-' + my.builtFilename %>" target="book"><%= title %> [<%= id %>]</a> 
                 </h3>
             </td>
             <td>    
                 <center>
-                    <h3>
+                    <h4>
                         <% if (! (my.publishing ||  my.building) ) { %>
                             <span class="active-indicator-button login-window"><a class="login-window" href="javascript:;" onClick="clickToPublish('<%= url%>', '<%= id %>'); return false;">Publish</a></span>
                         <% } else {%>
@@ -22,12 +22,12 @@
                                 <span class="css3-blink active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Publishing</a></span>
                             <% } %>
                         <% } %>
-                    </h3>
+                    </h4>
                 </center>
             </td>
             <td>
                 <center>
-                    <h3>
+                    <h4>
                     <% if (my.publishing) { %>
                         <span class="action-button btn-log"><a href="javascript:;" onclick="$.get('/rest/1/stopPublish?uid=<%= my.publishID %>', function(result){console.log(result);});">End Publish Job</a></span>    
                     <% } else { %>
@@ -35,12 +35,12 @@
                             <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + id + '-' + my.builtFilename + '/publish.log'%>">Publish Log</a></span>
                         <% } %>
                     <% } %>
-                    </h3>
+                    </h4>
                 </center>
             </td>
             <td>
                 <center>
-                    <h3>
+                    <h4>
                     <% if (my.brewTask) { %>
                         <% if (my.publishing) { %>
                             <span class="active-indicator-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>    
@@ -48,7 +48,7 @@
                             <span class="action-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>    
                         <% } %>
                     <% } %>
-                    </h3>
+                    </h4>
                 </center>
             </td>
         </tr>
