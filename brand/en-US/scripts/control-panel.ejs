@@ -1,7 +1,7 @@
 <div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
 
 <div class="ctrl-btn rebuild-btn">
-    <% if (bookmd.locked) { %>
+    <% if (bookmd.building) { %>
         <a id="rebuild-link" rel="/buildlog.html?buildid=<%= bookmd.buildID %>" href="#">
             <% if (bookmd.onQueue) { %>
                 <span class="css3-blink">On Queue...</span>
