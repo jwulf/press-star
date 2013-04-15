@@ -147,8 +147,6 @@ function pushSpec (data, client) {
                                 console.log('Checking for book...');
                                 if (Books[md.serverurl] && Books[md.serverurl][md.id]) {
                                     console.log('We got that book...');
-                                    Books[md.serverurl][md.id].buildID = uuid.v1();
-                                    console.log(Books[md.serverurl][md.id].buildID);
                                     builder.build(md.serverurl, md.id);
                                 }
                             }
