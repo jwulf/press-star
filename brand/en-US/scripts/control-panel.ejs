@@ -27,7 +27,7 @@
         <% if (bookmd.inBrew) { %>
             <span class="css3-blink"><a href="#" id="click-publish" rel="<%= bookmd.brewTask %>">In Brew...</a></span>
         <% } else { %>
-            <span class="css3-blink"><a id="click-publish" href="#" rel="/publishstream?publishID=<%= bookmd.publishID %>">Publishing...</a></span>
+            <span class="css3-blink"><a id="click-publish" href="#" rel="/publishstream.html?publishID=<%= bookmd.publishID %>">Publishing...</a></span>
         <% } %>
     <% } else { %>
     <a href="#" rel="/publish" id="click-publish">
