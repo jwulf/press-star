@@ -94,8 +94,9 @@ function rebuild (url, id) {
 }
 
 function rebuildAll () {
-    $.get('/rest/1/rebuildAll', {}, function(result){
-        console.log(result);
-    });
+    if (confirm("This will rebuild *all* the books. That's really what you want to do?"))
+        $.get('/rest/1/rebuildAll', {}, function(result){
+            console.log(result);
+        });
     return false;
 }

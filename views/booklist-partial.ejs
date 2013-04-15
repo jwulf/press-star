@@ -1,6 +1,8 @@
 <table border="0">
 <% for (var each in books) { var title = books[each].title, id = books[each].id, url = books[each].url, thisBook = data[url][id] %>
        <tr> 
+    
+            <!-- Book Name and link to Book -->
             <td>
                 <h3>
                 <% if (thisBook.builtFilename) { %>
@@ -14,6 +16,8 @@
                 <% } %>
                 </h3>
             </td>
+
+        <!-- Edit Structure --> 
                 <td>
                     <center>
                     <h3>
@@ -21,37 +25,65 @@
                     </h3>
                     </center>
                 </td>
+
+        <!-- Rebuild or Building / Publishing indicator -->
                 <td>
                     <center>
                     <h3>
-                        <% if (thisBook.locked) { %>
+                        <% if (thisBook.building) { %>
                             <% if (thisBook.onQueue) { %>
-                                <span class="active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">Queued</a></span>
+                                <span class="active-indicator-button">
+                                    <a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">
+                                        Queued
+                                    </a>
+                                </span>
                             <% } else { %>
-                                <span class="active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">Rebuilding</a></span>
+                                <span class="active-indicator-button css3-blink">
+                                    <a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">
+                                        Rebuilding
+                                    </a>    
+                                </span>
                             <% } %>
-                            </h3><center></td>
-                            <td><center><h3>
-                            <span class="action-button btn-log">Build Log</span>
                         <% } else { %>
-                            <% if (thisBook.builtFilename) { %>
-                                <span class="action-button btn-rebuild"><a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">Rebuild Book</a></span>
-                                </h3></center></td><td><center><h3>
-                                <% if (thisBook.buildError) { %>
-                                    <span class="active-indicator-button btn-log"><a target="_blank" href="<%= 'builds/' + id + '-' + thisBook.builtFilename + '/build.log'%>">Build Error</a></span>
-                                <% } else { %>
-                                    <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + id + '-' + thisBook.builtFilename + '/build.log'%>">Build Log</a></span>
-                                <% } %>
+                            <% if (thisBook.publishing) { %>
+                                <span class="active-indicator-button">
+                                        <a target="_blank" href="/publishstream.html?buildid=<%= thisBook.buildID %>">
+                                            Publishing
+                                        </a>
+                                    </span>
                             <% } else { %>
-                                <span class="active-indicator-button"><a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">Build Book</a></span>
-                                </h3></center></td><td><center><h3>
-                                <span class="action-button btn-log">Build Log</span>
+                                    <span class="action-button btn-rebuild">
+                                        <a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">
+                                            Rebuild Book
+                                        </a>
+                                    </span> 
                             <% } %>
                         <% } %>
-                    </h3>
-                    </center>
+                            </h3>
+                    <center>
                 </td>
 
+
+            <!-- Build Error or Build Log -->
+                <td>
+                    <center>
+                        <h3>
+                            <% if (thisBook.buildError) { %>
+                                <span class="active-indicator-button btn-log">
+                                    <a target="_blank" href="<%= 'builds/' + id + '-' + thisBook.builtFilename + '/build.log'%>">
+                                        Build Error
+                                    </a>
+                                </span>
+                            <% } else { %>
+                                <span class="action-button btn-log">
+                                    <a target="_blank" href="<%= 'builds/' + id + '-' + thisBook.builtFilename + '/build.log'%>">
+                                        Build Log
+                                    </a>
+                                </span>
+                            <% } %>
+                        </h3>
+                    </center>
+                </td>
         </tr>
     <% } %>
 </table>
