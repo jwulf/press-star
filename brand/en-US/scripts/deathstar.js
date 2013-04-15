@@ -215,36 +215,37 @@ function reload () {
 
 // Invoked via websocket from the server
 function patchTopic (msg) {
+    var target;
     console.log('Received patch for Topic ' + msg.topicID);
     if (msg.topicID && msg.html) {
         
-        // Locate the sectionTopic
-        var target = $('.sectionTopic' + msg.topicID);
-    
-        if (!target) return;
-    
-        // Locate and preserve its .prereqs-list child, if it exists
-        var prereq = target.children('.prereqs-list').detach();
+        $('.sectionTopic' + msg.topicID).each(function(){
+             // Locate the sectionTopic
+            var target = $(this);
         
-        // Locate and preserve its .see-also-list child, if it exists
-        var seealso = target.children('.see-also-list').detach();
-        
-        // Locate and preserve the bug link / edit child
-        var buglink = target.children('.bug-link').detach();
-        
-        // Get the title from the existing topic - this gets us the TOC anchor and correct section number
-        var title = target.find('.title')[0];
-        
-        // Update the content
-        target.html(msg.html);
-        
-        // Now replace the title to get the TOC anchor and the correct section numbering
-        $(target.find('.title')[0]).replaceWith(title);
-        
-        // Restore injected content
-        if (prereq) prereq.insertAfter(target.find('hr'));
-        if (seealso) seealso.appendTo(target);
-        if (buglink) buglink.appendTo(target);
+            // Locate and preserve its .prereqs-list child, if it exists
+            var prereq = target.children('.prereqs-list').detach();
+            
+            // Locate and preserve its .see-also-list child, if it exists
+            var seealso = target.children('.see-also-list').detach();
+            
+            // Locate and preserve the bug link / edit child
+            var buglink = target.children('.bug-link').detach();
+            
+            // Get the title from the existing topic - this gets us the TOC anchor and correct section number
+            var title = target.find('.title')[0];
+            
+            // Update the content
+            target.html(msg.html);
+            
+            // Now replace the title to get the TOC anchor and the correct section numbering
+            $(target.find('.title')[0]).replaceWith(title);
+            
+            // Restore injected content
+            if (prereq) prereq.insertAfter(target.find('hr'));
+            if (seealso) seealso.appendTo(target);
+            if (buglink) buglink.appendTo(target);   
+        });
             
     }    
 }
