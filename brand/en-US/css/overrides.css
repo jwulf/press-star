@@ -480,3 +480,11 @@ span.remark{
   -webkit-animation-duration: 2s; 
 }    
 
+.css3-blink a {
+    color: red;
+}
+
+.css3-blink a:visited {
+    color:red   
+}
+
