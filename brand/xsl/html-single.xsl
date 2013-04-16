@@ -25,6 +25,7 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
     <script src="Common_Content/scripts/utils.js"></script>
     <script src="Common_Content/scripts/ejs_production.js"></script>
     <script src="Common_Content/scripts/deathstar.js"></script>
+    <script src="Common_Content/scripts/publican-pressgang-utils.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </xsl:template>
 
