@@ -120,7 +120,7 @@ function doSave() {
     return false;
 }
 
-function doActualSave() {
+function doActualSave () {
     var builtHTML, skynizzleURL, xmlText;
 
     // Grab the preview HTML now, when save is called.

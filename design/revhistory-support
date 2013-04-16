@@ -1,0 +1,20 @@
+We put the Revision_History.xml in the topic description field.
+
+
+During build, if the Spec topic has a topic description set, then we overwrite 
+the generated Rev History with the contents of the topic description.
+
+When building the book, if we replaced the Revision History with the topic 
+description, during deathStarItUp() we will inject a special editor link 
+into the Revision History, which can be located like this:
+
+$('div.appendix').each(function(){if ($(this).find('h1').text() == 'Revision History') console.log(this)});
+
+The editor link needs to inform the Death Star editor to edit the topic description field, rather than the xml field.
+
+This should be pretty easy. We make the field a variable, and default it to 
+xml. If the right parameter is passed on the url, we make it the 'description' 
+field.
+
+OK, let's try this.
+
