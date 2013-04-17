@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.45
+Version:	0.46
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,11 +53,16 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Wed Apr 17 2013 Joshua Wulf <jwulf@redhat.com> 0.46
+- Updated jQuery to 1.9.1
+- Added PressGang protoype REST library
+- Started work on automated Revision History generation
+
 * Sat Apr 13 2013 Joshua Wulf <jwulf@redhat.com> 0.45
 - Added generic notifier for server push events
 - Refactor title flash to independent function
 - Removed section and chapter numbering for xrefs
-- Added embedded Death Star control panel
+- Added embedded Death Star control panel, rendered using client-side EJS and JSON
 - Better notifications system to integrate with event-emitting Books on the server
 - Lost socket connection notification ala gmail
 
