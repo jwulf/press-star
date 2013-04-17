@@ -1,11 +1,13 @@
 /* This is the demo function for this library. 
     Open a Death Star book in your browser - (hint: don't try this on the RHEV Admin Guide!)
     Open the Console. In Google Chrome I do Ctrl-Shift-I in Linux, or Cmd-Opt-I on the Mac. Not sure for Firefox.Firefox
-    Anyway, copy and paste this file into the console, then type this:
+    Anyway, type this:
     
-    getLogMessagesForBookSince(skynetURL, '01-01-2013');
+    getLogMessagesForBookSince('01-01-2013');
     
-    for great justice.
+    for great justice and lols.
+    
+    Depending on what state the code is in, you may or may not see log messages!
     
     1. For each topic, get the LogMessagesSince (date). [async]
     2. LogMessagesSince gets TopicRevisionsSince. [sync]
@@ -16,16 +18,8 @@
     1 & 4 are asynchronous in that they spawn a bunch of tasks (for each)    
     
     We know that once each topic has received its complete set of results, we have the complete set of results. 
-    
-    However, each topic does not know what its own complete set of results is. 
-    
-    At the TopicRevisionsSince point, the topic can know how many revisions it needs to hear back from. The answers can 
-    be null. So at the point of TopicRevisionsSince a callback should populate an indexed field with the number of callbacks
-    that the topic should expect. 
-    
-    Let's trace a single path of execution.
-    
-    We know how many topics we have. 
+
+    So 1 and 4 should track the total amount of spawned tasks, and callback when all outstanding async tasks complete.
 */
 
 // default rate limit one operation/500ms
