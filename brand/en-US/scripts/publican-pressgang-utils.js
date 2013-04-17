@@ -3,7 +3,7 @@
     Open the Console. In Google Chrome I do Ctrl-Shift-I in Linux, or Cmd-Opt-I on the Mac. Not sure for Firefox.Firefox
     Anyway, copy and paste this file into the console, then type this:
     
-    getLogMessagesForBookSince('01-01-2013');
+    getLogMessagesForBookSince(skynetURL, '01-01-2013');
     
     for great justice.
     
@@ -60,6 +60,8 @@ function getLogMessagesForBookSince(date, url, sort_ascending, rate_limit, cb) {
         next, // index for triggering getLogMessagesSinceRequests
         _spawned_tasks; // keeps track of how many topics we are searching for log messages
 
+    if (!url && skynetURL) url = skynetURL; // skynetURL is a dirty global in Death Star books. When, O When will we go all AMD Modular up in here?
+    
     if (!date || !url) cb('How about providing a date and a URL?');
     
     _rest_calls = 0;
