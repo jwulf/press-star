@@ -3,7 +3,9 @@
   <head>
     <title>Add Book</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/scripts/jquery-1.9.1.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.js"></script>
     <script src="/scripts/add-book.js"></script>
   </head>
   <body>
@@ -13,10 +15,10 @@
 
     <% include index-menu.ejs %>
     <h1>Add Book</h1>
-    <form onSubmit="addBook(); return false;">
+    <form onsubmit="addBook(); return false;">
         <table><tr><td>Server URL:</td><td> <input type="text" name="serverURL" size="200" value="<%= defaultURL %>"></td></tr>
         <tr><td>Content Spec ID:</td><td> <input type="text" name="specID" autofocus></td></tr>
-        <tr><td></td><td><INPUT TYPE="SUBMIT" VALUE="Add Book"></td></tr>
+        <tr><td></td><td><input type="submit" class="button" value="Add Book"></td></tr>
         </table>
     </form>
     <br>

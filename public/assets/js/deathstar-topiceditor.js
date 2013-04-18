@@ -27,9 +27,18 @@ var validXML = false,
     editor,
     oldVal;
 
-$(window).keypress(function(event) {
+// Execute on page load
+$(function() {
+    // Attach Save handlers
+    $('.save-menu').click(getLogMessage);
+    $('#commitmsg-button').click(doCommitLogSave);
+});
+
+    
+$(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
     if (pageIsEditor) {
+        // if the Save button is not disabled, do the save event
         if (!$("#save-button").prop("disabled")) doSave();
     }
     event.preventDefault();
@@ -53,6 +62,62 @@ $(document).keydown(function(event) {
     event.preventDefault();
     return false;
 });
+
+function getLogMessage (e) {
+    
+    var loginBox = '#login-box',
+        _log_level, msg,
+        log_levels = {minor: 1, major: 2};
+        
+    _log_level = 1;// Default to minor revision
+    
+    // I put the "minor" and "major" keys in the rel attribute of the commit menu items    
+    if (e) _log_level = log_levels[$(e).attr('rel')];
+    
+    //Fade in the Popup
+    $(loginBox).fadeIn(300);
+    
+    //Set the center alignment padding + border see css style
+    var popMargTop = ($(loginBox).height() + 24) / 2; 
+    var popMargLeft = ($(loginBox).width() + 24) / 2; 
+    
+    $(loginBox).css({ 
+        'margin-top' : -popMargTop,
+        'margin-left' : -popMargLeft
+    });
+    
+    $("input").keypress(function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+            doActualSave({log_level: _log_level, msg: msg});
+        }
+    });
+    $("input").keypress(function(event) {
+        if (event.keyCode == 27) {
+            closeMask ();
+        }    
+    });
+    
+    // Add the mask to body
+    $('body').append('<div id="mask"></div>');
+    $('#mask').click(closeMask);
+    $('.close').click(closeMask);
+    $('#mask').fadeIn(300);
+    
+    return false;
+}
+
+function doCommitLogSave () {
+    
+}
+
+function closeMask () {
+    $('#mask , .login-popup').fadeOut(300 , function() {
+        $('#mask').remove();  
+    }); 
+    return false;
+}
+
 
 function disable(selector) {
     $(selector).prop("disabled", true);
@@ -95,14 +160,6 @@ function doValidate(me, callback) {
     }
 }
 
-function hideSpinner(spinner) {
-    $(spinner).css("visibility", "hidden");
-}
-
-function showSpinner(spinner) {
-    $(spinner).css("visibility", "visible");
-}
-
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
     if ($("#save-button").prop('disabled') === false) {
@@ -120,7 +177,7 @@ function doSave() {
     return false;
 }
 
-function doActualSave() {
+function doActualSave (log_level, msg) {
     var builtHTML, skynizzleURL, xmlText;
 
     // Grab the preview HTML now, when save is called.
@@ -170,7 +227,7 @@ function doActualSave() {
 
         }
     }
-    requestURL = "/seam/resource/rest/1/topic/update/json";
+    var requestURL = "/seam/resource/rest/1/topic/update/json";
     saveAjaxRequest.global = true;
 
     saveAjaxRequest.open("POST", 'http://' + skynetURL + requestURL, true);
@@ -187,7 +244,7 @@ function doActualSave() {
         'configuredParameters': ['xml'],
         'xml': xmlText
     };
-    updateString = JSON.stringify(updateObject);
+    var updateString = JSON.stringify(updateObject);
 
     saveAjaxRequest.send(updateString);
 }
@@ -244,6 +301,7 @@ function updateXMLPreviewRoute(cm, preview) {
     //clientsideUpdateXMLPreview(cm,preview);
 }
 
+// Load a client-side xsl style sheet
 function loadXMLDoc(dname) {
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest();
@@ -323,7 +381,6 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
 
     // If we weren't called from the 2 second timer, we must have been called by the 
     // Enter key event. In that case we'll clear the timer
-    //   
 
     if (editorPlainText) {
         xmlText = $('#code').val();
@@ -334,17 +391,14 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post(nodeServer + "/rest/1/xmlpreview", {
-            xml: xmlText,
-            sectionNum: sectionNum
-        },
-
+        $.post(nodeServer + "/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
         }).error(function(a) {
             window.mutex = 0;
             // WORKAROUND: Google Chrome calls the error function on status 200, so this is workaround
+            // In Google Chrome we check the status and use the error handler to do the success behaviour
             if (a.status == 200) {
                 handleHTMLPreviewResponse(a.responseText, serverFunction);
             }
@@ -365,7 +419,7 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
   }
 }*/
 
-function setPageTitle(topicTitle) {
+function setPageTitle (topicTitle) {
     var titleHTML;
     var pageTitle;
     //  $("#page-title").html(topicID + ": ");
@@ -381,7 +435,6 @@ function setPageTitle(topicTitle) {
 function injectPreviewLink() {
     $("#preview-link").html('<a href="preview.html?skyneturl=http://' + skynetURL + '&topicid=' + topicID + '">Preview Link</a>');
 }
-
 
 function loadSkynetTopic() {
     if (alwaysUseServerToLoadTopics || editingOffline)
@@ -453,13 +506,6 @@ function serverTopicLoadCallback(topicAjaxRequest) {
     }
 } */
 
-function enableSaveRevert() {
-    if (!skynetURL === false) {
-        $('#save-button').prop('disabled', false);
-        $('#revert-button').prop('disabled', false);
-        $('#skynet-button').prop('disabled', false);
-    }
-}
 
 function doRevert() {
     loadSkynetTopic();

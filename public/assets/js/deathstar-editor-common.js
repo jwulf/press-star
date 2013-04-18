@@ -20,6 +20,8 @@ function getDate() {
 function disableSaveRevert()
 {
     $('.save-button').prop('disabled', true);
+    $('.save-button').addClass('disabled');
+    $('.save-button').addClass('disabled-link');
     $('#save-button').popover('hide');
     $('#save-button').prop('disabled', true);
     $('#revert-button').prop('disabled', true);
@@ -51,7 +53,13 @@ function enableSaveRevert()
   if (! skynetURL === false)
   {
     $('#save-button').prop('disabled', false);
+    $('.save-button').prop('disabled', false);
+    $('.save-button').removeClass('disabled');
+    $('.save-button').removeClass('disabled-link');
     $('#revert-button').prop('disabled', false);
     $('#skynet-button').prop('disabled', false);
   }
 }
+
+
+

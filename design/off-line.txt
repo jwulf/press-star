@@ -54,3 +54,18 @@ That's pretty easy, actually.
 
 The offline API is a file system writer in the Death Star server, similar to the jsondb API used to store the book metadata locally.
 
+
+
+
+Add Save Major / Save minor
+
+
+
+
+Version conflicts - check revision when it comes out, and when it's saved.
+
+
+Publishing - automatic snapshot.
+
+
+

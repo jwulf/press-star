@@ -43,7 +43,7 @@ function restroute (req, res){
     else 
     if (op =='remove') {removebook (req, res);}
     else
-    if (op == 'patch') {patch (req, res);}
+    if (op == 'patch') {livePatch.patchRESTendpoint (req, res);}
     else
     if (op == 'rebuildAll') {rebuildAll (req, res);}
     else
@@ -130,16 +130,6 @@ function rebuildAll (req, res) {
     res.send({code: 0, msg: 'Sent ' + count + ' books to the rebuilder'});
 }
 
-function patch (req, res){
-    var skynetURL = req.body.skynetURL,
-        html = req.body.html,
-        topicID = req.body.topicID;
-        
-    if (skynetURL && html && topicID)
-        livePatch.patch(skynetURL, topicID, html, function (err) {
-           if (err) {res.send({code:1, msg: err});} else {res.send({code:0, msg: 'Patch completed OK'});}
-        });
-}
 
 function removebook(req,res){
     var url = req.query.url,
@@ -149,9 +139,7 @@ function removebook(req,res){
             {
                 var pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
                 // Nuke all the current subscriptions for this book
-                if (livePatch.Topics[url])
-                    for (var topic in livePatch.Topics[url])
-                        if (topic[pathURL]) delete topic[pathURL];   
+                livePatch.removeTopicDependenciesForBook(url, id); 
                 delete jsondb.Books[url][id];
                 jsondb.write();
                 return res.send({code:0, msg: 'Book deleted'});

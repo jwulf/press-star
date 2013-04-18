@@ -131,3 +131,10 @@ form.signin input:-webkit-input-placeholder {
   -webkit-animation-timing-function: cubic-bezier(1, 0, 0, 1);
   -webkit-animation-duration: 2s;
 }
+table {
+  border-collapse: collapse;
+}
+td {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
