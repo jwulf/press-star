@@ -13,8 +13,6 @@ var express = require('express'),
     initTopicDependencies = require('./lib/livePatch').initialize(),
     jsondb = require('./lib/Books'),
     restapi = require('./routes/restapi'),
-    add = require('./routes/add').add,
-    publish = require('./routes/publish'),
     state = require('./lib/appstate'),
     initializeAppState = require('./lib/appstate').initialize();
 
