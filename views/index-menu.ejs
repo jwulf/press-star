@@ -6,36 +6,41 @@
   <li><a href="#">Remove Book</a></li>
 </ul>-->
 
-<table>
+<table cellpadding="7">
     <tr>
-        <td>
+        <td align="center">
             <% var buttonClass = { home: 'menu-button', add: 'menu-button', remove: 'menu-button', publish: 'menu-button'}
                 if (mode && buttonClass[mode]) buttonClass[mode] = 'active-indicator-button'; %>
             <h4>
             <span class="<%= buttonClass.home %>">
-            <a href="/">Home |</span> </a>
+            <a href="/">Home</span> </a>
         </h4>
         </td>  
-        <td>
+        <td>|</td>
+        <td align="center">
             <h4>
-                <span class="<%= buttonClass.add %>"><a href="/add">Add Book |</span> </a>
+                <span class="<%= buttonClass.add %>"><a href="/add">Add Book</span> </a>
             </h4>
         </td>  
-        <td>
+        <td>|</td>
+        <td align="center">
             <h4>
-                <span class="<%= buttonClass.remove %>"><a href="/remove">Remove Book |</span> </a>
+                <span class="<%= buttonClass.remove %>"><a href="/remove">Remove Book</span> </a>
             </h4>
         </td>
-        <td>
+        <td>|</td>
+        <td align="center">
             <h4>
-                <span class="<%= buttonClass.publish %>"><a href="/publish">Publish Book |</span> </a>
+                <span class="<%= buttonClass.publish %>"><a href="/publish">Publish Book</span> </a>
             </h4>
         </td>    
-        <td>
-            <h4><span class="action-button"><a href="javascript:;" onclick="rebuildAll()">Rebuild All | </a></span></h4>
+        <td>|</td>
+        <td align="center">
+            <h4><span class="action-button"><a href="javascript:;" onclick="rebuildAll()">Rebuild All</a></span></h4>
         </td>    
-        <td>
-            <h5><span class="menu-button"><a href="/about.html">About Deathstar 2.0 |</a></span></h5>  
+        <td>|</td>
+        <td align="center">
+            <h5><span class="menu-button"><a href="/about.html">About Deathstar 2.0</a></span></h5>  
         </td>
 
     </tr>
