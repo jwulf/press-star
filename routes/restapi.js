@@ -33,27 +33,27 @@ function restroute (req, res){
     console.log('Rest router called: ' + op);
     if (op === 'dtdvalidate') {dtdvalidate.dtdvalidate (req, res);}
     else
-    if (op === 'buildbook') {buildbook (req, res);}
+    if (op === 'buildbook') {buildbook(req, res);}
     else
-    if (op === 'buildstatus') {buildstatus (req, res);}
+    if (op === 'buildstatus') {buildstatus(req, res);}
     else 
-    if (op ==='addbook') {addbook (req, res);}
+    if (op ==='addbook') {addbook(req, res);}
     else
-    if (op ==='xmlpreview') {xmlpreview.xmlPreview (req, res);}
+    if (op ==='xmlpreview') {xmlpreview.xmlPreview(req, res);}
     else 
-    if (op =='remove') {removebook (req, res);}
+    if (op =='remove') {removebook(req, res);}
     else
-    if (op == 'patch') {livePatch.patchRESTendpoint (req, res);}
+    if (op == 'patch') {livePatch.patchRESTendpoint(req, res);}
     else
-    if (op == 'rebuildAll') {rebuildAll (req, res);}
+    if (op == 'rebuildAll') {rebuildAll(req, res);}
     else
-    if (op == 'build') {build (req, res);}
+    if (op == 'build') {build(req, res);}
     else 
-    if (op == 'publish') {publish (req, res);}
+    if (op == 'publish') {publish(req, res);}
     else
-    if (op == 'stopPublish') {stopPublish (req, res);}
+    if (op == 'stopPublish') {stopPublish(req, res);}
     else
-    if (op == 'getBookmd') {getBookmd (req, res);}
+    if (op == 'getBookmd') {getBookmd(req, res);}
 }
 
 function getBookmd (req, res) {
@@ -131,7 +131,7 @@ function rebuildAll (req, res) {
 }
 
 
-function removebook(req,res){
+function removebook (req,res){
     var url = req.query.url,
         id = req.query.id;
     if (jsondb.Books[url])
@@ -147,7 +147,7 @@ function removebook(req,res){
     res.send({code:1, msg: 'Book not found'});
 }
 
-function addbook(req, res){
+function addbook (req, res){
     var url = req.query.url,
         id = req.query.id;
     console.log('Add book operation requested for ' + url + id);
@@ -164,11 +164,11 @@ function addbook(req, res){
             function(err, md){
                 if (!err)
                 {
-                    res.send({'code' : 0, 'msg' : 'Successfully checked out'});
+                    res.send({'code' : 0, 'msg' : 'Successfully checked out "' + md.title + '"'});
                 }
                 else
                 {
-                    res.send({'code' : 1, 'msg' : 'Error checking out book ' + err});
+                    res.send({'code' : 1, 'msg' : err});
                 }
             }
         );        
@@ -181,7 +181,7 @@ function checkout (pg, specID, dir, cb){
     if (jsondb.Books[pg.url] && jsondb.Books[pg.url][specID])
     {
         console.log('Book already checked out');
-        cb('According to our records, this book is already checked out. Please remove it first if you want to check it out again.');
+        cb('According to our records, this book has already been added.');
     } else {
         console.log('No existing checkout found, proceeding...')
         cylon.checkout(pg, parseInt(specID), dir, 
@@ -190,13 +190,12 @@ function checkout (pg, specID, dir, cb){
                 if (!err) {
                     jsondb.addBook(md, cb);
                     livePatch.generateStreams();
-                    console.log('Checked out OK');
                 }
                 else
                 {
                     console.log('Error during checkout operation');
                     console.log(err);
-                    cb(err,md);
+                    cb(err, md);
                 }
             }
         ); 
