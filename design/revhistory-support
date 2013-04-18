@@ -1,6 +1,7 @@
 We put the Revision_History.xml in the topic description field.
 
 
+Add two 
 During build, if the Spec topic has a topic description set, then we overwrite 
 the generated Rev History with the contents of the topic description.
 
@@ -17,4 +18,34 @@ xml. If the right parameter is passed on the url, we make it the 'description'
 field.
 
 OK, let's try this.
+
+
+Commit Message support:
+
+Here is the POST Payload of a post with a commit message
+
+{"description":"", 
+"created":null, 
+"lastModified":null, 
+"bugzillaBugs_OTM":null, 
+"translatedTopics_OTM":null, 
+"outgoingRelationships":null, 
+"incomingRelationships":null, 
+"revisions":null, 
+"title":"The Death Star", 
+"xml":"<section>\n\t<title>The Death Star</title>\n\t<para>\n\t\tEditor initialized empty topic content \n\t</para>\n</section>", 
+"xmlErrors":null, 
+"html":null, 
+"locale":"en-US", 
+"xmlDoctype":null, 
+"tags":{"items":[], "size":null, "expand":null, "startExpandIndex":null, "endExpandIndex":null}, "sourceUrls_OTM":{"items":[], "size":null, "expand":null, "startExpandIndex":null, "endExpandIndex":null}, "properties":{"items":[], "size":null, "expand":null, "startExpandIndex":null, "endExpandIndex":null}, "selfLink":null, "editLink":null, "deleteLink":null, "addLink":null, 
+"id":14579, "revision":null, "configuredParameters":["properties","sourceUrls_OTM","tags","description","locale","title","xml"], "expand":null, "logDetails":null}
+
+
+Here are the query string parameters:
+
+message:jwulf: {firstname: "Joshua", surname: "Wulf", email: "jwulf@redhat.com", msg: "Here is my commit log message"}
+flag:2
+userId:89
+expand:{"branches":[{"trunk":{"name": "properties"}},{"trunk":{"name": "sourceUrls_OTM"}},{"trunk":{"name": "revisions", "start": 0, "end": 2}}]}
 

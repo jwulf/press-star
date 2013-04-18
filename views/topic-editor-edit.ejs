@@ -1,8 +1,6 @@
 <div class="tab-pane fade active in" id="edit">
     <div class="btn-toolbar" id="toolbuttons">
-
         <!-- Start Toolbar buttons -->
-
         <div class="btn-group">
             <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"
             rel="popover" data-content="Insert Docbook templates" data-original-title="Insert Docbook">
@@ -39,12 +37,10 @@
                 </li>
             </ul>
         </div>
-
         <div class="btn-group">
             <button class="btn btn-mini" rel="popover" data-content="Wrap a text selection in an XML tag. Hotkey: Ctrl-Shift-D"
             data-original-title="XML Tag Wrap Selection" id="tagwrap-button">XML Tag Wrap</span>
         </div>
-
         <!-- Find and Replace -->
         <div class="btn-group">
             <button class="btn btn-mini" rel="popover" data-content="Find Previous. Hot Key: Shift-Ctrl-F / Cmd-Option-F"
@@ -68,22 +64,16 @@
         <!-- Start Toggles -->
         <div class="btn-group" data-toggle="buttons-checkbox">
             <button id="tagCloseToggle" class="btn btn-mini btn-primary" rel="popover"
-                data-content="Toggle automatic XML tag closure on/off" data-original-title="Close XML Tags">
-                Close XML Tags
-            </button>
+            data-content="Toggle automatic XML tag closure on/off" data-original-title="Close XML Tags">Close XML Tags</button>
             <button class="btn btn-mini btn-primary" rel="popover"
-                data-content="Toggle interface help hints on/off" data-original-title="Show Help Hints"
-                id="helpHintToggle">
-                Show Hints
-            </button>
+            data-content="Toggle interface help hints on/off" data-original-title="Show Help Hints"
+            id="helpHintToggle">Show Hints</button>
             <button class="btn btn-mini btn-primary" rel="popover"
-                    data-content="Toggle editor to plain text mode. Use with the Firefox extension 'It's All Text' to edit topics in your favorite editor." data-original-title="Plain Text Mode"
-                    id="plainTextToggle">
-                Plain Text Editor
-            </button>
-        </div>  <!-- End Toggles -->
-
-       <!-- <div class="btn-group">
+            data-content="Toggle editor to plain text mode. Use with the Firefox extension 'It's All Text' to edit topics in your favorite editor."
+            data-original-title="Plain Text Mode" id="plainTextToggle">Plain Text Editor</button>
+        </div>
+        <!-- End Toggles -->
+        <!-- <div class="btn-group">
             <a class="btn btn-mini" href="#"><i class="icon-user icon-white"></i> User</a>
             <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
             <ul class="dropdown-menu">
@@ -93,9 +83,7 @@
                 <li class="divider"></li>
                 <li><a href="#"><i class="i"></i> Make admin</a></li>
             </ul>
-        </div> -->
-
-    </div>
+        </div> --></div>
     <form>
         <textarea id="code" name="code"></textarea>
     </form>
@@ -104,13 +92,31 @@
     </div>
     <div id="div-validation" class="div-validation"></div>
     <div class="btn-toolbar" id="editor-buttons">
+        <div class="btn-group">
         <button id="validate-button" class="btn" rel="popover" data-original-title="Validate"
-        data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
-        <button class="btn" id="save-button" rel="popover" data-original-title="Save"
-        data-content="Save the editor content back to the server">Save</button>
-        <button class="btn" id="revert-button" rel="popover" data-original-title="Revert"
-        data-content="Reload the editor content from the server">Revert</button>
-        <button class="btn" id="skynet-button" rel="popover" data-original-title="Open in Skynet"
-        data-content="Open the topic in the Skynet editor">Open in Skynet</button>
+            data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
+    </div>
+        <!-- Save button -->
+        <div class="btn-group dropup">
+            <button class="btn btn-success save-button" id="save-button" rel="popover" data-original-title="Save"
+            data-content="Save the editor content back to the server, optionally with a commit log message">Save</button>
+            <a class="btn btn-success save-button dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <!-- dropdown menu links -->
+                <li><a href="#" rel="minor" class="save-button save-menu">Save now with minor revision message</a></li>
+                <li><a href="#" rel="major" class="save-button save-menu">Save now with Revision History Entry</a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" id="revert-button" rel="popover" data-original-title="Revert"
+                data-content="Reload the editor content from the server">Revert</button>
+        </div>
+        <div class="btn-group">
+            <button class="btn" id="skynet-button" rel="popover" data-original-title="Open in Skynet"
+                data-content="Open the topic in the Skynet editor">Open in Skynet</button>
+        </div>
     </div>
 </div>
