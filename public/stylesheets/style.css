@@ -138,3 +138,7 @@ td {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
 }
+ul.nav > li > a,
+a.brand {
+  border-bottom: none;
+}

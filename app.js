@@ -53,8 +53,6 @@ app.all('/*', function(req, res, next) {
 });
 
 app.get('/', routes.index);
-app.get('/publish', publish.publish);
-app.get('/add', add);
 app.get('/users', user.list);
 app.post('/rest/:version/:operation', restapi.restroute);
 app.get('/rest/:version/:operation', restapi.restroute);
@@ -62,8 +60,22 @@ app.get('/rest/:version/:operation', restapi.restroute);
 app.get('/edit', function (req, res) {
     res.render('topic-editor', {layout:false, 
         alwaysUseServerToLoadTopics: state.appstate.alwaysUseServerToLoadTopics || false, 
-        offline: state.appstate.offline || false
+        offline: state.appstate.offline || false,
     });    
+});
+
+app.get('/publish', function (req, res) {
+    console.log('publish requested');
+    res.render('publish', { books: jsondb.sortedBooks, data: jsondb.Books, title: 'Death Star 2.0', mode: 'publish'});
+});
+
+app.get('/add', function (req, res) {
+   // var resturl= '/rest/1/addbook?url=' + url + '&id=' + id;
+    res.render('add',{defaultURL: 'http://skynet.usersys.redhat.com:8080/TopicIndex', mode: 'add'});
+});
+
+app.get('/about', function (req,res){
+    res.render('about', { mode: 'about'});    
 });
 
 app.get('/booklist', function (req, res) {

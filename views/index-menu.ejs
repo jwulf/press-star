@@ -1,48 +1,22 @@
-<!--<ul class="nav nav-pills">
-  <li class="active">
-    <a href="#">Home</a>
-  </li>
-  <li><a href="#">Add Book</a></li>
-  <li><a href="#">Remove Book</a></li>
-</ul>-->
+<% var navClass = { home: 'not', add: 'not', remove: 'not', publish: 'not'}
+    if (mode && navClass[mode]) navClass[mode] = 'active'; %>
 
-<table cellpadding="7">
-    <tr>
-        <td align="center">
-            <% var buttonClass = { home: 'menu-button', add: 'menu-button', remove: 'menu-button', publish: 'menu-button'}
-                if (mode && buttonClass[mode]) buttonClass[mode] = 'active-indicator-button'; %>
-            <h4>
-            <span class="<%= buttonClass.home %>">
-            <a href="/">Home</span> </a>
-        </h4>
-        </td>  
-        <td>|</td>
-        <td align="center">
-            <h4>
-                <span class="<%= buttonClass.add %>"><a href="/add">Add Book</span> </a>
-            </h4>
-        </td>  
-        <td>|</td>
-        <td align="center">
-            <h4>
-                <span class="<%= buttonClass.remove %>"><a href="/remove">Remove Book</span> </a>
-            </h4>
-        </td>
-        <td>|</td>
-        <td align="center">
-            <h4>
-                <span class="<%= buttonClass.publish %>"><a href="/publish">Publish Book</span> </a>
-            </h4>
-        </td>    
-        <td>|</td>
-        <td align="center">
-            <h4><span class="action-button"><a href="javascript:;" onclick="rebuildAll()">Rebuild All</a></span></h4>
-        </td>    
-        <td>|</td>
-        <td align="center">
-            <h5><span class="menu-button"><a href="/about.html">About Deathstar 2.0</a></span></h5>  
-        </td>
-
-    </tr>
-</table>
-<hr>
+<div class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="/">Death Star 2.0 beta</a>
+        <ul class="nav">
+            <li class="divider-vertical"></li>
+            <li class="<%= navClass.home %>">
+                <a href="/">Build Book</a>
+            </li>
+            <li class="divider-vertical"></li>
+            <li class="<%= navClass.add %>"><a href="/add">Add Book</a></li>
+            <li class="divider-vertical"></li>
+            <li class="<%= navClass.remove %>"><a href="/remove">Remove Book</a></li>
+            <li class="divider-vertical"></li>
+            <li class="<%= navClass.publish %>"><a href="/publish">Publish Book</a></li>
+            <li class="divider-vertical"></li>
+            <li class="<%= navClass.about %>"><a href="/about">About</a></li>
+        </ul>
+    </div>
+</div> 
