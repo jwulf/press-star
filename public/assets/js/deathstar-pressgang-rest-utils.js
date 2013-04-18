@@ -47,8 +47,8 @@ function sendPatchNotification (url, id, html) {
     
         $.post('/rest/1/patch', {
             html: html,
-            skynetURL: _url,
-            topicID: id
+            url: _url,
+            id: id
         },
 
         function(data) {
