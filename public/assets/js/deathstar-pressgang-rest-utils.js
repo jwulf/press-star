@@ -1,3 +1,84 @@
+var pressgang_rest_v1_url = '/seam/resource/rest/1/'
+
+function saveTopicToPressGang (url, id, xml, log_level, log_msg, cb) {
+   var _url, _cb, _log_level;
+    
+    // Deal with the optionality of log_level and log_msg;
+    _cb = (typeof log_level === 'function') ? log_level : cb;
+    
+    // Log level defaults to 1 when none is supplied
+    _log_level = (log_level && typeof log_level !== 'function') ? log_level : 1;
+    
+    if (url && id && xml) {
+        // Add a leading 'http://' if the url doesn't already have one
+        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+        
+        _url += pressgang_rest_v1_url+ 'topic/update/json';
+        
+        // Add the log message if one was specified
+        if (log_msg) _url += '?flag=' + _log_level + '&message=' + encodeURI(log_msg);
+
+        $.ajax ({
+            url: _url,
+            type: "POST",
+            data: JSON.stringify({id: id, configuredParameters: ['xml'], xml: xml}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: _cb
+        });
+    }    
+}
+
+/* Save a topic to the PressGang server */
+function saveTopicViaDeathStar (url, id, xml, log_level, log_msg, cb) {
+ 
+}
+
+/* Send a livePatch notification to the Death Star server. 
+    The server will then patch all books that use this topic
+*/
+
+function sendPatchNotification (url, id, html) {
+    var _url, request;
+    
+    if (url && id && html) {
+        // Add a leading 'http://' if the url doesn't already have one
+        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+    
+        $.post('/rest/1/patch', {
+            html: html,
+            skynetURL: _url,
+            topicID: id
+        },
+
+        function(data) {
+            console.log(data);
+        });
+    }
+}
+
+/* Load a topic from the PressGang server directly via a JSONP Ajax call */
+function loadTopicFromPressGang (url, id, cb) {
+    var _url, request;
+    
+    if (id && url) 
+    {
+        // Add a leading 'http://' if the url doesn't already have one
+        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+        
+        request = _url + pressgang_rest_v1_url + 'topic/get/jsonp/'+ id + '?callback=?';  
+        
+        $.getJSON(request, function(json) {
+            cb && cb(json);
+          });
+    }
+}
+
+function loadTopicViaDeathStar () {
+    
+} 
+
+
 
 /* This is the demo function for this library. 
     Open a Death Star book in your browser - (hint: don't try this on the RHEV Admin Guide!)
@@ -70,17 +151,7 @@ function url_query_extract( query, url ) {
 	}
 }
 
-function loadSkynetTopicJsonP (id, url, cb)
-{
-  if (id && url) 
-  {
-    var requestURL="/seam/resource/rest/1/topic/get/jsonp/"+ id +"?callback=?";  
-    var requeststring=url+requestURL;
-    $.getJSON("http://"+requeststring, function(json) {
-    cb && cb(json);
-  });
-  }
-}
+
 
 function getTopicRevisions (url, id, start, end, cb) {
     var _cb, _req;

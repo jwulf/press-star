@@ -1,5 +1,17 @@
 Live Update Editing
 
+Add support for content spec push events:
+
+0. Store the content spec that is used to build a book in its metadata (we already get it in getFixedRevisions)
+1. On push, read the content spec before it is pushed to the server.
+2. On successful complete, grab the new spec.
+3. Three-way diff:
+  (a) Compare the 0-spec to the 2-spec for structural changes. Reorganise the existing topics to fit.
+  (b) Compare the 1-spec to the 2-spec for new topics. Get the new topic number from the 2-spec and create placeholders for immediate editing.
+
+For bonus points - how does this work offline?
+
+
 
 ## Phase One
 

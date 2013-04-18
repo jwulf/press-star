@@ -1,5 +1,10 @@
 External Editor Support
 
+Request from Jaromir: 
+
+Add support to the content spec editor.
+
+
 Request from ekopalova
 
 The Firefox add-on "It's All Text" allows external editors to be used to edit text areas. 

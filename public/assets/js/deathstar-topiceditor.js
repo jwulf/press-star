@@ -206,16 +206,8 @@ function doActualSave (log_level, msg) {
 
                 // Send the topic HTML to the server for patching
                 if (builtHTML) {
-                    skynizzleURL = (skynetURL.indexOf('http://') != 0) ? 'http://' + skynetURL : skynetURL;
-                    $.post('http://' + window.location.host + '/rest/1/patch', {
-                        html: builtHTML,
-                        skynetURL: skynizzleURL,
-                        topicID: topicID
-                    },
-
-                    function(data) {
-                        console.log(data);
-                    });
+                    sendPatchNotification(skynetURL, topicID, builtHTML);
+                    console.log('Sending Patch Notification');
                 }
 
                 if (!validXML) doValidate();
@@ -391,7 +383,7 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post(nodeServer + "/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum},
+        $.post(nodeServer + "/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
@@ -442,10 +434,10 @@ function loadSkynetTopic() {
         loadTopicViaServer();
     } else {
         // This function loads the topic xml via JSONP, without a proxy        
-        // It requires your web browser to have a connection to the PressGang server (VPN?)
+        // It requires your web browser to have a connection to the PressGang server (On the same network or VPN)
         // but lessens the load on the server
         if (topicID && skynetURL) {
-            loadSkynetTopicJsonP(topicID, skynetURL, function(json) {
+            loadTopicFromPressGang(skynetURL, topicID, function(json) {
                 if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
