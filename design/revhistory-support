@@ -53,3 +53,11 @@ Here's an example URL:
 http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/topic/update/json?message=jwulf%3A+A+major+change+from+the+PressGang+UI&flag=2&userId=89&expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%7B%22name%22%3A+%22properties%22%7D%7D%2C%7B%22trunk%22%3A%7B%22name%22%3A+%22sourceUrls_OTM%22%7D%7D%2C%7B%22trunk%22%3A%7B%22name%22%3A+%22revisions%22%2C+%22start%22%3A+0%2C+%22end%22%3A+2%7D%7D%5D%7D
 
 /TopicIndex/seam/resource/rest/1/topic/update/json?flag=2&message=%20A%20Major%20Revision%20History%20message&userId=89
+
+
+
+
+Get all the users:
+
+$.get('http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/all', {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, function (result) { console.log(result); });
+

@@ -2,7 +2,8 @@
 // 1. Add the ability to click on the title and edit it
 
 // We use this until we can get identity sorted out
-var pressgang_userid = 89; // default "unknown user" ID
+var pressgang_userid,
+    UNKNOWN_USER = 89; // default "unknown user" ID
 
 var previewRenderErrorMsg = '<p>Could not transform</p>'
 // window.previewserverurl="http://127.0.0.1:8888";
@@ -18,14 +19,15 @@ var validXML = false,
     urlpath,
     serverURL,
     topicID,
-    sectionNum,
+    sectionNum, // comes from the editor link, used to preview the topic with the same section number as it appears in the book
     skynetURL,
     sectionNum,
     helpHintsOn,
     editorPlainText,
     editor,
     oldVal, 
-    globalLogLevel;
+    globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
+    specID; // editor links now include the specID of the book they come from. This allows default log messages to identify the book
 
 // Execute on page load
 $(function() {
@@ -118,17 +120,62 @@ function getLogMessage (e) {
 }
 
 function doCommitLogSave () {
-    var _log_msg = $('#commitmsg').val();
+    var _log_msg, // the log message
+        username,  // the stored user name
+        thisusername, // the username currently requesting the commit
+        verified_pg_user_id, // if we have to get a new PressGang user id, it goes here
+        user; // iterator for the PressGang user list
+        
+    _log_msg = $('#commitmsg').val();
     
-    // We will cookie store your username here for the time being
-    // In the very near future we'll need to do the API call to verify your identity and get your userid
-    // We'll store that in a cookie, so that we can use it when the Death Star is offline
-    // One step at a time
     
-    setCookie('username', $('#userid').val(), 365);
+    // If they change their username in the commit dialog, or it hasn't been set, then we verify it with pressgang
+    // and set their userid
+
+    pressgang_userid = getCookie('pressgang_userid'); // Do we have a PressGang user ID stored?
+    var username = getCookie('username'); // Do we have a username stored?
+    var thisusername = $('#userid').val(); // What name are they using for this commit?
     
-    doActualSave(globalLogLevel, _log_msg);
-    closeMask ();
+    /* If we have not verified a PressGang ID for this user, or they are requesting a commit
+        with a different user ID than the one we verified, we verify their ID. 
+        
+        It's not authentication or authorization, it's just identification, and it's completely open.
+        
+        The user gives us a user name, and we retrieve the unique ID to match from PressGang */
+
+    //REFACTOR - this needs to come out of this method into its own function
+    
+    if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
+        pressgang_userid = UNKNOWN_USER;
+            // Get all the users!
+            var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
+            
+        $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
+            {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
+            function (result) {
+        
+                for (var users = 0; users < result.items.length; users ++) {
+                    user = result.items[users].item;
+                    if (user.name == thisusername) { pressgang_userid = user.id; break;}
+                }
+                
+                if (pressgang_userid != UNKNOWN_USER) { // cool, we found them in there
+                    setCookie('username', thisusername, 365);
+                    setCookie('pressgang_userid', pressgang_userid, 365);
+                    doActualSave(globalLogLevel, _log_msg);
+                    closeMask ();
+                }
+                if (pressgang_userid == UNKNOWN_USER) { // We're still unknown!
+                    if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
+                        doActualSave(globalLogLevel, _log_msg);
+                        closeMask ();       
+                    }
+                }
+            });
+    } else { // It's all kosher, we've authenticated and cookied this user before
+        doActualSave(globalLogLevel, _log_msg);
+        closeMask ();
+    }
 }
 
 function closeMask () {
@@ -221,7 +268,7 @@ function doActualSave (log_level, log_msg) {
         xmlText = editor.getValue();
     }
     
-    saveTopic(pressgang_userid, skynetURL, topicID, xmlText, log_level, log_msg, saveTopicCallback);
+    saveTopic(pressgang_userid, skynetURL, topicID, specID, xmlText, log_level, log_msg, saveTopicCallback);
     
     function saveTopicCallback(data) {
         if (data.code == 0) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
@@ -321,11 +368,21 @@ function clientsideUpdateXMLPreview(cm, preview) {
 }
 
 function generateRESTParameters() {
-    var params = extractURLParameters();
-
-    skynetURL = params.skynetURL;
-    topicID = params.topicID;
+ //   var params = extractURLParameters();
+    
+   // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values 
+ 
+    var url = location.href;
+    var qs = url.substring(url.indexOf('?') + 1).split('&');
+    for(var i = 0, params = {}; i < qs.length; i++){
+        qs[i] = qs[i].split('=');
+        params[qs[i][0]] = decodeURIComponent(qs[i][1]);
+    }
+ 
+    skynetURL = params.skyneturl;
+    topicID = params.topicid;
     sectionNum = params.sectionNum;
+    specID = params.specID;
 }
 
 // This function sends the editor content to a node server to get back a rendered HTML view
@@ -640,6 +697,11 @@ function initializeTopicEditPage() {
         $('#userid').removeAttr('autofocus');
         $('#commitmsg').attr('autofocus', 'autofocus');
     }
+    
+    // Get our id from the cookie, if we have one
+    pressgang_userid = getCookie('pressgang_userid');
+    // Otherwise commit as unknown user
+    pressgang_userid = (pressgang_userid) ? pressgang_userid : UNKNOWN_USER;
 }
 
 function togglePlainText (e) {

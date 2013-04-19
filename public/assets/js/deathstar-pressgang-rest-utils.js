@@ -1,7 +1,7 @@
 var pressgang_rest_v1_url = '/seam/resource/rest/1/',
     deathstar_rest_v1_url = '/rest/1/';
 
-function saveTopic(userid, url, id, xml, log_level, log_msg, cb) {
+function saveTopic(userid, url, id, specid, xml, log_level, log_msg, cb) {
 // Give us a single point where we can route the save action via the browser
 // or the Death Star server.
 
@@ -10,11 +10,11 @@ function saveTopic(userid, url, id, xml, log_level, log_msg, cb) {
 // To have the Death Star performing pre-processing and cache the save in off-line mode
 // call saveTopicViaDeathStar()
 
-    saveTopicViaDeathStar(userid, url, id, xml, log_level, log_msg, cb);
+    saveTopicViaDeathStar(userid, url, id, specid, xml, log_level, log_msg, cb);
 }
 
 
-function saveTopicToPressGangFromBrowser (userid, url, id, xml, log_level, log_msg, cb) {
+function saveTopicToPressGangFromBrowser (userid, url, id, specid, xml, log_level, log_msg, cb) {
     // Save the Topic directly to PressGang - no Death Star routing
     /*  
     
@@ -58,7 +58,7 @@ function saveTopicToPressGangFromBrowser (userid, url, id, xml, log_level, log_m
 }
 
 /* Save a topic to the PressGang server */
-function saveTopicViaDeathStar (userid, url, id, xml, log_level, log_msg, cb) {
+function saveTopicViaDeathStar (userid, url, id, specid, xml, log_level, log_msg, cb) {
    var _url, _cb, _log_level, _log_msg;
     
     // Deal with the optionality of log_level and log_msg;
@@ -85,7 +85,8 @@ function saveTopicViaDeathStar (userid, url, id, xml, log_level, log_msg, cb) {
                         xml: xml,
                         log_level: _log_level,
                         log_msg: log_msg,
-                        userid: userid
+                        userid: userid,
+                        specid: specid
                         }),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
