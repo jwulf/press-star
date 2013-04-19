@@ -97,16 +97,16 @@
             data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
     </div>
         <!-- Save button -->
-        <div class="btn-group dropup">
+        <div id="save-dropup" class="btn-group dropup">
             <button class="btn btn-success save-button" id="save-button" rel="popover" data-original-title="Save"
             data-content="Save the editor content back to the server, optionally with a commit log message">Save</button>
-            <a class="btn btn-success save-button dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="btn btn-success not-save-button dropdown-toggle" data-toggle="dropdown" href="#">
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
                 <!-- dropdown menu links -->
-                <li><a href="#" rel="minor" class="save-button save-menu">Save now with minor revision message</a></li>
-                <li><a href="#" rel="major" class="save-button save-menu">Save now with Revision History Entry</a></li>
+                <li><a href="#" rel="minor" class="save-button save-menu"><bold>minor revision message</bold></a></li>
+                <li><a href="#" rel="major" class="save-button save-menu"><bold>Revision History Entry</bold></a></li>
             </ul>
         </div>
 

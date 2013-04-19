@@ -10,6 +10,7 @@ var fs = require('fs'),
     publisher = require('./../lib/publisher'),
     krb5 = require('node-krb5'),
     ephemeral = require('./../lib/ephemeralStreams'),
+    topics = require('./../lib/topicdriver'),
     LOG_HEADER = ephemeral.LOG_HEADER,
     LOG_CONSOLE = ephemeral.LOG_CONSOLE;
 
@@ -54,6 +55,8 @@ function restroute (req, res){
     if (op == 'stopPublish') {stopPublish(req, res);}
     else
     if (op == 'getBookmd') {getBookmd(req, res);}
+    else
+    if (op == 'topicupdate') {topics.topicupdate(req, res)};
 }
 
 function getBookmd (req, res) {

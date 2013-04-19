@@ -1,6 +1,21 @@
-var pressgang_rest_v1_url = '/seam/resource/rest/1/'
+var pressgang_rest_v1_url = '/seam/resource/rest/1/',
+    deathstar_rest_v1_url = '/rest/1/';
 
-function saveTopicToPressGang (url, id, xml, log_level, log_msg, cb) {
+function saveTopic(userid, url, id, xml, log_level, log_msg, cb) {
+// Give us a single point where we can route the save action via the browser
+// or the Death Star server.
+
+// To have the browser save it directly to the PressGang server, pass this call
+// to saveTopicToPressGang()
+// To have the Death Star performing pre-processing and cache the save in off-line mode
+// call saveTopicViaDeathStar()
+
+    saveTopicViaDeathStar(userid, url, id, xml, log_level, log_msg, cb);
+}
+
+
+function saveTopicToPressGang (userid, url, id, xml, log_level, log_msg, cb) {
+    // Save the Topic directly to PressGang - no Death Star routing
    var _url, _cb, _log_level;
     
     // Deal with the optionality of log_level and log_msg;
@@ -30,8 +45,36 @@ function saveTopicToPressGang (url, id, xml, log_level, log_msg, cb) {
 }
 
 /* Save a topic to the PressGang server */
-function saveTopicViaDeathStar (url, id, xml, log_level, log_msg, cb) {
- 
+function saveTopicViaDeathStar (userid, url, id, xml, log_level, log_msg, cb) {
+   var _url, _cb, _log_level, _log_msg;
+    
+    // Deal with the optionality of log_level and log_msg;
+    _cb = (typeof log_level === 'function') ? log_level : cb;
+    
+    // Log level defaults to 1 when none is supplied
+    _log_level = (log_level && typeof log_level !== 'function') ? log_level : 1;
+    
+    if (url && id && xml) {
+        // Add a leading 'http://' if the url doesn't already have one
+        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+        
+        _url += deathstar_rest_v1_url+ 'topicupdate';
+        
+        $.ajax ({
+            url: _url,
+            type: "POST",
+            data: JSON.stringify({
+                        id: id, 
+                        xml: xml,
+                        log_level: _log_level,
+                        log_msg: log_msg,
+                        userid: userid
+                        }),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: _cb
+        });
+    }      
 }
 
 /* Send a livePatch notification to the Death Star server. 

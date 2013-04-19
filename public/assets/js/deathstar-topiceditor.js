@@ -51,6 +51,10 @@ $(document).keydown(function(event) {
         doTagWrap();
         return false;
     }
+    
+    if (event.keyCode == 27) {
+            closeMask ();
+        }  
 
     // Ctrl-S hotkey for Save
     //19 for Mac Command+S
@@ -76,6 +80,7 @@ function getLogMessage (e) {
     
     //Fade in the Popup
     $(loginBox).fadeIn(300);
+    $('#save-dropup').removeClass('open');
     
     //Set the center alignment padding + border see css style
     var popMargTop = ($(loginBox).height() + 24) / 2; 
@@ -102,8 +107,8 @@ function getLogMessage (e) {
     $('body').append('<div id="mask"></div>');
     $('#mask').click(closeMask);
     $('.close').click(closeMask);
+    $('#cancel-log-msg').click(closeMask)
     $('#mask').fadeIn(300);
-    
     return false;
 }
 
@@ -146,8 +151,7 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
         }
-    }
-    else {
+    } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
 
     }
@@ -177,7 +181,7 @@ function doSave() {
     return false;
 }
 
-function doActualSave (log_level, msg) {
+function doActualSave (log_level, log_msg) {
     var builtHTML, skynizzleURL, xmlText;
 
     // Grab the preview HTML now, when save is called.
@@ -192,53 +196,32 @@ function doActualSave (log_level, msg) {
 
     showStatusMessage("Performing Save...", '', 'alert-info');
 
-    requestURL = "/seam/resource/rest/1/topic/update/json";
-
-    var saveAjaxRequest = new XMLHttpRequest();
-    saveAjaxRequest.global = true;
-    saveAjaxRequest.onreadystatechange = function() {
-        if (saveAjaxRequest.readyState == 4) {
-
-            if (saveAjaxRequest.status == 200 || saveAjaxRequest.status == 304) {
-                showStatusMessage("Saved OK", '', 'alert-success');
-                disable("#save-button");
-                disable("#revert-button");
-
-                // Send the topic HTML to the server for patching
-                if (builtHTML) {
-                    sendPatchNotification(skynetURL, topicID, builtHTML);
-                    console.log('Sending Patch Notification');
-                }
-
-                if (!validXML) doValidate();
-            }
-            else {
-                showStatusMessage("Error saving. Status code: " + saveAjaxRequest.status, '', 'alert-error');
-                enableSaveRevert();
-            }
-
-        }
-    }
-    var requestURL = "/seam/resource/rest/1/topic/update/json";
-    saveAjaxRequest.global = true;
-
-    saveAjaxRequest.open("POST", 'http://' + skynetURL + requestURL, true);
     if (editorPlainText) {
         xmlText = $('#code').val();
-    }
-    else {
+    } else {
         xmlText = editor.getValue();
     }
+    
+    saveTopic(userid, skynetURL, topicID, xmlText, log_level, log_msg, saveTopicCallback);
+    
+    function saveTopicCallback(data) {
+        if (!err) {
+            showStatusMessage("Saved OK", '', 'alert-success');
+            disable("#save-button");
+            disable("#revert-button");
 
-    saveAjaxRequest.setRequestHeader("Content-Type", "application/json");
-    var updateObject = {
-        'id': topicID,
-        'configuredParameters': ['xml'],
-        'xml': xmlText
-    };
-    var updateString = JSON.stringify(updateObject);
+            // Send the topic HTML to the server for patching
+            if (builtHTML) {
+                sendPatchNotification(skynetURL, topicID, builtHTML);
+                console.log('Sending Patch Notification');
+            }
 
-    saveAjaxRequest.send(updateString);
+            if (!validXML) doValidate();
+        } else {
+           showStatusMessage("Error saving. Status code: " + saveAjaxRequest.status, '', 'alert-error');
+            enableSaveRevert();
+        }
+    }
 }
 
 // Sends the editor content to a node server for validation
@@ -247,43 +230,38 @@ function serversideValidateTopic(editor, cb) {
 
     function validationCallback(data, cb) {
 
-
         validationServerResponse = 1;
-        if (data == "0") {
+        if (data === "0") {
             showStatusMessage("Topic XML is valid Docbook 4.5", '', 'alert-success');
             validXML = true;
             disable("#validate-button");
             if (cb && typeof(cb) == "function") cb();
-        }
-        else {
-            showStatusMessage('Topic has errors (click to reveal/hide)', data, 'alert-error');
+        } else {
+            showStatusMessage(data.errorSummary, data.errorDetails, 'alert-error');
             validXML = false;
             cb && cb();
         }
     }
+    
     if (editorPlainText) {
         xmlText = $('#code').val();
-    }
-    else {
+    } else {
         xmlText = editor.getValue();
     }
 
-    $.post("/rest/1/dtdvalidate", {
-        'xml': xmlText
-    },
-
-    function(data) {
-        validationCallback(data, cb);
-    }).error(function(a) {
-        // WORKAROUND: Google Chrome calls the error function on status 200, so this is workaround
-        if (a.status == 200) {
-            validationCallback(a.responseText, cb)
-        }
-        else {
-            showStatusMessage("Communication error requesting validation: " + a.status + ':' + a.responseText, '', 'alert-error');
-            if (cb) cb();
-        }
-    })
+    $.post("/rest/1/dtdvalidate", {xml: xmlText},
+        function(data) {
+            validationCallback(data, cb);
+        }).error(function(a) {
+            // WORKAROUND: Google Chrome calls the error function on status 200, so this is workaround
+            if (a.status == 200) {
+                validationCallback(a.responseText, cb)
+            }
+            else {
+                showStatusMessage("Communication error requesting validation: " + a.status + ':' + a.responseText, '', 'alert-error');
+                if (cb) cb();
+            }
+    });
 }
 
 function updateXMLPreviewRoute(cm, preview) {
@@ -791,6 +769,13 @@ function doReplace() {
 // It uses the id attribute of the sub-menu entry to look up the template in a 
 // dictionary. 
 function injectTemplate() {
+    
+    var d = new Date(); 
+    var n = d.getMonth(); // we use n to dynamically populate the changelog with the current month 
+    var month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    var longMonth = ['January', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var y = d.getFullYear(); // likewise for the current year
+    
     var templates = {
         'inject-varlistentry': '   <varlistentry>\n\
       <term></term>\n\
@@ -891,7 +876,21 @@ function injectTemplate() {
       <para>\n\
       </para>\n\
    </formalpara>',
-        'inject-changelog': '   <variablelist role="changelog">\n' + '      <varlistentry>\n' + '         <term role="changelog-toggle">Changes</term>\n' + '         <listitem>\n' + '            <itemizedlist role="changelog-items">\n' + '            <listitem>\n' + '               <!-- Docs BZ: https://bugzilla.redhat.com/show_bug.cgi?id=845223 -->\n' + '              <!-- Upstream BZ: https://issues.apache.org/jira/browse/QPID-4174 -->\n' + '               <para role="changelog-feb-2013">\n' + '                  New content - generated February 2013.\n' + '               </para>\n' + '               </listitem>\n' + '               <listitem>\n' + '                  <para role="changelog-may-2013">\n' + '                     Updated March 2013.\n' + '                  </para>\n' + '                  <!-- add the role "changes-may-2013" to all elements affected by the change" -->\n' + '               </listitem>\n' + '            </itemizedlist>\n' + '         </listitem>\n' + '      </varlistentry>\n' + '   </variablelist>\n'
+        'inject-changelog': '   <variablelist role="changelog">\n' +
+                            '      <varlistentry>\n' + 
+                            '         <term role="changelog-toggle">Changes</term>\n' + 
+                            '         <listitem>\n' + 
+                            '            <itemizedlist role="changelog-items">\n' + 
+                            '               <listitem>\n' + 
+                            '                  <para role="changelog-' + month[n] + '-' + y + '">\n' + 
+                            '                     Updated ' + longMonth[n] + ' ' + y + '.\n' + 
+                            '                  </para>\n' + 
+                            '                  <!-- add the role "changes-' + month[n] + '-' + y + '" to all elements affected by the change" -->\n' + 
+                            '               </listitem>\n' + 
+                            '            </itemizedlist>\n' + 
+                            '         </listitem>\n' + 
+                            '      </varlistentry>\n' + 
+                            '   </variablelist>\n'
     };
     window.editor.replaceSelection(templates[this.id]);
     makeValidityAmbiguous();

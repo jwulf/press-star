@@ -182,7 +182,7 @@ width:100%;
 
 .login-popup {
   display: none;
-  background: #333;
+  background: #fff;
   padding: 10px;
   border: 2px solid #ddd;
   float: left;
