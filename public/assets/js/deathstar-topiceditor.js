@@ -123,7 +123,6 @@ function doCommitLogSave () {
     var _log_msg, // the log message
         username,  // the stored user name
         thisusername, // the username currently requesting the commit
-        verified_pg_user_id, // if we have to get a new PressGang user id, it goes here
         user; // iterator for the PressGang user list
         
     _log_msg = $('#commitmsg').val();
@@ -150,6 +149,9 @@ function doCommitLogSave () {
             // Get all the users!
             var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
             
+        // NOTE:  Persist the user identity on the server when going offline!!!
+        // Getting a user identity needs to be part of the offlining process
+        
         $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
             {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
             function (result) {
