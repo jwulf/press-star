@@ -1,9 +1,8 @@
 // TODO:
 // 1. Add the ability to click on the title and edit it
-// 2. Add buttons to insert elements
-// 3. General usability enhancements like coloured state messages and action button locations
 
-var defaultnodeServer = "";
+// We use this until we can get identity sorted out
+var pressgang_userid = 89; // default "unknown user" ID
 
 var previewRenderErrorMsg = '<p>Could not transform</p>'
 // window.previewserverurl="http://127.0.0.1:8888";
@@ -71,12 +70,15 @@ function getLogMessage (e) {
     
     var loginBox = '#login-box',
         _log_level, msg,
-        log_levels = {minor: 1, major: 2};
+        log_levels = {minor: 1, major: 2},
+        log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"}
         
     _log_level = 1;// Default to minor revision
     
     // I put the "minor" and "major" keys in the rel attribute of the commit menu items    
-    if (e) _log_level = log_levels[$(e).attr('rel')];
+    if (this) _log_level = log_levels[$(this).attr('rel')];
+    
+    $('#commit-msg-type').html(log_level_text[_log_level]);
     
     //Fade in the Popup
     $(loginBox).fadeIn(300);
@@ -208,10 +210,10 @@ function doActualSave (log_level, log_msg) {
         xmlText = editor.getValue();
     }
     
-    saveTopic(userid, skynetURL, topicID, xmlText, log_level, log_msg, saveTopicCallback);
+    saveTopic(pressgang_userid, skynetURL, topicID, xmlText, log_level, log_msg, saveTopicCallback);
     
     function saveTopicCallback(data) {
-        if (!err) {
+        if (data.code == 0) { // We got a sucess response from the Death Star
             showStatusMessage("Saved OK", '', 'alert-success');
             disable("#save-button");
             disable("#revert-button");
@@ -224,7 +226,7 @@ function doActualSave (log_level, log_msg) {
 
             if (!validXML) doValidate();
         } else {
-           showStatusMessage("Error saving. Status code: " + saveAjaxRequest.status, '', 'alert-error');
+           showStatusMessage("Error saving. Status code: " + data.code + ' : ' + data.msg, '', 'alert-error');
             enableSaveRevert();
         }
     }

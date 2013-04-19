@@ -272,3 +272,15 @@ form.signin input:-webkit-input-placeholder {
   font: 12px;
   width: 214px;
 }
+
+/*
+Right-align dropdown button menu, as per: https://github.com/twitter/bootstrap/issues/2045
+*/
+.pull-right .dropdown-menu:after {
+    left: auto;
+    right: 13px;
+}
+.pull-right .dropdown-menu {
+    left: auto;
+    right: 0;
+}

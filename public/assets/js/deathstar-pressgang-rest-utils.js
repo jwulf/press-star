@@ -55,15 +55,19 @@ function saveTopicViaDeathStar (userid, url, id, xml, log_level, log_msg, cb) {
     _log_level = (log_level && typeof log_level !== 'function') ? log_level : 1;
     
     if (url && id && xml) {
-        // Add a leading 'http://' if the url doesn't already have one
-        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+        // url is the url of the pressgang instance, and the identifier of the topic
+        // _url is the url for our ajax call to the Death Star
         
-        _url += deathstar_rest_v1_url+ 'topicupdate';
+        // Add a leading 'http://' if the url doesn't already have one
+        url = (url.indexOf('http://') === 0) ? url = url : url = 'http://' + url;
+        
+        _url = deathstar_rest_v1_url+ 'topicupdate';
         
         $.ajax ({
             url: _url,
             type: "POST",
             data: JSON.stringify({
+                        url: url,
                         id: id, 
                         xml: xml,
                         log_level: _log_level,
@@ -72,10 +76,19 @@ function saveTopicViaDeathStar (userid, url, id, xml, log_level, log_msg, cb) {
                         }),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            success: _cb
+            complete: saveTopicViaDeathStarCallback, 
         });
     }      
+    
+    function saveTopicViaDeathStarCallback(data) {
+        if (data.status == 200) { // Communication with Death Star was good
+            return _cb({code: 0, msg: "Saved  OK"});           
+        } else {
+            return _cb({code: data.status, msg: data.statusText});   
+        }
+    }
 }
+
 
 /* Send a livePatch notification to the Death Star server. 
     The server will then patch all books that use this topic

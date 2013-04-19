@@ -91,32 +91,40 @@
         <a id="status-message" href="#"></a>
     </div>
     <div id="div-validation" class="div-validation"></div>
-    <div class="btn-toolbar" id="editor-buttons">
-        <div class="btn-group">
-        <button id="validate-button" class="btn btn-info" rel="popover" data-original-title="Validate"
-            data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
-    </div>
-        <!-- Save button -->
-        <div id="save-dropup" class="btn-group dropup">
-            <button class="btn btn-success save-button" id="save-button" rel="popover" data-original-title="Save"
-            data-content="Save the editor content back to the server, optionally with a commit log message">Save</button>
-            <a class="btn btn-success not-save-button dropdown-toggle" data-toggle="dropdown" href="#">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <!-- dropdown menu links -->
-                <li><a href="#" rel="minor" class="save-button save-menu"><bold>minor revision message</bold></a></li>
-                <li><a href="#" rel="major" class="save-button save-menu"><bold>Revision History Entry</bold></a></li>
-            </ul>
-        </div>
-
-        <div class="btn-group">
-            <button class="btn" id="revert-button" rel="popover" data-original-title="Revert"
-                data-content="Reload the editor content from the server">Revert</button>
-        </div>
-        <div class="btn-group">
-            <button class="btn" id="skynet-button" rel="popover" data-original-title="Open in Skynet"
-                data-content="Open the topic in the Skynet editor">Open in Skynet</button>
+   
+    <div>
+        <div class="btn-toolbar" id="editor-buttons">
+            <div class="btn-group">
+                <button class="btn" id="skynet-button" rel="popover" data-original-title="Open in Skynet"
+                    data-content="Open the topic in the PressGang UI editor">Open in PressGang</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="revert-button" rel="popover" data-original-title="Revert"
+                    data-content="Reload the editor content from the server">Revert</button>
+            </div>
+           
+    
+            <div class="pull-right">
+                <!-- Validate button -->
+                <div class="btn-group">
+                    <button id="validate-button" class="btn" rel="popover" data-original-title="Validate"
+                        data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
+                </div>
+                
+                <!-- Save button -->
+                <div id="save-dropup" class="btn-group dropup">
+                    <button class="btn btn-success save-button" id="save-button" rel="popover" data-original-title="Save"
+                    data-content="Save the editor content back to the server, optionally with a commit log message">Save</button>
+                    <a class="btn btn-success not-save-button dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- dropdown menu links -->
+                        <li><a href="#" rel="minor" class="save-button save-menu"><bold>minor revision message</bold></a></li>
+                        <li><a href="#" rel="major" class="save-button save-menu"><bold>Revision History Entry</bold></a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
