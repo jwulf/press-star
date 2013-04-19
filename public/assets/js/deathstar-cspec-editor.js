@@ -59,7 +59,6 @@ function newCmdOutput(text) {
 function specEditorload() {
     deets = extractURLParameters();
     skynetURL = deets.skynetURL;
-    nodeServer = deets.nodeServer;
     debugOutput('Loading socket.io from ' + nodeServer + '/socket.io/socket.io.js');
     $.getScript('/socket.io/socket.io.js', function() {
         debugOutput('Socket.io loaded', true);
@@ -69,7 +68,7 @@ function specEditorload() {
 }
 
 function loadSkynetTopic() {
-    loadSkynetTopicJsonP(deets.topicID, deets.skynetURL, updateSpecText);
+    loadTopicFromPressGangInBrowser( deets.skynetURL, deets.topicID, updateSpecText);
 }
 
 function updateSpecText(json) {

@@ -6,7 +6,7 @@ function saveTopic(userid, url, id, xml, log_level, log_msg, cb) {
 // or the Death Star server.
 
 // To have the browser save it directly to the PressGang server, pass this call
-// to saveTopicToPressGang()
+// to saveTopicToPressGangFromBrowser()
 // To have the Death Star performing pre-processing and cache the save in off-line mode
 // call saveTopicViaDeathStar()
 
@@ -14,8 +14,21 @@ function saveTopic(userid, url, id, xml, log_level, log_msg, cb) {
 }
 
 
-function saveTopicToPressGang (userid, url, id, xml, log_level, log_msg, cb) {
+function saveTopicToPressGangFromBrowser (userid, url, id, xml, log_level, log_msg, cb) {
     // Save the Topic directly to PressGang - no Death Star routing
+    /*  
+    
+    This function demonstrates how to load a topic from PressGang from a web
+    browser.
+    
+    To support off-line operation, all topic saving and loading is routed through
+    the Death Star, which then routes the operations to its offline cache or to the 
+    PressGang server, depending on what mode it is in.
+    
+    This code stays in for legacy and demonstration purposes. It will be retired 
+    at some point in the future.
+    
+    */
    var _url, _cb, _log_level;
     
     // Deal with the optionality of log_level and log_msg;
@@ -114,7 +127,7 @@ function sendPatchNotification (url, id, html) {
 }
 
 /* Load a topic from the PressGang server directly via a JSONP Ajax call */
-function loadTopicFromPressGang (url, id, cb) {
+function loadTopicFromPressGangInBrowser (url, id, cb) {
     var _url, request;
     
     if (id && url) 

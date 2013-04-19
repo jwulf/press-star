@@ -308,49 +308,12 @@ function clientsideUpdateXMLPreview(cm, preview) {
     }
 }
 
-// Decompose skynetURL to server URL, server port, and path
-// for REST GET and POST of the topic XML
 function generateRESTParameters() {
     var params = extractURLParameters();
 
     skynetURL = params.skynetURL;
-    nodeServer = params.nodeServer;
     topicID = params.topicID;
     sectionNum = params.sectionNum;
-
-    // Take off the leading "http://", if it exists
-    if (!skynetURL === false) {
-
-        portstart = skynetURL.indexOf(":");
-        portend = skynetURL.indexOf("/");
-
-        if (portstart !== -1) {
-            // Deals with the case of a URL with a port number, eg: skynet.whatever.com:8080
-            port = skynetURL.substring(portstart + 1, portend);
-            urlpath = skynetURL.substring(portend);
-            serverURL = skynetURL.substring(0, portstart);
-        }
-        else {
-            if (portend !== -1) {
-                // Deals with the case of a URL with no port number, but a path after the server URL
-                port = "80";
-                urlpath = skynetURL.substring(portend);
-                serverURL = skynetURL.substring(0, portend);
-            }
-            else {
-                // Deals with the case of no port number and no path
-                port = "80";
-                urlpath = "/"
-                serverURL = skynetURL;
-            }
-        }
-    }
-    else {
-        disable('#save-button');
-        disable('#revert-button');
-        disable('#skynet-button');
-    }
-
 }
 
 // This function sends the editor content to a node server to get back a rendered HTML view
@@ -369,7 +332,7 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post(nodeServer + "/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL},
+        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
@@ -423,7 +386,7 @@ function loadSkynetTopic() {
         // It requires your web browser to have a connection to the PressGang server (On the same network or VPN)
         // but lessens the load on the server
         if (topicID && skynetURL) {
-            loadTopicFromPressGang(skynetURL, topicID, function(json) {
+            loadTopicFromPressGangInBrowser(skynetURL, topicID, function(json) {
                 if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
