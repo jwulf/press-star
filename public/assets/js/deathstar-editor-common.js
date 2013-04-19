@@ -40,12 +40,13 @@ function makeValidityAmbiguous(){
 function showStatusMessage(message, error, alertType)
 {
    var statusMessage;
-	if (! alertType == '')
+    if (! alertType == '')
 	   statusMessage = '<div class="alert ' + alertType +'">' + message + '</div>';
 	else
 	   statusMessage = '<div>'+ message + '</div>';
 	$("#status-message").html(statusMessage);
 	$("#div-validation").html(error);
+    adjustValidationLinkText();
 }
 
 function enableSaveRevert()

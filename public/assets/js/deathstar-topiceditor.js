@@ -150,6 +150,12 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
         if (section !== null) {
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
+        } else { // the topic preview is empty, or is not a section, could it be an appendix, i.e: a Revision History?
+            section = doc.getElementsByClassName("appendix");
+            if (section !== null) {
+                $(".div-preview").empty();
+                $(".div-preview").append(section[0]);
+            }
         }
     } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
@@ -237,7 +243,7 @@ function serversideValidateTopic(editor, cb) {
             disable("#validate-button");
             if (cb && typeof(cb) == "function") cb();
         } else {
-            showStatusMessage(data.errorSummary, data.errorDetails, 'alert-error');
+            showStatusMessage(data.errorSummary + '<span class="pull-right"><small>[<a id="click-to-reveal-hide" href="#"></a>]</small></span>', data.errorDetails , 'alert-error');
             validXML = false;
             cb && cb();
         }
@@ -255,7 +261,7 @@ function serversideValidateTopic(editor, cb) {
         }).error(function(a) {
             // WORKAROUND: Google Chrome calls the error function on status 200, so this is workaround
             if (a.status == 200) {
-                validationCallback(a.responseText, cb)
+                validationCallback(a.responseText, cb);
             }
             else {
                 showStatusMessage("Communication error requesting validation: " + a.status + ':' + a.responseText, '', 'alert-error');
@@ -630,7 +636,8 @@ function initializeTopicEditPage() {
 
     // function handler for the validation error text show/hide
     $('.validation-toggle').click(function(e) {
-        $('.div-validation').slideToggle('slow');
+        adjustValidationLinkText(true); // send true to let the function know we are changing the visibility of the validation details
+        $('.div-validation').slideToggle('slow'); // and do a funky slide animation, like a Boss!
         e.preventDefault();
     });
 
@@ -979,4 +986,40 @@ function createCommentLinks() {
 
 function openTopicInSkynet() {
     window.open(skynetButtonURL, '_blank');
+}
+
+/* This function synchronizes the "hide/reveal" message on the validation details expansion link
+ It could be made insanely terse by using booleans, an array, and a span with a single word: 'hide' or 'reveal'
+ However, we are not going to do that, in the interests of sanity
+
+ This function is called when the error text is updated, in order to add the correct state link to the error text
+ and also when the validation details expansion link is clicked, in order to update the link text with the correct
+state.
+
+  The changing_visibility boolean lets the function know if the state is changing. We have to do this before
+  starting the state change, because the state change is a transition. We have a deterministic state before the transition
+  starts, but after that we can't know what's going on. So we treat that case as the inverse. We are open, and *about to close*
+  (so treat it as if it were closed).
+  
+  On the other hand, the state when called for a text update is the state that it will continue to be, so we treat it as closed and 
+  staying closed.
+  */
+function adjustValidationLinkText (changing_visibility) {
+    var style = $('.div-validation').attr('style'),
+        hidden = (style == 'display: none;' || style == undefined);
+        
+    if (changing_visibility) {        
+        // We are about to change the visibility state of the validation error details 
+        if ( hidden ) { // it was hidden, going visible now
+            $('#click-to-reveal-hide').html('Click to hide details')
+        } else { // It was visible, going to hidden now
+            $('#click-to-reveal-hide').html('Click to reveal details');
+        }
+    } else {
+        if ( hidden ) { // it's hidden, or hasn't been shown yet
+            $('#click-to-reveal-hide').html('Click to reveal details');
+        } else { // it's visible
+            $('#click-to-reveal-hide').html('Click to hide details')
+        }
+    }
 }
