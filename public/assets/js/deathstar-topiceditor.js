@@ -486,7 +486,8 @@ function serverTopicLoadCallback(topicAjaxRequest) {
 
 
 function doRevert() {
-    loadSkynetTopic();
+    if (confirm('Discard all changes and reload?'))
+        loadSkynetTopic();
 }
 
 function toggleHelpHints(e) {
