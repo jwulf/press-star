@@ -24,7 +24,8 @@ var validXML = false,
     helpHintsOn,
     editorPlainText,
     editor,
-    oldVal;
+    oldVal, 
+    globalLogLevel;
 
 // Execute on page load
 $(function() {
@@ -71,14 +72,16 @@ function getLogMessage (e) {
     var loginBox = '#login-box',
         _log_level, msg,
         log_levels = {minor: 1, major: 2},
-        log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"}
+        log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"};
         
-    _log_level = 1;// Default to minor revision
-    
     // I put the "minor" and "major" keys in the rel attribute of the commit menu items    
-    if (this) _log_level = log_levels[$(this).attr('rel')];
+    globalLogLevel = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
     
-    $('#commit-msg-type').html(log_level_text[_log_level]);
+    $('#commit-msg-type').html(log_level_text[globalLogLevel]);
+    $('#commitmsg-save').attr('rel', globalLogLevel); // set the rel attribute on the commit message save button
+    // There is something very dirty about all this attaching data to DOM elements or putting it in global variables
+    // I'm feeling the need to implement some kind of model layer with wiring to elements
+    // Soon, my precious, soon...
     
     //Fade in the Popup
     $(loginBox).fadeIn(300);
@@ -93,10 +96,10 @@ function getLogMessage (e) {
         'margin-left' : -popMargLeft
     });
     
-    $("input").keypress(function(event) {
+    $("#commitmsg").keypress(function(event) {
         if (event.which == 13) {
             event.preventDefault();
-            doActualSave({log_level: _log_level, msg: msg});
+            doCommitLogSave(_log_level);
         }
     });
     $("input").keypress(function(event) {
@@ -115,7 +118,17 @@ function getLogMessage (e) {
 }
 
 function doCommitLogSave () {
+    var _log_msg = $('#commitmsg').val();
     
+    // We will cookie store your username here for the time being
+    // In the very near future we'll need to do the API call to verify your identity and get your userid
+    // We'll store that in a cookie, so that we can use it when the Death Star is offline
+    // One step at a time
+    
+    setCookie('username', $('#userid').val(), 365);
+    
+    doActualSave(globalLogLevel, _log_msg);
+    closeMask ();
 }
 
 function closeMask () {
@@ -174,15 +187,13 @@ function doValidate(me, callback) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if ($("#save-button").prop('disabled') === false) {
+    if ($("#save-button").prop('disabled') === false) { // If the Save button is enabled
         disableSaveRevert();
         // if the validate button is enabled, then we'll call validation before saving
         if ($("#validate-button").prop('disabled') == false)
-        // This needs to be a callback, because validation is asynchronous
-        {
+        { // This needs to be a callback, because validation is asynchronous
             doValidate(null, doActualSave);
-        }
-        else {
+        } else {
             doActualSave();
         }
     }
@@ -204,28 +215,29 @@ function doActualSave (log_level, log_msg) {
 
     showStatusMessage("Performing Save...", '', 'alert-info');
 
-    if (editorPlainText) {
+    if (editorPlainText) { // get the xml  from the plain text editor
         xmlText = $('#code').val();
-    } else {
+    } else { // of the code mirror editor, depending on which one is active
         xmlText = editor.getValue();
     }
     
     saveTopic(pressgang_userid, skynetURL, topicID, xmlText, log_level, log_msg, saveTopicCallback);
     
     function saveTopicCallback(data) {
-        if (data.code == 0) { // We got a sucess response from the Death Star
+        if (data.code == 0) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
             showStatusMessage("Saved OK", '', 'alert-success');
             disable("#save-button");
             disable("#revert-button");
+            $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
 
             // Send the topic HTML to the server for patching
             if (builtHTML) {
                 sendPatchNotification(skynetURL, topicID, builtHTML);
-                console.log('Sending Patch Notification');
+                console.log('Sending Patch Notification for topic %s', topicID);
             }
 
             if (!validXML) doValidate();
-        } else {
+        } else { // Not code 0 from the Death Star
            showStatusMessage("Error saving. Status code: " + data.code + ' : ' + data.msg, '', 'alert-error');
             enableSaveRevert();
         }
@@ -428,26 +440,6 @@ function serverTopicLoadCallback(topicAjaxRequest) {
 
 }
 
-// This function loads the topic xml using a node.js proxy server
-// Currently unused, as we're loading via JSONP
-/*function loadSkynetTopicNodeProxy(topicID,skynetURL)
-{ 
- if (topicID && skynetURL) 
-  {
-  // Load codemirror contents from Skynet URL
-    topicAjaxRequest= new XMLHttpRequest();
-    topicAjaxRequest.onreadystatechange=serverTopicLoadCallback(topicAjaxRequest)
-    
-
-    requestURL="/seam/resource/rest/1/topic/get/xml/"+topicID+"/xml";  
-    requestString="?serverurl="+serverURL+"&requestport="+port+"&requesturl="+urlpath+requestURL;    
-    // alert(restProxy+requestString);
-    topicAjaxRequest.open("GET", nodeServer + "/restget" + requestString, true);
-    topicAjaxRequest.send(null);
-    }
-} */
-
-
 function doRevert() {
     if (confirm('Discard all changes and reload?'))
         loadSkynetTopic();
@@ -577,9 +569,8 @@ function initializeTopicEditPage() {
         $('#helpHintsToggle').button('toggle');
         toggleHelpHints();
     }
-    
 
-    //    $("#auto-complete-toggle, #validate-button, #save-button, #revert-button, #skynet-button, #codetabs-button, #tagwrap-button, #codetabs-lite-button").button ();
+    // Bind event handlers
     $("#validate-button").click(doValidate);
     $("#save-button").click(doSave);
     $("#revert-button").click(doRevert);
@@ -639,7 +630,16 @@ function initializeTopicEditPage() {
 
     generateRESTParameters();
     loadSkynetTopic();
-    skynetButtonURL = "http://" + skynetURL + "/TopicEdit.seam?topicTopicId=" + topicID;
+    skynetButtonURL = "http://" + skynetURL + "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + topicID;
+        
+    // Set up identity user identity
+    
+    var username = getCookie('username');
+    if (username) {
+        $('#userid').val(username);
+        $('#userid').removeAttr('autofocus');
+        $('#commitmsg').attr('autofocus', 'autofocus');
+    }
 }
 
 function togglePlainText (e) {
