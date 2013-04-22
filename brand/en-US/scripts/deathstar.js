@@ -32,7 +32,6 @@ function deathstarItUp()
 
 function disconnectedNotifier () {
     var _text;
-    
     if (!socketConnected) {
         retries ++;
         displayNotification('Attempting to contact server... lost connection ' + (retries * 5) + ' seconds ago', NO_FLASH);
@@ -240,6 +239,14 @@ function patchTopic (msg) {
             
             // Now replace the title to get the TOC anchor and the correct section numbering
             $(target.find('.title')[0]).replaceWith(title);
+            
+            // Update the revision information stored in the css
+              // http://stackoverflow.com/questions/2644299/jquery-removeclass-wildcard
+            target.removeClass(function (index, css) {
+                return (css.match (/\bpg-topic-rev\S+/g) || []).join(' ');    
+            }); // get rid of previous revision information
+            
+            target.addClass('pg-topic-rev-' + revision); // Add current revision
             
             // Restore injected content
             if (prereq) prereq.insertAfter(target.find('hr'));

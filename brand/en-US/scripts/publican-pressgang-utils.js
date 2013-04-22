@@ -183,10 +183,10 @@ function getLogMessagesForBookSince(date, url, sort_ascending, rate_limit, cb) {
     }
 
     function nextSearch() {
-        next++;
         if (logMessagesSinceRequests[next]) { // If there is another search
             logMessagesSinceRequests[next](); // launch it
-            _spawned_tasks ++;
+            _spawned_tasks ++; // increment the count of outstanding jobs
+            next++; // increment the index for the next time round
             setTimeout(nextSearch, _rate_limit); // and come back in _rate_limit ms
         }
     }

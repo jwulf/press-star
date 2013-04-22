@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.46
+Version:	0.47
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Mon Apr 22 2013 Joshua Wulf <jwulf@redhat.com> 0.47
+- Live patching now embeds the topic revision number as a css class: pg-topic-rev-<revision>
+
 * Wed Apr 17 2013 Joshua Wulf <jwulf@redhat.com> 0.46
 - Updated jQuery to 1.9.1
 - Added PressGang protoype REST library
