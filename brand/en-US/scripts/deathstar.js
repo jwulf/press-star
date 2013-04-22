@@ -1,4 +1,11 @@
-var flash, originalTitle, bookmd, socketConnected = false, NO_FLASH = false, retries, beenConnected;
+var flash, 
+    originalTitle, 
+    bookmd, 
+    socketConnected = false, 
+    NO_FLASH = false, 
+    retries, 
+    beenConnected, 
+    work;
 
 function url_query( query, url ) {
   // Parse URL Queries
@@ -28,6 +35,56 @@ function deathstarItUp()
     getBookmd();
     
     $('.notifier').click(clearNotifier);
+    
+    $("#floatingtoc").load('index.html .toc:eq(0)');
+	$("body").click(function(){
+		work = 1;
+		retract_menu('floatingtoc');
+	});
+	$(".docnav li.home").click(function(e){
+		work = 1;
+		toggle(e, 'floatingtoc');
+		return false;
+	});
+}
+
+function retract_menu(id) {
+    if(work) {
+		work = 0;
+		var entity = document.getElementById(id);
+		if(entity) {
+			var my_class = entity.className;
+			var my_parent = entity.parentNode;
+			if(my_class.indexOf("visible") != -1) {
+				entity.className = my_class.replace(/visible/,"hidden");
+				my_parent.className = my_parent.className.replace(/expanded/,"collapsed");
+			}
+		}
+	}
+}
+
+function toggle(e, id) {
+    if(work) {
+		work = 0;
+		var entity = document.getElementById(id);
+		if(entity) {
+			var my_class = entity.className;
+			var my_parent = entity.parentNode;
+			if(my_class.indexOf("hidden") != -1) {
+				entity.className = my_class.replace(/hidden/,"visible");
+				my_parent.className = my_parent.className.replace(/collapsed/,"expanded");
+	
+			}
+			else if(my_class.indexOf("visible") != -1) {
+				entity.className = my_class.replace(/visible/,"hidden");
+				my_parent.className = my_parent.className.replace(/expanded/,"collapsed");
+
+			}
+			else {
+
+			}
+		}
+	}
 }
 
 function disconnectedNotifier () {
@@ -221,7 +278,10 @@ function patchTopic (msg) {
         $('.sectionTopic' + msg.topicID).each(function(){
              // Locate the sectionTopic
             var target = $(this);
-        
+            
+            // Locate and preserve its .changelog child, if it exists
+            var changelog = target.children('.changelog').detach();
+            
             // Locate and preserve its .prereqs-list child, if it exists
             var prereq = target.children('.prereqs-list').detach();
             
@@ -250,6 +310,7 @@ function patchTopic (msg) {
             
             // Restore injected content
             if (prereq) prereq.insertAfter(target.find('hr'));
+            if (changelog) changelog.insertAfter(target.find('hr'));
             if (seealso) seealso.appendTo(target);
             if (buglink) buglink.appendTo(target);   
         });

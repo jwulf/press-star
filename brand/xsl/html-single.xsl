@@ -39,12 +39,16 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 <xsl:template name="user.header.content">
   <div class="notify-rebuilt invisible"><center><a href="javascript:;" onclick="reload()">Update available. Hit F5 to Refresh.</a></center></div>
     <div class="notifier invisible"></div>
+    <div id="floatingtoc" class="hidden"></div>
     <div id="ds-control-panel" class="control-panel">
       <!-- <div class="ctrl-btn ds-control-panel-btn" ><a href="#" id="go-home">Death Star</a></div>
         <div class="ctrl-btn rebuild-btn"><a id="rebuild-link" href="#">Rebuild Book</a></div>
         <div class="ctrl-btn edit-structure-btn"><a href="#" id="edit-structure">Edit Structure</a></div>
         <div class="ctrl-btn publish-btn"><a href="#" id="click-publish">Publish</a></div> -->
     </div>
+    <ul class="docnav">
+        <li class="home"><xsl:value-of select="//title[1]"/></li>
+    </ul>
 </xsl:template>
 
 <!-- depth of section labelling -->
