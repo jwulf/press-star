@@ -3,8 +3,9 @@
 
 // We use this until we can get identity sorted out
 var pressgang_userid,
-    UNKNOWN_USER = 89; // default "unknown user" ID
-
+    UNKNOWN_USER = 89, // default "unknown user" ID
+    topicRevision; // used to check whether a new revision has been created on save
+    
 var previewRenderErrorMsg = '<p>Could not transform</p>'
 // window.previewserverurl="http://127.0.0.1:8888";
 var nodeServer;
@@ -25,7 +26,8 @@ var validXML = false,
     helpHintsOn,
     editorPlainText,
     editor,
-    oldVal, 
+    oldVal,
+    pressGangUIURL,
     globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
     specID; // editor links now include the specID of the book they come from. This allows default log messages to identify the book
 
@@ -126,8 +128,7 @@ function doCommitLogSave () {
         user; // iterator for the PressGang user list
         
     _log_msg = $('#commitmsg').val();
-    
-    
+     
     // If they change their username in the commit dialog, or it hasn't been set, then we verify it with pressgang
     // and set their userid
 
@@ -142,20 +143,30 @@ function doCommitLogSave () {
         
         The user gives us a user name, and we retrieve the unique ID to match from PressGang */
 
-    //REFACTOR - this needs to come out of this method into its own function
+    //REFACTOR: this needs to come out of this method into its own function
     
     if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
         pressgang_userid = UNKNOWN_USER;
             // Get all the users!
             var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
             
+        
+        // REFACTOR:
+        // Rather than getting all the users, we can query for the specific user like this:
+        // http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/query;username=jwulf?expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%20%7B%22name%22%3A%20%22users%22%7D%7D%5D%7D
+        
         // NOTE:  Persist the user identity on the server when going offline!!!
         // Getting a user identity needs to be part of the offlining process
         
         $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
             {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
             function (result) {
-        
+                // Chrome gets result as a JSON object, FF 20 on Linux gets it as a string ???
+                // jQuery $.get does "intelligent guess" for the returned datatype if none is specified
+                // Try setting the datatype explicitly to json in $.get
+                // Also hack around with JSON.parse:
+                if (typeof result == 'string') result = JSON.parse(result); 
+                
                 for (var users = 0; users < result.items.length; users ++) {
                     user = result.items[users].item;
                     if (user.name == thisusername) { pressgang_userid = user.id; break;}
@@ -173,7 +184,7 @@ function doCommitLogSave () {
                         closeMask ();       
                     }
                 }
-            });
+            }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
         doActualSave(globalLogLevel, _log_msg);
         closeMask ();
@@ -270,24 +281,63 @@ function doActualSave (log_level, log_msg) {
         xmlText = editor.getValue();
     }
     
-    saveTopic(pressgang_userid, skynetURL, topicID, specID, xmlText, log_level, log_msg, saveTopicCallback);
+    var saveObject = { 
+                        userid: pressgang_userid, 
+                        url: skynetURL,
+                        id: topicID,
+                        specid: specID,
+                        xml: xmlText,
+                        html: builtHTML,
+                        log_level: log_level,
+                        log_msg: log_msg,
+                        revision: topicRevision
+                        };
+    
+    saveTopic(saveObject, saveTopicCallback);
     
     function saveTopicCallback(data) {
-        if (data.code == 0) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
-            showStatusMessage("Saved OK", '', 'alert-success');
+        if (data.status == 200) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
+     
             disable("#save-button");
             disable("#revert-button");
-            $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
-
-            // Send the topic HTML to the server for patching
-            if (builtHTML) {
-                sendPatchNotification(skynetURL, topicID, builtHTML);
-                console.log('Sending Patch Notification for topic %s', topicID);
+         
+            var json = JSON.parse(data.responseText);
+                
+            if (json.revisionconflict) { // Topic was not saved because of revision conflict
+                showStatusMessage("Revision conflict - you're editing " + topicRevision + ', in the meantime someone saved ' + json.revision + 
+                    '<span class="pull-right"><small>[<a href="#">Click for details</a>]</small></span>', 
+                    'While you were editing, someone saved a <a target="_blank" href="' + pressGangUIURL + 
+                    '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
+                    json.revision + '</a> of this topic.', 'alert-warning');
+                enableSaveRevert();
+                // We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
+            } else {
+                // Load up the transformed xml from the saved topic
+                if (pageIsEditor) {
+                    window.editor.setValue(json.xml);
+                    $('#code').each(function(){this.value = json.xml;});
+                    disableSaveRevert();
+                }
+                if (json.revision != topicRevision) { //check if the topic returned from skynizzle has a different revision number
+                    topicRevision = json.revision;
+                    showStatusMessage("Saved OK: revision " + topicRevision + ' created.', '', 'alert-success');
+                    $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
+                    updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+                    //doValidate(); // The Validation message was overwriting the Save result message
+                    setPageTitle(json.title);
+    
+                } else {
+                    showStatusMessage('No new revision was saved. ' + 
+                        '<span class="pull-right"><small>[<a href="#">Click for more details</a>]' + 
+                        '</small></span>',
+                        'You must change the topic XML to save a new revision. ' + 
+                        'Extraneous whitespace is stripped from topics before they are saved. ' + 
+                        'If the only changes you make are stripped away, ' +
+                        ' then a new revision is not created.', 'alert-info');
+                }
             }
-
-            if (!validXML) doValidate();
         } else { // Not code 0 from the Death Star
-           showStatusMessage("Error saving. Status code: " + data.code + ' : ' + data.msg, '', 'alert-error');
+            showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
             enableSaveRevert();
         }
     }
@@ -382,6 +432,7 @@ function generateRESTParameters() {
     }
  
     skynetURL = params.skyneturl;
+    pressGangUIURL = skynetURL.substr(0, skynetURL.indexOf('TopicIndex')) + 'pressgang-ccms-ui/';
     topicID = params.topicid;
     sectionNum = params.sectionNum;
     specID = params.specID;
@@ -436,10 +487,11 @@ function setPageTitle (topicTitle) {
     var pageTitle;
     //  $("#page-title").html(topicID + ": ");
     if (topicTitle) {
-        pageTitle = topicID + ': ' + topicTitle;
-        titleHTML = '<a href="' + skynetButtonURL + '" target="_blank">' + pageTitle + '</a>';
+        pageTitle =  ('"' + topicTitle + '"' + ' - ID: ' + topicID + '  <small>[rev: ' + topicRevision + ']</small>');
+        titleHTML = '<a href="'  + pressGangUIURL + 
+                    '#SearchResultsAndTopicView;query;topicIds=' + topicID + '" target="_blank">' + pageTitle + '</a>';
         $("#page-title").html(titleHTML);
-        document.title = pageTitle;
+        document.title = topicID + ' - ' + topicTitle;
     }
 }
 
@@ -464,11 +516,11 @@ function loadSkynetTopic() {
                     $('#code').each(function(){this.value = json.xml;});
                     disableSaveRevert();
                     doValidate();
-                    injectPreviewLink();
                 }
+                topicRevision = json.revision;
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
-                window.title = json.title;
+
             });
         }
     }
@@ -689,7 +741,7 @@ function initializeTopicEditPage() {
 
     generateRESTParameters();
     loadSkynetTopic();
-    skynetButtonURL = "http://" + skynetURL + "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + topicID;
+    skynetButtonURL = pressGangUIURL + '#SearchResultsAndTopicView;query;topicIds=' + topicID;
         
     // Set up identity user identity
     
