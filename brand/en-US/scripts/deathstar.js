@@ -246,7 +246,7 @@ function patchTopic (msg) {
                 return (css.match (/\bpg-topic-rev\S+/g) || []).join(' ');    
             }); // get rid of previous revision information
             
-            target.addClass('pg-topic-rev-' + revision); // Add current revision
+            target.addClass('pg-topic-rev-' + msg.revision); // Add current revision
             
             // Restore injected content
             if (prereq) prereq.insertAfter(target.find('hr'));

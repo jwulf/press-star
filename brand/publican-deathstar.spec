@@ -55,6 +55,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon Apr 22 2013 Joshua Wulf <jwulf@redhat.com> 0.47
 - Live patching now embeds the topic revision number as a css class: pg-topic-rev-<revision>
+- Topic driver implemented on server. 
 
 * Wed Apr 17 2013 Joshua Wulf <jwulf@redhat.com> 0.46
 - Updated jQuery to 1.9.1
