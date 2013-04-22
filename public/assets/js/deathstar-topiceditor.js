@@ -222,7 +222,7 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
-        if (section !== null) {
+        if (section.length !== 0) {
             $(".div-preview").empty();
             $(".div-preview").append(section[0]);
         } else { // the topic preview is empty, or is not a section, could it be an appendix, i.e: a Revision History?
