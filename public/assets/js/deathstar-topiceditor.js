@@ -217,7 +217,7 @@ window.onbeforeunload = function(e) {
 };
 
 // callback function for use when a node server is generating the live HTML preview
-function handleHTMLPreviewResponse(preview, serverFunction) {
+function handleHTMLPreviewResponse (preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
@@ -320,7 +320,11 @@ function doActualSave (log_level, log_msg) {
                 }
                 if (json.revision != topicRevision) { //check if the topic returned from skynizzle has a different revision number
                     topicRevision = json.revision;
-                    showStatusMessage("Saved OK: revision " + topicRevision + ' created.', '', 'alert-success');
+                    showStatusMessage('Saved OK: revision <a href="#">' + topicRevision + 
+                        '</a> created. <span class="pull-right"><small>[<a href="#">Click for more detail</a>]</small></span', 
+                        'The topic was saved and a new revision <a target="_blank" href="' + pressGangUIURL + 
+                        '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
+                    json.revision + '</a> created.' , 'alert-success');
                     $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
                     updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                     //doValidate(); // The Validation message was overwriting the Save result message
@@ -383,7 +387,7 @@ function serversideValidateTopic(editor, cb) {
     });
 }
 
-function updateXMLPreviewRoute(cm, preview) {
+function updateXMLPreviewRoute (cm, preview) {
     // serverFunction = "validate";
     serverFunction = "preview";
     serversideUpdateXMLPreview(cm, "preview");
@@ -439,7 +443,7 @@ function generateRESTParameters() {
 }
 
 // This function sends the editor content to a node server to get back a rendered HTML view
-function serversideUpdateXMLPreview(cm, serverFunction) {
+function serversideUpdateXMLPreview (cm, serverFunction) {
     var xmlText;
 
     // If we weren't called from the 2 second timer, we must have been called by the 
@@ -777,8 +781,11 @@ function togglePlainText (e) {
                 }
             },
             onChange: function(cm, e) {
-                enableSaveRevert();
-                makeValidityAmbiguous();
+                // commenting out to test effect in Firefox when saving topics
+                // currently the refresh with the new xml from the server is causing
+                // this to fire and obscure the "Saved successfully" messsage
+            //    enableSaveRevert();
+            //    makeValidityAmbiguous();
             },
             onKeyEvent: function(cm, e) {
                 if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
@@ -974,7 +981,7 @@ function injectTemplate() {
                             '                  <para role="changelog-' + month[n] + '-' + y + '">\n' + 
                             '                     Updated ' + longMonth[n] + ' ' + y + '.\n' + 
                             '                  </para>\n' + 
-                            '                  <!-- add the role "changes-' + month[n] + '-' + y + '" to all elements affected by the change" -->\n' + 
+                            '                  <!-- add the attribute role="changes-' + month[n] + '-' + y + '" to all elements affected by the change" -->\n' + 
                             '               </listitem>\n' + 
                             '            </itemizedlist>\n' + 
                             '         </listitem>\n' + 

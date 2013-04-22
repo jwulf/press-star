@@ -1,0 +1,18 @@
+<h1>What's New?</h1>
+
+<h2>Monday April 22, 2013</h2>
+
+<h3>Editor</h3>
+
+<h4>DTD Validation</h4>
+<ul><li>DTD validation is now done in memory, rather than using a temporary file. 
+This results in faster performance. </li>
+<li>The language attribute of &lt;programlisting&gt; elements is now transparently
+rewritten to Publican-compliant capitalization when the topic is saved. No errors
+are reported during validation for language attributes that can be auto-corrected.
+If the language cannot be recognized, a validation error is reported.</li>
+<li>DTD errors are now more targeted. The error summary is the structure of the XML, 
+showing where the unexpected element occurs.</li>
+<img src="changelog/img/validation-error-summary.png"/>
+<li>More detail can be exposed if desired by clicking the summary.</li>
+<img src="changelog/img/validation-error-detail.png"/>
