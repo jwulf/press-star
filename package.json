@@ -22,7 +22,8 @@
     "jsdom": "0.5.5",
     "nexpect": "0.2.4",
     "node-krb5": "0.0.3",
-    "cheerio": "0.10.8" 
+    "cheerio": "0.10.8",
+    "carrier": "*"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",
