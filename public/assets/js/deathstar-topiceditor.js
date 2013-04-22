@@ -155,7 +155,9 @@ function doCommitLogSave () {
         $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
             {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
             function (result) {
-        
+
+		 // Chrome gets result as a JSON object, FF 20 on Linux gets it as a string ???
+                if (typeof result == 'string') result = JSON.parse(result);         
                 for (var users = 0; users < result.items.length; users ++) {
                     user = result.items[users].item;
                     if (user.name == thisusername) { pressgang_userid = user.id; break;}
