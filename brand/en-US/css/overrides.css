@@ -1,30 +1,30 @@
-@import url(http://fonts.googleapis.com/css?family=PT+Mono|Open+Sans:400italic,400,600);
+/* @import url(http://fonts.googleapis.com/css?family=PT+Mono|Open+Sans:400italic,400,600); */
 
-/* @font-face {
+@font-face {
   font-family: 'PT Mono';
   font-style: normal;
   font-weight: 400;
-  src: local('PT Mono'), local('PTMono-Regular'), url(jmle3kzCPnW8O7_gZGRDlQ.woff) format('woff');
+  src: local('PT Mono'), local('PTMono-Regular'), url(/assets/fonts/RTA0Dhj_HESY0h-ax44VkwLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(MTP_ySUJH_bn48VBG8sNSnhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(/assets/fonts/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 400;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(xjAJXh38I15wypJXxuGMBobN6UDyHWBl620a-IRfuBk.woff) format('woff');
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/assets/fonts/xjAJXh38I15wypJXxuGMBrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+  src: local('Open Sans'), local('OpenSans'), url(/assets/fonts/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
 } 
-*/
+
 
 /* The Publican website menu.css has a line-height set to 1em */
 
@@ -771,4 +771,8 @@ body:hover #menu {
 
 .visible {
     display: block;
+}
+
+.ds-control-panel a {
+   font-family: 'liberation-sans', sans-serif;
 }

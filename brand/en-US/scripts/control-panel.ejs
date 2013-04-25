@@ -22,6 +22,12 @@
     </a>
 </div>
 
+<% if ($('.customrevhistory').length >0) { %>
+    <div class="ctrl-btn update-rev-history-btn">
+        <a href="#" id="update-revhistory">Update Revision History</a>
+    </div>
+<% } %>
+
 <div class="ctrl-btn publish-btn">
     <% if (bookmd.publishing) { %>
         <% if (bookmd.inBrew) { %>

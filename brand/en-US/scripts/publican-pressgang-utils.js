@@ -1,3 +1,103 @@
+var pressgang_rest_v1_url = '/seam/resource/rest/1/',
+    deathstar_rest_v1_url = '/rest/1/';
+
+function saveTopic(saveObject, cb) {
+// Give us a single point where we can route the save action via the browser
+// or the Death Star server.
+
+// To have the browser save it directly to the PressGang server, pass this call
+// to saveTopicToPressGangFromBrowser()
+// To have the Death Star performing pre-processing and cache the save in off-line mode
+// call saveTopicViaDeathStar()
+
+//    userid, url, id, specid, xml, html, log_level, log_msg
+    saveTopicViaDeathStar(saveObject, cb);
+}
+
+
+function saveTopicToPressGangFromBrowser (userid, url, id, specid, xml, log_level, log_msg, cb) {
+    // Save the Topic directly to PressGang - no Death Star routing
+    /*  
+    
+    This function demonstrates how to load a topic from PressGang from a web
+    browser.
+    
+    To support off-line operation, all topic saving and loading is routed through
+    the Death Star, which then routes the operations to its offline cache or to the 
+    PressGang server, depending on what mode it is in.
+    
+    This code stays in for legacy and demonstration purposes. It will be retired 
+    at some point in the future.
+    
+    */
+   var _url, _cb, _log_level;
+    
+    // Deal with the optionality of log_level and log_msg;
+    _cb = (typeof log_level === 'function') ? log_level : cb;
+    
+    // Log level defaults to 1 when none is supplied
+    _log_level = (log_level && typeof log_level !== 'function') ? log_level : 1;
+    
+    if (url && id && xml) {
+        // Add a leading 'http://' if the url doesn't already have one
+        _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+        
+        _url += pressgang_rest_v1_url+ 'topic/update/json';
+        
+        // Add the log message if one was specified
+        if (log_msg) _url += '?flag=' + _log_level + '&message=' + encodeURI(log_msg);
+
+        $.ajax ({
+            url: _url,
+            type: "POST",
+            data: JSON.stringify({id: id, configuredParameters: ['xml'], xml: xml}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: _cb
+        });
+    }    
+}
+
+/* Save a topic to the PressGang server */
+function saveTopicViaDeathStar (save,cb) {
+   var _url;
+    
+    // Log level defaults to 1 when none is supplied
+    save.log_level = (save.log_level) ? save.log_level : 1;
+    
+    if (save.url && save.id && save.xml) {
+        // url is the url of the pressgang instance, and the identifier of the topic
+        // _url is the url for our ajax call to the Death Star
+        
+        // Add a leading 'http://' if the url doesn't already have one
+        save.url = (save.url.indexOf('http://') === 0) ? save.url = save.url : save.url = 'http://' + save.url;
+        
+        _url = deathstar_rest_v1_url+ 'topicupdate';
+        
+        $.ajax ({
+            url: _url,
+            type: "POST",
+            data: JSON.stringify(save),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            complete: cb, 
+        });
+    }      
+}
+
+function loadTopicViaDeathStar (url, id, cb) {
+    var _url;
+    // Add a leading 'http://' if the url doesn't already have one
+    _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+    
+    $.get('/rest/1/gettopic', {url: _url, id: id}, cb);
+    
+    // Here's what you get back in the callback when the PG server cannot be reached: 
+    //{code: "ENOTFOUND", errno: "ENOTFOUND", syscall: "getaddrinfo"} 
+    
+    // Otherwise you get a topic
+} 
+
 /* This is the demo function for this library. 
     Open a Death Star book in your browser - (hint: don't try this on the RHEV Admin Guide!)
     Open the Console. In Google Chrome I do Ctrl-Shift-I in Linux, or Cmd-Opt-I on the Mac. Not sure for Firefox.Firefox
@@ -75,7 +175,7 @@ function getLogMessagesForBookSince(date, url, sort_ascending, rate_limit, cb) {
     // The topics in the book are identified by scanning the DOM for the edit links
     num_topics_to_check = $('.RoleCreateBugPara > a').length;
 
-    console.log('Searching for log messages for %s topics since %s', num_topics_to_check, date);
+    console.log('Searching server %s for log messages for %s topics since %s', url, num_topics_to_check, date);
 
     start_time = new Date().getTime(); // We'll time the operation
 
@@ -103,8 +203,9 @@ function getLogMessagesForBookSince(date, url, sort_ascending, rate_limit, cb) {
         */
 
         // push these log messages to our global result
-        for (var i = 0; i < result.length; i++) 
-            _results.push[result[i]];
+        if (result) // result is null if there are no revisions
+            for (var i = 0; i < result.length; i++) 
+                _results.push[result[i]];
 
         // Our job has returned, so we decrement the _job_counter
         _job_counter--;
@@ -116,7 +217,7 @@ function getLogMessagesForBookSince(date, url, sort_ascending, rate_limit, cb) {
             Object.keys(_spawned_log_msgs).length,
             num_topics_to_check - _job_counter, 
             num_topics_to_check, 
-            result.length, 
+            _results.length, 
             _rest_calls, 
             Math.round(_rest_calls/elapsed_time),
             elapsed_time,

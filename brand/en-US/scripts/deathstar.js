@@ -11,8 +11,8 @@ function url_query( query, url ) {
   // Parse URL Queries
   // from http://www.kevinleary.net/get-url-parameters-javascript-jquery/
   // Will parse the current window location if not passed a url
-	query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-	var expr = "[\\?&]"+query+"=([^&#]*)";
+    query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var expr = "[\\?&]"+query+"=([^&#]*)";
 	var regex = new RegExp( expr );
 	var results = regex.exec( url) || regex.exec( window.location.href );
 	if( results !== null ) {
@@ -36,6 +36,8 @@ function deathstarItUp()
     
     $('.notifier').click(clearNotifier);
     
+    $('#update-revhistory').click(updateRevHistory);
+    
     $("#floatingtoc").load('index.html .toc:eq(0)');
 	$("body").click(function(){
 		work = 1;
@@ -46,6 +48,49 @@ function deathstarItUp()
 		toggle(e, 'floatingtoc');
 		return false;
 	});
+}
+
+function updateRevHistory(e) {
+    var _revhistoryid,
+        _classes,
+        _class;
+    
+    console.log('Update Rev History 0.1');
+    (e && e.preventDefault());
+    
+    // Extract the topic ID from the custom class
+   if ($('.customrevhistory').length > 0) {
+        _classes = $($('.customrevhistory')[0]).attr('class').split(' ');
+        for (_class = 0; _class < _classes.length; _class ++)
+            if (_classes[_class].indexOf('pg-topic-id-') !== -1)
+                _revhistoryid = _classes[_class].substr(12);
+        
+        
+        if (_revhistoryid) { // we have a revision history topic
+            console.log('Revision History topic ' + _revhistoryid);
+            loadTopicViaDeathStar(skynetURL, _revhistoryid, function (result){
+                // Topic loaded, now DOM parse it for the most recent entry (dateA)
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(result.xml, 'text/xml');
+                var _latest_rev_history_entry = $(doc.getElementsByTagName('date')[0]).text();
+                console.log('Revision History entry: ' + _latest_rev_history_entry);
+                var timestamp = new Date(Date.parse(_latest_rev_history_entry));
+                console.log('Latest Revision History entry was ' + timestamp);
+                
+                var _day = timestamp.getDate().toString();
+                _day = (_day.length == 1) ? '0' + _day : _day;
+                var _month = timestamp.getMonth().toString();
+                _month = (_month.length == 1) ? '0' + _month : _month;
+                var _year = timestamp.getFullYear().toString();
+                var _target_date = _day + '-' + _month + '-' + _year;
+                console.log('Initiating search for log messages since %s', _target_date);
+                getLogMessagesForBookSince(_target_date, skynetURL, function(result){console.log(result)});
+            });
+        } else {
+            console.log('Could not locate a revision history topic in this book');
+        }
+        
+   }
 }
 
 function retract_menu(id) {
