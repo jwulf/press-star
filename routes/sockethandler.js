@@ -1,12 +1,10 @@
 var fs=require('fs'),
     spawn = require('child_process').spawn,
-    carrier = require('carrier'),
-    builder = require('./../lib/build.js'),
-    cylon = require('pressgang-cylon'),    
-    uuid = require('node-uuid'),
+    carrier = require('carrier'),   
     Library = require('./../lib/Books'),
     Stream = require('stream').Stream,
     livePatch = require('./../lib/livePatch'),
+    assembler = require('./../lib/assembler'),
     ephemeral = require('./../lib/ephemeralStreams');
 
 exports.socketHandler = socketHandler;
@@ -140,19 +138,10 @@ function pushSpec (data, client) {
                 // If the push succeeds, then we will spawn a rebuild of the book, if we're hosting it
                 if (code == BUILD_SUCCEEDED && data.command == 'push') {
                     console.log('Initiating post-content-spec-push rebuild');
-                    cylon.stripMetadata('http://' + data.server, data.spec, function specMetadataCallback(err, md) {
-                        console.log(md);
-                        if (md){
-                            if (md.serverurl &&  md.id){
-                                console.log('Checking for book...');
-                                if (Books[md.serverurl] && Books[md.serverurl][md.id]) {
-                                    console.log('We got that book...');
-                                    builder.build(md.serverurl, md.id);
-                                }
-                            }
-                        }   
-                    });
-                    
+                    if (Books[data.server] && Books[data.server][data.spec]) {
+                        console.log('We got that book...');
+                        assembler.build(md.serverurl, md.id);
+                    }
                 }
                 cmd_running = false;         
                 fs.unlink(filename, function(err)

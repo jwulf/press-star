@@ -1,7 +1,4 @@
-var fs = require('fs'),
-    exec = require('child_process').exec,
-    cylon = require('pressgang-cylon'),
-    PressGangCCMS = require('pressgang-rest').PressGangCCMS,
+var pressgang = require('pressgang-rest'),
     xmlpreview = require('./../lib/xmlpreview'),
     dtdvalidate = require('./../lib/dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
@@ -11,6 +8,8 @@ var fs = require('fs'),
     krb5 = require('node-krb5'),
     ephemeral = require('./../lib/ephemeralStreams'),
     topics = require('./../lib/topicdriver'),
+    assembler = require('./../lib/assembler'),
+    wrench = require('wrench'),
     LOG_HEADER = ephemeral.LOG_HEADER,
     LOG_CONSOLE = ephemeral.LOG_CONSOLE;
 
@@ -116,7 +115,8 @@ function build (req, res) {
         id = req.query.id;
     if (url && id) {
         console.log('Received a build request for ' + url + ' ' + id);
-        builder.build(url, id);
+        //builder.build(url, id);
+        assembler.build(url, id);
         res.send({code: 0, msg: 'Build requested'});
     } else {
         res.send({code:1, msg: 'Need to send a URL and an ID'});
@@ -141,6 +141,7 @@ function removebook (req,res){
         if (jsondb.Books[url][id])
             {
                 var pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
+                wrench.rmdirRecursive(pathURL);
                 // Nuke all the current subscriptions for this book
                 livePatch.removeTopicDependenciesForBook(url, id); 
                 delete jsondb.Books[url][id];
@@ -155,55 +156,30 @@ function addbook (req, res){
         id = req.query.id;
     console.log('Add book operation requested for ' + url + id);
     if (url && id)
-        checkout(
-            {
-                url: url, 
-                username: req.params.username,
-                authmethod: req.params.authmethod,
-                authtoken: req.params.authtoken,
-                restver: req.params.restver
-            },
-            id, './books',
-            function(err, md){
-                if (!err)
-                {
-                    res.send({'code' : 0, 'msg' : 'Successfully checked out "' + md.title + '"'});
-                }
-                else
-                {
-                    res.send({'code' : 1, 'msg' : err});
-                }
+        checkout(url, id, './books', function (err, spec){
+                if (err) return res.send({'code' : 1, 'msg' : err});
+                res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.metadata.title + '"'});
             }
         );        
 }
     
-function checkout (pg, specID, dir, cb){
+function checkout (url, id, dir, cb){
     console.log('Check out operation')
-    var pressgang = new PressGangCCMS(pg);
     // First, check if the book is already checked out
-    if (jsondb.Books[pg.url] && jsondb.Books[pg.url][specID])
-    {
+    if (jsondb.Books[url] && jsondb.Books[url][id]) {
         console.log('Book already checked out');
-        cb('According to our records, this book has already been added.');
-    } else {
-        console.log('No existing checkout found, proceeding...')
-        cylon.checkout(pg, parseInt(specID), dir, 
-            function (err, md){ 
-                // If everything went ok, update the database
-                if (!err) {
-                    jsondb.addBook(md, cb);
-                    livePatch.generateStreams();
-                }
-                else
-                {
-                    console.log('Error during checkout operation');
-                    console.log(err);
-                    cb(err, md);
-                }
-            }
-        ); 
-       
-    }   
+        return cb('According to our records, this book has already been added.');
+    } 
+    
+    console.log('No existing checkout found, proceeding...')
+    pressgang.checkoutSpec(url, id, dir, function (err, spec) { 
+        if (err) return cb(err, spec);
+
+        // If everything went ok, update the database
+        jsondb.addBook(spec.metadata, cb);
+        livePatch.generateStreams();
+    }); 
+
 }
 
 function buildstatus (req, res){
