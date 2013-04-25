@@ -9,7 +9,7 @@
     "express": "3.0.0rc5",
     "ejs": "*",
     "stylus": "*",
-    "pressgang-rest": "0.1.1",
+    "pressgang-rest": "0.1.2",
     "restler": "2.0.1",
     "socket.io": "0.9.10",
     "node_xslt": "0.1.7",

@@ -144,7 +144,7 @@ function removebook (req,res){
         if (jsondb.Books[url][id])
             {
                 var pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
-                wrench.rmdirRecursive(pathURL);
+                wrench.rmdirRecursive(pathURL, function (err) {console.log(err + 'removing' + pathURL)});
                 // Nuke all the current subscriptions for this book
                 livePatch.removeTopicDependenciesForBook(url, id); 
                 delete jsondb.Books[url][id];
@@ -161,7 +161,7 @@ function addbook (req, res){
     if (url && id)
         checkout(url, id, './books', function (err, spec){
                 if (err) return res.send({'code' : 1, 'msg' : err});
-                res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.metadata.title + '"'});
+                res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
             }
         );        
 }
