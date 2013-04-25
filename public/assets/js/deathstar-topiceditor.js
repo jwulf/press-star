@@ -505,9 +505,27 @@ function injectPreviewLink() {
 }
 
 function loadSkynetTopic() {
-    if (alwaysUseServerToLoadTopics || editingOffline)
+    var  alwaysUseServerToLoadTopics = true;
+    if (alwaysUseServerToLoadTopics)
     {
-        loadTopicViaServer();
+        loadTopicViaDeathStar(skynetURL, topicID, function (json) {
+            if (json.errno) {
+                var _msg = json.errno +  ' ' + json.syscall;
+                if (json.errno == 'ENOTFOUND' && json.syscall == 'getaddrinfo') _msg = 'Error retrieving topic from Press Gang';
+                showStatusMessage(_msg, 'Can the Death Star server reach ' + skynetURL +'?', 'alert-error');    
+            } else{
+                if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
+                if (pageIsEditor) {
+                    window.editor.setValue(json.xml);
+                    $('#code').each(function(){this.value = json.xml;});
+                    disableSaveRevert();
+                    doValidate();
+                }
+                topicRevision = json.revision;
+                setPageTitle(json.title);
+                updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+            }
+        });
     } else {
         // This function loads the topic xml via JSONP, without a proxy        
         // It requires your web browser to have a connection to the PressGang server (On the same network or VPN)

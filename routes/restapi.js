@@ -55,7 +55,9 @@ function restroute (req, res){
     else
     if (op == 'getBookmd') {getBookmd(req, res);}
     else
-    if (op == 'topicupdate') {topics.topicupdate(req, res)};
+    if (op == 'topicupdate') {topics.topicupdate(req, res)}
+    else 
+    if (op =='gettopic') {topics.gettopicRESTEndpoint(req,res)};
 }
 
 function getBookmd (req, res) {
@@ -100,7 +102,8 @@ function publish (req, res) {
                 res.send({code: 1, msg: 'Kerberos authentication failed.'});
             } else {
                 console.log("Kerb credentials OK");
-                publisher.publish(url, id, kerbid, kerbpwd, commitmsg);
+                assembler.publish(url, id, kerbid, kerbpwd);
+//                publisher.publish(url, id, kerbid, kerbpwd, commitmsg);
                 res.send({code: 0, msg: 'Publish requested'});
             }
         });

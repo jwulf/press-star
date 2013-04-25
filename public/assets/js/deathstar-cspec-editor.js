@@ -68,7 +68,8 @@ function specEditorload() {
 }
 
 function loadSkynetTopic() {
-    loadTopicFromPressGangInBrowser( deets.skynetURL, deets.topicID, updateSpecText);
+    //loadTopicFromPressGangInBrowser( deets.skynetURL, deets.topicID, updateSpecText);
+    loadTopicViaDeathStar(deets.skynetURL, deets.topicID, updateSpecText);
 }
 
 function updateSpecText(json) {
