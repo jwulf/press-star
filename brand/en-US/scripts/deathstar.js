@@ -320,7 +320,7 @@ function patchTopic (msg) {
     console.log('Received patch for Topic ' + msg.topicID);
     if (msg.topicID && msg.html) {
         
-        $('.sectionTopic' + msg.topicID).each(function(){
+        $('.pg-topic-id-' + msg.topicID).each(function(){
              // Locate the sectionTopic
             var target = $(this);
             
