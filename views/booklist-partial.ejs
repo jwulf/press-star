@@ -31,7 +31,7 @@
                     <center>
                     <h4>
                         <% if (thisBook.building) { %>
-                            <% if (thisBook.onQueue) { %>
+                            <% if (thisBook.onQueue || thisBook.onPublishQueue) { %>
                                 <span class="active-indicator-button">
                                     <a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">
                                         Queued
@@ -46,11 +46,23 @@
                             <% } %>
                         <% } else { %>
                             <% if (thisBook.publishing) { %>
-                                <span class="active-indicator-button">
-                                        <a target="_blank" href="/publishstream.html?buildid=<%= thisBook.buildID %>">
+                                <% if (thisBook.onPublishQueue) { %>
+                                    <span class="active-indicator-button">
+                                        <a target="_blank" href="/buildlog.html?buildid=<%= thisBook.buildID %>">
+                                            Queued
+                                        </a>
+                                    </span>
+                                <% } else { %>
+                                    <% if (thisBook.inBrew) { %>
+                                    <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= thisBook.publishID %>">In Brew</a></span>
+                                <% } else { %>
+                                    <span class="active-indicator-button">
+                                        <a target="_blank" href="/publishstream.html?publishid=<%= thisBook.publishID %>">
                                             Publishing
                                         </a>
                                     </span>
+                                <% } %>
+                            <% } %>
                             <% } else { %>
                                     <span class="action-button btn-rebuild">
                                         <a href="javascript:;" onclick="rebuild('<%=url%>', '<%=id%>')">

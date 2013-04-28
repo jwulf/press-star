@@ -60,9 +60,23 @@ function socketHandler (client){
             }
     });
     
-    client.on('disconnect', function() {
+    // Send a notification for any book event - used by index pages to refresh Library state
+    client.on('bookNotificationSubscribe', function () {
+        console.log('Client subscribed for Book Notifications');
+        Library.NotificationStream.on('change', function (data) {
+            client.emit('bookNotification', data);
+        }); 
+    });
+    
+    client.on('disconnect', function () {
         console.log('Bye client :(');
+    
+    /*
+       Do we need to remove stream listeners in the disconnect function, or are they
+       automatically destroyed?
+    */
     }); 
+
 }
 
 function getStream (data, client){

@@ -1,3 +1,7 @@
+<% var partialURLs = { home: 'booklist', add: 'none', remove: 'removelist', publish: 'publishlist'};
+    var partialURL;
+    if (mode && partialURLs[mode]) partialURL = partialURLs[mode]; %>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,7 +11,8 @@
     <script src="/scripts/jquery-1.9.1.min.js"></script>   
     <script src="/bootstrap/js/bootstrap.js"></script>
     <script src="/scripts/index.js"></script>
-    <script>window.sourceURL="booklist"</script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>window.sourceURL="<%= partialURL %>"</script>
   </head>
   <body onload="pageSetup()">
     
@@ -15,7 +20,15 @@
     <% include index-menu.ejs %>
 
     <div id="booklist">
-        <% include booklist-partial.ejs %>
+        <% if (mode == 'home' ) { %>
+            <% include booklist-partial.ejs %>
+        <% } %>
+        <% if (mode == 'remove') { %>
+            <% include booklist-remove.ejs %>
+        <% } %>
+        <% if (mode == 'publish') { %>
+            <% include booklist-publish.ejs %>
+        <% } %>
    </div>
 
   </body>

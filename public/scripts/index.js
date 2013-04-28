@@ -1,4 +1,4 @@
-var oldBookList, currentURL, currentID;
+var oldBookList, currentURL, currentID, socketConnected, beenConnected, retries;
 
 // Login dialog from http://www.alessioatzeni.com/blog/login-box-modal-dialog-window-with-css-and-jquery/
 function clickToPublish(url, id) {
@@ -36,15 +36,19 @@ function clickToPublish(url, id) {
     return false;
 }
 
-function indexRefresh (){
- window.refreshTimer = setInterval(function() {
-     $.get(window.sourceURL, {}, function(result) {
-         if (result != oldBookList) {
-             $('#booklist').html(result);
-             oldBookList = result;
-         }
-     });
-    }, 1000);   
+function indexRefreshTimer () {
+    window.refreshTimer = setInterval(function() {
+        indexRefresh();
+    }, 10000);   // refresh every 10 seconds
+}
+
+function indexRefresh () {
+    $.get(window.sourceURL, {}, function(result) {
+        if (result != oldBookList) {
+            $('#booklist').html(result);
+            oldBookList = result;
+        }
+    });
 }
 
 function closeMask () {
@@ -67,6 +71,8 @@ function pageSetup () {
     });
     
     $('#publish-button').click(publish);
+    
+    connectSocket();
 }
 
 function publish (e) {
@@ -100,3 +106,39 @@ function rebuildAll () {
         });
     return false;
 }
+
+function connectSocket () {
+    var socket;
+    
+    // This code handles disconnection events (for example a server bounce, or the client switching networks)
+    if (! socketConnected) {
+        if (!beenConnected) {
+            socket = io.connect(); 
+        
+            socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
+                socketConnected = true;
+                console.log('Websocket connected to server');
+                socket.emit('bookNotificationSubscribe');
+                
+                socket.on('disconnect', function () { 
+                    socketConnected = false;
+                });
+            });
+                        
+            /* State change is sent every time the book's metadata structure changes on the
+             server. It is used to update client-side views of building / publishing / error status
+             
+             The Death Star Control Panel uses client-side Embedded JavaScript Templating in 
+             conjunction with this event to maintain a real-time view of the book's activity on the
+             server.
+             */
+             
+            socket.on('bookNotification', function (data) {
+                console.log('Book Notification: ' + data); 
+                indexRefresh();
+            });
+        }
+    }
+}
+
+
