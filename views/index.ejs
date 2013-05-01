@@ -31,5 +31,35 @@
         <% } %>
    </div>
 
+     <div id="login-box" class="login-popup">
+           <a href="#" class="close"><img src="close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
+           <form class="signin" action="">
+               <fieldset class="textbox">
+               <label class="username">
+                   <span>Kerberos ID</span>
+                   <input id="username" name="kerbid" value="" type="text" autocomplete="on" autofocus placeholder="Kerberos ID">
+               </label>
+
+               <label class="password">
+               <span>Kerberos Password</span>
+               <input id="password" class="wipe-me" name="kerbpwd" value="" type="password" placeholder="Kerberos Password">
+               </label>
+
+               <label class="commit-message">
+                   <span>Commit message</span>
+                   <input id="commitmsg" name="commitmsg" class="wipe-me" value="" type="text" autocomplete="on" placeholder="Commit Message">
+               </label>
+               <button id="publish-button" class="submit button" type="button">Publish</button>
+
+               <p>
+               Your credentials will not be stored.
+               </p>
+
+               </fieldset>
+         </form>
+       </div>
+
+              <div class="global-warning" style="position: fixed; bottom: 15px; left: 15px; text-align: left; cursor: default; box-shadow: rgba(0, 0, 0, 0.247059) 0px 0px 8px;"><div class="inner" style="display: inline-block; width: 360px; padding: 15px; text-align: left; font-size: 14px; background-color: rgb(66, 66, 66); line-height: 1.2em; color: rgb(255, 255, 255); background-position: initial initial; background-repeat: initial initial;"><h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">Extended maintenence Saturday May 4th 11am EST</h2><span>Editing will be unavailable for a few hours as we migrate to the next generation of rvl. If you're working on something mission critical, please export your presentation before then.</span><span style="display: block; margin-top: 5px; cursor: pointer; text-decoration: underline;">Dismiss</span></div></div>
+
   </body>
 </html>

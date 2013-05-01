@@ -107,13 +107,13 @@
             <div class="pull-right">
                 <!-- Validate button -->
                 <div class="btn-group">
-                    <button id="validate-button" class="btn btn-info" rel="popover" data-original-title="Validate"
+                    <button id="validate-button" class="btn btn-info" rel="popover" data-bind="disable: validated" data-original-title="Validate"
                         data-content="Perform Docbook DTD validation of the editor content using a web service">Validate</button>
                 </div>
                 
                 <!-- Save button -->
                 <div id="save-dropup" class="btn-group dropup">
-                    <button class="btn btn-success save-button" id="save-button" rel="popover" data-original-title="Save"
+                    <button class="btn btn-success save-button" data-bind="enable: modified" id="save-button" rel="popover" data-original-title="Save"
                     data-content="Save the editor content back to the server, optionally with a commit log message">Save</button>
                     <a class="btn btn-success not-save-button dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="caret"></span>

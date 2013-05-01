@@ -5,8 +5,12 @@ var deets = {
 };
 var skynetURL, nodeServer, TopicID;
 var validXML;
-var socket, lastcmdclass;
-
+var socket, 
+    lastcmdclass,
+    Model = {
+        modified: ko.observable()
+    };
+    
 function disable(selector) {
     $(selector).prop("disabled", true);
     $(selector).popover('hide');
@@ -72,17 +76,30 @@ function loadSkynetTopic() {
     loadTopicViaDeathStar(deets.skynetURL, deets.topicID, updateSpecText);
 }
 
+function revert() {
+    if (Model.modified() && alert('Discard changes and reload?')) { 
+        loadSkynetTopic(); 
+    } else {
+        loadSkynetTopic();
+    }
+}
+
 function updateSpecText(json) {
     if (json.xml) {
         editor.setValue(json.xml);
         $("#page-title").html("Content Spec: " + deets.topicID + " - " + json.title);
         document.title = deets.topicID + ' - ' + json.title;
+        Model.modified(false);
+    } else {
+        alert('REST Communication Error while retrieving Spec: ' + json.code);
     }
-    disableSaveRevert();
+
 }
 
 function pageSetup() {
 
+    ko.applyBindings(Model);
+    
     newCmdOutput();
 
     window.mutex = 0;
@@ -93,15 +110,13 @@ function pageSetup() {
     window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         mode: 'text/plaintext',
         onChange: function(cm, e) {
-            enableSaveRevert();
-            makeValidityAmbiguous();
+            Model.modified(true);
         },
         onKeyEvent: function(cm, e) {
             if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
             k = e.keyCode;
             if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                enableSaveRevert();
-                makeValidityAmbiguous();
+                Model.modified(true);
             }
             return false; // return false tells Codemirror to also process the key;
         },
@@ -140,8 +155,8 @@ function pageSetup() {
     $('#save-button').click(pushSpec);
     $('#push-align').click(pushSpecPermissive);
     $('#validate-button').click(validateSpec);
-    disable('#save-button');
-    disable('#revert-button');
+    $('#revert-button').click(revert);
+    Model.modified(false);
     resizePanes();
 }
 

@@ -11,7 +11,7 @@
 	<link href="assets/css/docs.css" rel="stylesheet">
 
 	<script type="text/javascript">var pageIsEditor=true;</script>
-
+    <script src="assets/js/knockout-2.2.1.js"></script>
 	<script src="assets/js/jquery-1.7.2.min.js"></script> 
 	<script src="assets/js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script src="assets/js/bootstrap-tab.js"></script>
@@ -64,7 +64,7 @@
 						</div>	
 
 						<div class="btn-group dropup">
-							<button class="btn btn-danger" data-loading-text="Working..." id="save-button">Push</button>
+							<button class="btn btn-danger" data-bind="enable: modified" data-loading-text="Working..." id="save-button">Push</button>
 							<button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
 								<span class="caret"></span>
 							</button>

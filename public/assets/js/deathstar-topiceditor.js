@@ -14,8 +14,7 @@ window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
 // window.restProxy="http://127.0.0.1:8888/";
 window.mutex = 0;
-var validXML = false,
-    validationServerResponse,
+var validationServerResponse,
     port,
     urlpath,
     serverURL,
@@ -27,9 +26,20 @@ var validXML = false,
     editorPlainText,
     editor,
     oldVal,
+    originalTitle, // the original title of the page - used when flashing the tab for attention
+    flash, // the timer for flashing the window title. Lets us clear it from wherever
     pressGangUIURL,
     globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
-    specID; // editor links now include the specID of the book they come from. This allows default log messages to identify the book
+    specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
+    Model = {
+        modified: ko.observable(),
+        validated: ko.observable(),
+        revision: ko.observable(),
+        title: ko.observable(),
+        htmlpreview: ko.observable(),
+        helpHintsOn: ko.observable(false)
+    };
+
 
 // Execute on page load
 $(function() {
@@ -42,8 +52,8 @@ $(function() {
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
     if (pageIsEditor) {
-        // if the Save button is not disabled, do the save event
-        if (!$("#save-button").prop("disabled")) doSave();
+        // if the topic has been modified do the save event
+        if (Model.modified()) doSave();
     }
     event.preventDefault();
     return false;
@@ -65,11 +75,16 @@ $(document).keydown(function(event) {
     if (!(String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) && !(event.which == 19)) return true;
 
     if (pageIsEditor) {
-        if (!$("#save-button").prop("disabled")) doSave();
+        if (Model.modified()) doSave();
     }
     event.preventDefault();
     return false;
 });
+
+function topicEdited() {
+    Model.validated(false);
+    Model.modified(true);
+}
 
 function getLogMessage (e) {
     
@@ -198,12 +213,6 @@ function closeMask () {
     return false;
 }
 
-
-function disable(selector) {
-    $(selector).prop("disabled", true);
-    $(selector).popover('hide');
-}
-
 function timedRefresh() {
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
     if (window.timerID != 0) {
@@ -213,7 +222,7 @@ function timedRefresh() {
 }
 
 window.onbeforeunload = function(e) {
-    if (!$("#save-button").prop("disabled") === true) return 'You have unsaved changes.';
+    if (Model.modified()) return 'You have unsaved changes.';
 };
 
 // callback function for use when a node server is generating the live HTML preview
@@ -223,13 +232,11 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
         if (section.length !== 0) {
-            $(".div-preview").empty();
-            $(".div-preview").append(section[0]);
+            Model.htmlpreview(section[0].innerHTML);
         } else { // the topic preview is empty, or is not a section, could it be an appendix, i.e: a Revision History?
             section = doc.getElementsByClassName("appendix");
             if (section !== null) {
-                $(".div-preview").empty();
-                $(".div-preview").append(section[0]);
+                Model.htmlpreview(section[0].innerHTML);
             }
         }
     } else {
@@ -239,7 +246,7 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
 }
 
 function doValidate(me, callback) {
-    if (!$("#validate-button").prop("disabled") == true || callback) {
+    if (!Model.validated() || callback) {
         showStatusMessage("Performing validation check...", '', 'alert-info');
         serversideValidateTopic(editor, callback);
     }
@@ -247,11 +254,10 @@ function doValidate(me, callback) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if ($("#save-button").prop('disabled') === false) { // If the Save button is enabled
-        disableSaveRevert();
-        // if the validate button is enabled, then we'll call validation before saving
-        if ($("#validate-button").prop('disabled') == false)
-        { // This needs to be a callback, because validation is asynchronous
+    if (Model.modified) { 
+        // if the topic is not validated we'll call validation before saving
+        if (!Model.validated())
+        { 
             doValidate(null, doActualSave);
         } else {
             doActualSave();
@@ -266,9 +272,9 @@ function doActualSave (log_level, log_msg) {
     // Grab the preview HTML now, when save is called.
     if ($('#div-preview-inline').find('.titlepage')) builtHTML = $('#div-preview-inline').html();
 
-    if (!validXML && validationServerResponse == 1) {
+    if (!Model.validated() && validationServerResponse == 1) {
         alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
-        $("#validate-button").prop("disabled", false);
+        Model.validated(false);
     }
 
     if (validationServerResponse == 0) alert("Unable to perform validation. Saving without validation.");
@@ -297,9 +303,6 @@ function doActualSave (log_level, log_msg) {
     
     function saveTopicCallback(data) {
         if (data.status == 200) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
-     
-            disable("#save-button");
-            disable("#revert-button");
          
             var json = JSON.parse(data.responseText);
                 
@@ -309,14 +312,16 @@ function doActualSave (log_level, log_msg) {
                     'While you were editing, someone saved a <a target="_blank" href="' + pressGangUIURL + 
                     '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
                     json.revision + '</a> of this topic.', 'alert-warning');
-                enableSaveRevert();
+                topicEdited();
+                // enableSaveRevert();
+                flashTitle('Revision Conflict');
                 // We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
             } else {
                 // Load up the transformed xml from the saved topic
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
-                    disableSaveRevert();
+                    Model.modified(false);
                 }
                 if (json.revision != topicRevision) { //check if the topic returned from skynizzle has a different revision number
                     topicRevision = json.revision;
@@ -329,6 +334,7 @@ function doActualSave (log_level, log_msg) {
                     updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                     //doValidate(); // The Validation message was overwriting the Save result message
                     setPageTitle(json.title);
+                    clearInterval(flash);
     
                 } else {
                     showStatusMessage('No new revision was saved. ' + 
@@ -342,10 +348,18 @@ function doActualSave (log_level, log_msg) {
             }
         } else { // Not code 0 from the Death Star
             showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
-            enableSaveRevert();
+            topicEdited();
+            //enableSaveRevert();
         }
     }
 }
+
+function flashTitle(msg) {
+    originalTitle = window.title;
+    flash = setInterval(function () {
+         window.title = (window.title == originalTitle) ? msg: originalTitle;
+    }, 750);
+};
 
 // Sends the editor content to a node server for validation
 function serversideValidateTopic(editor, cb) {
@@ -356,12 +370,11 @@ function serversideValidateTopic(editor, cb) {
         validationServerResponse = 1;
         if (data === "0") {
             showStatusMessage("Topic XML is valid Docbook 4.5", '', 'alert-success');
-            validXML = true;
-            disable("#validate-button");
+            Model.validated(true);
             if (cb && typeof(cb) == "function") cb();
         } else {
             showStatusMessage(data.errorSummary + '<span class="pull-right"><small>[<a id="click-to-reveal-hide" href="#"></a>]</small></span>', data.errorDetails , 'alert-error');
-            validXML = false;
+            Model.validated(false);
             cb && cb();
         }
     }
@@ -478,14 +491,6 @@ function serversideUpdateXMLPreview (cm, serverFunction) {
 
 }
 
-/*function onUnload()
-{
-  if ( document.getElementbyId("button-save") && ! document.getElementById("button-save").disabled)
-  {
-    var r=confirm("You have unsaved changes. Do you want to discard them?");
-  }
-}*/
-
 function setPageTitle (topicTitle) {
     var titleHTML;
     var pageTitle;
@@ -518,12 +523,13 @@ function loadSkynetTopic() {
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
-                    disableSaveRevert();
+                    Model.modified(false);
                     doValidate();
                 }
                 topicRevision = json.revision;
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+                clearInterval(flash);
             }
         });
     } else {
@@ -536,7 +542,7 @@ function loadSkynetTopic() {
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
-                    disableSaveRevert();
+                    Model.modified(false);
                     doValidate();
                 }
                 topicRevision = json.revision;
@@ -563,7 +569,7 @@ function serverTopicLoadCallback(topicAjaxRequest) {
         if (topicAjaxRequest.status == 200 || topicAjaxRequest.status == 304) {
             // Load the server response into the editor
             window.editor.setValue(topicAjaxRequest.response);
-            disableSaveRevert();
+            Model.modified(false);
             doValidate();
             updateXMLPreviewRoute(editor, document.getElementsByClassName("div-preview"));
             editorTitle = document.getElementById("page-title");
@@ -579,10 +585,10 @@ function doRevert() {
 }
 
 function toggleHelpHints(e) {
-    helpHintsOn = !helpHintsOn;
-    toggleButton('#helpHintToggle', helpHintsOn);
+    Model.helpHintsOn(!Model.helpHintsOn());
+    toggleButton('#helpHintToggle', Model.helpHintsOn());
     
-    if (helpHintsOn) {
+    if (Model.helpHintsOn()) {
         $('.btn').popover({
             'trigger': 'hover'
         });
@@ -592,7 +598,7 @@ function toggleHelpHints(e) {
         $('.btn').popover('disable')
     }
 
-    if (e) setCookie('helpHintsOn', helpHintsOn, 365);
+    if (e) setCookie('helpHintsOn', Model.helpHintsOn(), 365);
     return false;
 }
 
@@ -639,7 +645,14 @@ function resizePanes() {
 // This is the onload function for the editor page
 function initializeTopicEditPage() {
 
-
+    // Activate the knockout.js bindings
+    ko.applyBindings(Model);
+    
+    // Whenever the topic is set modified, we set validated to false
+    Model.modified.subscribe(function(modified) {
+        Model.validated(!Model.modified);    
+    });
+    
     editorPlainText = true;
     togglePlainText(false);
 
@@ -696,12 +709,10 @@ function initializeTopicEditPage() {
     // Toggle Help Hints
     $('#helpHintToggle').click(toggleHelpHints);
     
-    helpHintsOn = true;
-    toggleHelpHints();
-    if (getCookie('helpHintsOn') == 'true') {
-        $('#helpHintsToggle').button('toggle');
-        toggleHelpHints();
-    }
+    Model.helpHintsOn((getCookie('helpHintsOn') == 'true'));
+    
+    $('#helpHintsToggle').button('toggle');
+    
 
     // Bind event handlers
     $("#validate-button").click(doValidate);
@@ -809,8 +820,7 @@ function togglePlainText (e) {
                 if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
                 k = e.keyCode;
                 if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                    enableSaveRevert();
-                    makeValidityAmbiguous();
+                    topicEdited();
                 }
                 return false; // return false tells Codemirror to also process the key;
             },
@@ -826,15 +836,13 @@ function togglePlainText (e) {
     else {
         window.editor.toTextArea();
         $('#code').change(function() {
-            enableSaveRevert();
-            makeValidityAmbiguous();
+            topicEdited();
         });
         $('#code').keydown(function(e) {
             if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
             k = e.keyCode;
             if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                enableSaveRevert();
-                makeValidityAmbiguous();
+                topicEdited();
             }
         });
         editorPlainText = true;
@@ -850,8 +858,7 @@ function togglePlainText (e) {
 function setTimer() {
     setTimeout(function() {
         if ($('#code').val() != oldVal) {
-            makeValidityAmbiguous();
-            enableSaveRevert();
+            topicEdited();
             updateXMLPreviewRoute($('#code').val(), document.getElementsByClassName("div-preview"));
             oldVal = $('#code').val();
         }
@@ -1007,7 +1014,7 @@ function injectTemplate() {
                             '   </variablelist>\n'
     };
     window.editor.replaceSelection(templates[this.id]);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -1033,7 +1040,7 @@ function injectCodetabs() {
   </varlistentry>\n\
 </variablelist>\n";
     window.editor.replaceSelection(codetabblock);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -1050,7 +1057,7 @@ function injectCodetabsLite() {
         newcode = codetabblock1 + codetabblock2 + codetabblock3;
     }
     window.editor.replaceSelection(newcode);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -1070,7 +1077,7 @@ function doTagWrap() {
         tag = tag.replace('<', '');
         tag = tag.replace('>', '');
         window.editor.replaceSelection('<' + tag + '>' + currenttext + '</' + closetag + '>');
-        makeValidityAmbiguous();
+        topicEdited();
         updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
     }
     return false;
