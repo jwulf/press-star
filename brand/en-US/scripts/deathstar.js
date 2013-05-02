@@ -340,8 +340,16 @@ function patchTopic (msg) {
             
             // Update the content
             target.html(msg.html);
-            
-            // Now replace the title to get the TOC anchor and the correct section numbering
+
+            /* titles look like this:
+
+             <h2 class="title"><a id="Creating_and_Adding_Books"></a>2.1.&nbsp;Creating and Adding Books</h2>
+
+             We will take the section number and keep it. We will replace the title text with the new title.
+             We will keep the <a> element to allow the section to be the target of a TOC link.
+
+             */
+
             var new_title_text = $(target.find('.title')[0]).text();  // Grab the new title
             new_title_text = (new_title_text.substr(new_title_text.indexOf(' '))); // remove the section number
 
@@ -349,8 +357,15 @@ function patchTopic (msg) {
 
             var old_section_num = $(title).text().substr(0, $(title).text().indexOf(' ')); // separate old section number
 
+            var _a = $(target.find('.title')[0]).children('a').detach();  // grab the anchor target
             $(target.find('.title')[0]).text(old_section_num + ' ' + new_title_text); // new title
-            
+            $(target.find('.title')[0]).prepend(_a); // replace anchor target
+
+            var _id = _a.attr('id'); // anchor
+            console.log('scanning TOC for ' + _id);
+            $("[href='#" + _id + "']").text(old_section_num + ' ' + new_title_text); // TOC links
+
+
             // Update the revision information stored in the css
               // http://stackoverflow.com/questions/2644299/jquery-removeclass-wildcard
             target.removeClass(function (index, css) {
