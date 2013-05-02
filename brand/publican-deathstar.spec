@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.47
+Version:	0.48
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Thu May 01 2013 Joshua Wulf <jwulf@redhat.com> 0.48
+- Support for changing topic title from editor
+
 * Tue Apr 23 2013 Joshua Wulf <jwulf@redhat.com> 0.47
 - Live patching now embeds the topic revision number as a css class: pg-topic-rev-<revision>
 - Topic driver implemented on server. 

@@ -7,7 +7,7 @@ var flash,
     beenConnected, 
     work;
 
-function url_query( query, url ) {
+function url_query (query, url) {
   // Parse URL Queries
   // from http://www.kevinleary.net/get-url-parameters-javascript-jquery/
   // Will parse the current window location if not passed a url
@@ -23,7 +23,7 @@ function url_query( query, url ) {
 	}
 }
 
-function deathstarItUp()
+function deathstarItUp ()
 {
     var editorURL, injectorURL, buildData, endLoc, topicID;
     
@@ -35,8 +35,6 @@ function deathstarItUp()
     getBookmd();
     
     $('.notifier').click(clearNotifier);
-    
-    $('#update-revhistory').click(updateRevHistory);
     
     $("#floatingtoc").load('index.html .toc:eq(0)');
 	$("body").click(function(){
@@ -50,7 +48,7 @@ function deathstarItUp()
 	});
 }
 
-function updateRevHistory(e) {
+function updateRevHistory (e) {
     var _revhistoryid,
         _classes,
         _class;
@@ -93,7 +91,7 @@ function updateRevHistory(e) {
    }
 }
 
-function retract_menu(id) {
+function retract_menu (id) {
     if(work) {
 		work = 0;
 		var entity = document.getElementById(id);
@@ -108,7 +106,7 @@ function retract_menu(id) {
 	}
 }
 
-function toggle(e, id) {
+function toggle (e, id) {
     if(work) {
 		work = 0;
 		var entity = document.getElementById(id);
@@ -190,7 +188,7 @@ function connectSocket () {
     }
 }
 
-function processStateChange(data) {
+function processStateChange (data) {
     if (data.md)    
         updateControlPanel(data.md);
 }
@@ -209,6 +207,7 @@ function updateControlPanel (md) {
     $('#edit-structure').click(clickEditStructure);
     $('#click-publish').click(clickPublish);
     $('#go-home').click(clickGoHome);
+    $('#update-revhistory').click(updateRevHistory);
 }
 
 function clickGoHome (e) {
@@ -343,7 +342,14 @@ function patchTopic (msg) {
             target.html(msg.html);
             
             // Now replace the title to get the TOC anchor and the correct section numbering
-            $(target.find('.title')[0]).replaceWith(title);
+            var new_title_text = $(target.find('.title')[0]).text();  // Grab the new title
+            new_title_text = (new_title_text.substr(new_title_text.indexOf(' '))); // remove the section number
+
+            $(target.find('.title')[0]).replaceWith(title); // Old TOC anchor and section number
+
+            var old_section_num = $(title).text().substr(0, $(title).text().indexOf(' ')); // separate old section number
+
+            $(target.find('.title')[0]).text(old_section_num + ' ' + new_title_text); // new title
             
             // Update the revision information stored in the css
               // http://stackoverflow.com/questions/2644299/jquery-removeclass-wildcard
