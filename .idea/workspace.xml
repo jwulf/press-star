@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/index.ejs" afterPath="$PROJECT_DIR$/views/index.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" afterPath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/livePatch.js" afterPath="$PROJECT_DIR$/lib/livePatch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deathstar-2.0.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -13,10 +15,11 @@
     <file path="/deathstar-topiceditor.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367252915998" ignored="false" />
     <file path="/topicdriver.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367492942420" ignored="false" />
     <file path="/a.dummy" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367472670511" ignored="false" />
-    <file path="/livePatch.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367475441508" ignored="false" />
+    <file path="/livePatch.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367496155078" ignored="false" />
     <file path="/publican-deathstar.spec" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367476351534" ignored="false" />
     <file path="/index.ejs" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367493280781" ignored="false" />
     <file path="/sockethandler.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367490606864" ignored="false" />
+    <file path="/deathstar.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367496119900" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,10 +66,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.ejs" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.ejs" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/index.ejs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="67" selection-start="3341" selection-end="3341" vertical-scroll-proportion="0.79198766">
+            <state line="66" column="67" selection-start="3341" selection-end="3341" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="livePatch.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="402" column="43" selection-start="18342" selection-end="18342" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="deathstar.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="363" column="33" selection-start="11956" selection-end="11956" vertical-scroll-proportion="0.9061033">
               <folding />
             </state>
           </provider>
@@ -107,7 +128,7 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/publican-deathstar" />
   </component>
   <component name="GitLogSettings">
     <option name="myDateState">
@@ -121,20 +142,20 @@
         <option value="$PROJECT_DIR$/views/booklist-publish.ejs" />
         <option value="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" />
         <option value="$PROJECT_DIR$/routes/restapi.js" />
-        <option value="$PROJECT_DIR$/lib/livePatch.js" />
-        <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
         <option value="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" />
         <option value="$PROJECT_DIR$/publican-deathstar/publican.cfg" />
         <option value="$PROJECT_DIR$/public/scripts/index.js" />
         <option value="$PROJECT_DIR$/routes/sockethandler.js" />
         <option value="$PROJECT_DIR$/lib/topicdriver.js" />
         <option value="$PROJECT_DIR$/views/index.ejs" />
+        <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
+        <option value="$PROJECT_DIR$/lib/livePatch.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
-    <option name="y" value="22" />
+    <option name="x" value="-1790" />
+    <option name="y" value="194" />
     <option name="width" value="1440" />
     <option name="height" value="808" />
   </component>
@@ -208,6 +229,60 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="routes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="en-US" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="en-US" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -298,7 +373,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="22" width="1440" height="808" extended-state="6" />
+    <frame x="-1790" y="194" width="1440" height="808" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -420,20 +495,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="393" column="110" selection-start="17448" selection-end="17993" vertical-scroll-proportion="0.35211268">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="344" column="89" selection-start="11041" selection-end="11041" vertical-scroll-proportion="0.4531722">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec">
       <provider selected="true" editor-type-id="text-editor">
         <state line="56" column="46" selection-start="1486" selection-end="1486" vertical-scroll-proportion="0.4531722">
@@ -485,7 +546,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="67" selection-start="3341" selection-end="3341" vertical-scroll-proportion="0.79198766">
+        <state line="66" column="67" selection-start="3341" selection-end="3341" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="402" column="43" selection-start="18342" selection-end="18342" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="363" column="33" selection-start="11956" selection-end="11956" vertical-scroll-proportion="0.9061033">
           <folding />
         </state>
       </provider>
