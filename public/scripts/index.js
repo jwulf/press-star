@@ -71,7 +71,10 @@ function pageSetup () {
     });
     
     $('#publish-button').click(publish);
-    
+
+    $('.global-warning').click(function() {
+       $('.global-warning').css('display', 'none');
+    });
     connectSocket();
 
     checkMOTD();
