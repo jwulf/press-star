@@ -2,21 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/motd.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/booklist-publish.ejs" afterPath="$PROJECT_DIR$/views/booklist-publish.ejs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" afterPath="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" afterPath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/index.ejs" afterPath="$PROJECT_DIR$/views/index.ejs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/index.js" afterPath="$PROJECT_DIR$/public/scripts/index.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/livePatch.js" afterPath="$PROJECT_DIR$/lib/livePatch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" afterPath="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/publican.cfg" afterPath="$PROJECT_DIR$/publican-deathstar/publican.cfg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deathstar-2.0.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367295809346" ignored="false" />
+    <file path="/Dummy.txt" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367470875665" ignored="false" />
     <file path="/index.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367238898556" ignored="false" />
     <file path="/motd.json" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367239744844" ignored="false" />
     <file path="/booklist-publish.ejs" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367246381383" ignored="false" />
     <file path="/deathstar-topiceditor.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367252915998" ignored="false" />
+    <file path="/topicdriver.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367473526986" ignored="false" />
+    <file path="/a.dummy" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367472670511" ignored="false" />
+    <file path="/livePatch.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367475441508" ignored="false" />
+    <file path="/publican-deathstar.spec" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367476351534" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,19 +56,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.ejs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/index.ejs">
+      <file leaf-file-name="topicdriver.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/topicdriver.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="754" selection-start="3075" selection-end="3075" vertical-scroll-proportion="0.0">
+            <state line="71" column="90" selection-start="2713" selection-end="2713" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pressgangccms.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="restapi.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/routes/restapi.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="0" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pressgangccms.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/pressgang-rest/pressgangccms.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="32" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.5399061">
+            <state line="55" column="32" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -75,87 +86,35 @@
       <file leaf-file-name="motd.json" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/motd.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="5" selection-start="7" selection-end="8" vertical-scroll-proportion="0.0">
+            <state line="1" column="5" selection-start="7" selection-end="8" vertical-scroll-proportion="-0.625">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="livePatch.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
+      <file leaf-file-name="deathstar.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="479" column="49" selection-start="21679" selection-end="21679" vertical-scroll-proportion="0.0">
+            <state line="344" column="89" selection-start="11041" selection-end="11041" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="booklist-publish.ejs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/booklist-publish.ejs">
+      <file leaf-file-name="publican-deathstar.spec" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="35" selection-start="3166" selection-end="3166" vertical-scroll-proportion="0.0">
+            <state line="56" column="46" selection-start="1486" selection-end="1486" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="deathstar-topiceditor.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
+      <file leaf-file-name="publican.cfg" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/publican-deathstar/publican.cfg">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="589" column="39" selection-start="23968" selection-end="23968" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <marker date="1367241714000" expanded="true" signature="34358:34476" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34403:34453" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34523:35099" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34574:35084" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34592:34805" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34610:34786" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34632:34688" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34711:34767" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34824:35066" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34842:35047" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34864:34936" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34888:34913" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34958:35028" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="34981:35005" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35148:35894" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35199:35879" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35217:35508" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35235:35489" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35257:35313" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35336:35392" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35414:35470" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35527:35861" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35545:35842" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35567:35639" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35591:35616" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35661:35731" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35684:35708" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35753:35823" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35776:35800" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35935:36229" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="35979:36213" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36002:36103" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36125:36191" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36146:36168" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36275:36567" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36316:36372" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36335:36355" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36388:36548" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36411:36531" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36433:36507" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36458:36484" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36586:36670" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="36633:36650" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38073:38170" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38093:38170" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38216:38304" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38345:38493" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38387:38472" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38513:38663" placeholder="..." />
-                <marker date="1367241714000" expanded="true" signature="38556:38642" placeholder="..." />
-              </folding>
+            <state line="7" column="46" selection-start="125" selection-end="125" vertical-scroll-proportion="0.16431925">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -177,7 +136,7 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/publican-deathstar" />
   </component>
   <component name="GitLogSettings">
     <option name="myDateState">
@@ -189,14 +148,20 @@
       <list>
         <option value="$PROJECT_DIR$/public/scripts/index.js" />
         <option value="$PROJECT_DIR$/public/motd.json" />
-        <option value="$PROJECT_DIR$/lib/livePatch.js" />
         <option value="$PROJECT_DIR$/views/booklist-publish.ejs" />
         <option value="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" />
         <option value="$PROJECT_DIR$/views/index.ejs" />
+        <option value="$PROJECT_DIR$/routes/restapi.js" />
+        <option value="$PROJECT_DIR$/lib/topicdriver.js" />
+        <option value="$PROJECT_DIR$/lib/livePatch.js" />
+        <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
+        <option value="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" />
+        <option value="$PROJECT_DIR$/publican-deathstar/publican.cfg" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="1" />
     <option name="y" value="22" />
     <option name="width" value="1440" />
     <option name="height" value="808" />
@@ -270,6 +235,60 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="en-US" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="publican-deathstar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="en-US" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deathstar-2.0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="public" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -310,74 +329,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="assets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="node_modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="node_modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pressgang-rest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deathstar-2.0" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -385,9 +336,10 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
@@ -396,6 +348,9 @@
       <option name="filePath" />
       <option name="scope" value="ALL" />
       <option name="testName" />
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="$PROJECT_DIR$">
       <method />
     </configuration>
     <list size="0" />
@@ -426,14 +381,35 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="808" extended-state="6" />
+    <frame x="1" y="22" width="1440" height="808" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289855" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289855" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24629499" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24629499" sideWeight="0.6710145" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -442,7 +418,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -509,93 +484,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/views/index.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="13" selection-start="2319" selection-end="2319" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/motd.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="5" selection-start="7" selection-end="8" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="479" column="49" selection-start="21679" selection-end="21679" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/booklist-publish.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="35" selection-start="3166" selection-end="3166" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="589" column="39" selection-start="23968" selection-end="23968" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <marker date="1367241714000" expanded="true" signature="34358:34476" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34403:34453" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34523:35099" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34574:35084" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34592:34805" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34610:34786" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34632:34688" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34711:34767" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34824:35066" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34842:35047" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34864:34936" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34888:34913" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34958:35028" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34981:35005" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35148:35894" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35199:35879" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35217:35508" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35235:35489" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35257:35313" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35336:35392" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35414:35470" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35527:35861" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35545:35842" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35567:35639" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35591:35616" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35661:35731" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35684:35708" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35753:35823" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35776:35800" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35935:36229" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35979:36213" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36002:36103" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36125:36191" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36146:36168" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36275:36567" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36316:36372" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36335:36355" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36388:36548" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36411:36531" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36433:36507" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36458:36484" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36586:36670" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36633:36650" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38073:38170" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38093:38170" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38216:38304" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38345:38493" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38387:38472" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38513:38663" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38556:38642" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-pressgang-rest-utils.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="401" column="0" selection-start="14729" selection-end="15283" vertical-scroll-proportion="0.0">
@@ -610,9 +498,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/motd.json">
+    <entry file="file://$PROJECT_DIR$/views/publish.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="5" selection-start="7" selection-end="8" vertical-scroll-proportion="0.0">
+        <state line="46" column="24" selection-start="674" selection-end="1885" vertical-scroll-proportion="-20.76923" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="589" column="39" selection-start="23663" selection-end="23663" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="61" column="754" selection-start="3075" selection-end="3075" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/booklist-publish.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="53" column="35" selection-start="3166" selection-end="3166" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -624,23 +529,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
+    <entry file="file://$PROJECT_DIR$/public/motd.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="479" column="49" selection-start="21679" selection-end="21679" vertical-scroll-proportion="0.0">
+        <state line="1" column="5" selection-start="7" selection-end="8" vertical-scroll-proportion="-0.625">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/booklist-publish.ejs">
+    <entry file="file://$PROJECT_DIR$/node_modules/pressgang-rest/pressgangccms.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="35" selection-start="3166" selection-end="3166" vertical-scroll-proportion="0.0">
+        <state line="55" column="32" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.0">
           <folding />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/publish.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="24" selection-start="674" selection-end="1885" vertical-scroll-proportion="-20.76923" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/scripts/index.js">
@@ -650,75 +550,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
+    <entry file="file://$PROJECT_DIR$/routes/restapi.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="589" column="39" selection-start="23968" selection-end="23968" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <marker date="1367241714000" expanded="true" signature="34358:34476" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34403:34453" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34523:35099" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34574:35084" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34592:34805" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34610:34786" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34632:34688" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34711:34767" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34824:35066" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34842:35047" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34864:34936" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34888:34913" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34958:35028" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="34981:35005" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35148:35894" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35199:35879" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35217:35508" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35235:35489" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35257:35313" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35336:35392" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35414:35470" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35527:35861" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35545:35842" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35567:35639" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35591:35616" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35661:35731" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35684:35708" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35753:35823" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35776:35800" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35935:36229" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="35979:36213" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36002:36103" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36125:36191" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36146:36168" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36275:36567" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36316:36372" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36335:36355" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36388:36548" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36411:36531" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36433:36507" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36458:36484" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36586:36670" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="36633:36650" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38073:38170" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38093:38170" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38216:38304" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38345:38493" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38387:38472" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38513:38663" placeholder="..." />
-            <marker date="1367241714000" expanded="true" signature="38556:38642" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="754" selection-start="3075" selection-end="3075" vertical-scroll-proportion="0.0">
+        <state line="5" column="0" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/pressgang-rest/pressgangccms.js">
+    <entry file="file://$PROJECT_DIR$/lib/topicdriver.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="32" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.5399061">
+        <state line="71" column="90" selection-start="2713" selection-end="2713" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/livePatch.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="393" column="110" selection-start="17448" selection-end="17993" vertical-scroll-proportion="0.35211268">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="344" column="89" selection-start="11041" selection-end="11041" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="46" selection-start="1486" selection-end="1486" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/publican-deathstar/publican.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="46" selection-start="125" selection-end="125" vertical-scroll-proportion="0.16431925">
           <folding />
         </state>
       </provider>
