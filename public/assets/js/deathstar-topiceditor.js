@@ -31,6 +31,7 @@ var validationServerResponse,
     pressGangUIURL,
     globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
     specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
+    revHistoryFragment,
     Model = {
         modified: ko.observable(),
         validated: ko.observable(),
@@ -287,8 +288,8 @@ function doActualSave (log_level, log_msg) {
         xmlText = editor.getValue();
     }
     
-    var saveObject = { 
-                        userid: pressgang_userid, 
+    var saveObject = {
+                        userid: pressgang_userid,
                         url: skynetURL,
                         id: topicID,
                         specid: specID,
@@ -453,6 +454,7 @@ function generateRESTParameters() {
     topicID = params.topicid;
     sectionNum = params.sectionNum;
     specID = params.specID;
+    revHistoryFragment = params.revhistoryupdate || false;
 }
 
 // This function sends the editor content to a node server to get back a rendered HTML view
@@ -525,6 +527,9 @@ function loadSkynetTopic() {
                     $('#code').each(function(){this.value = json.xml;});
                     Model.modified(false);
                     doValidate();
+                    if (revHistoryFragment) {
+                        window.opener.getRevHistoryFragment(json.xml, injectRevHistoryFragment);
+                    }
                 }
                 topicRevision = json.revision;
                 setPageTitle(json.title);
@@ -552,6 +557,19 @@ function loadSkynetTopic() {
             });
         }
     }
+}
+
+// Passed in to the page through the revhistoryupdate parameter
+function injectRevHistoryFragment(content, fragment){
+
+    var doc = $.parseXML(content);
+    var newEntry = $.parseXML(fragment);
+     $('revhistory', doc).prepend($('revision', newEntry)[0]);
+    var newHTML = new XMLSerializer().serializeToString(doc);
+    window.editor.setValue(newHTML);
+    $('#code').each(function(){this.value = newHTML;});
+    Model.validated(false);
+    Model.modified(true);
 }
 
 function newTopicXML () {
