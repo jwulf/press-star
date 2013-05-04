@@ -23,9 +23,15 @@
 </div>
 
 <% if ($('.customrevhistory').length >0) { %>
+    <% if (updatingRevHistory) { %>
+    <div class="ctrl-btn update-rev-history-btn">
+        <span class="css3-blink">Generating Revision History <% if (percentage) { %> <%= percentage %>%<% } %></span>
+    </div>
+    <% } else { %>
     <div class="ctrl-btn update-rev-history-btn">
         <a href="#" id="update-revhistory">Update Revision History</a>
     </div>
+    <% } %>
 <% } %>
 
 <div class="ctrl-btn publish-btn">

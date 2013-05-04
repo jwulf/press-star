@@ -55,6 +55,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu May 01 2013 Joshua Wulf <jwulf@redhat.com> 0.48
 - Support for changing topic title from editor
+- Automated Revision History Generation
 
 * Tue Apr 23 2013 Joshua Wulf <jwulf@redhat.com> 0.47
 - Live patching now embeds the topic revision number as a css class: pg-topic-rev-<revision>
