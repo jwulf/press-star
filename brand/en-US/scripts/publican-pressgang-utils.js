@@ -141,7 +141,7 @@ var _rate_limit = 0, // _rate_limit in ms is global to allow all API calls to sh
     _spawned_log_msgs; // Used to track async call return
 
 /**
- * Load topic via the Death Star topic driver
+ * Generate a Revision History entry
  * @param {Array.<{ topic: (number),
                     msg: (string),
                     timestamp: (number),
@@ -156,15 +156,26 @@ var _rate_limit = 0, // _rate_limit in ms is global to allow all API calls to sh
  *          with a roll-up of revision history entries.
  */
 function generateRevisionHistoryFragment(results, cb) {
-    var revHistoryFragment, ourDate, result, splitDate, i;
+    var revHistoryFragment, ourDate, result, splitDate, i, firstname, surname, email;
 
     ourDate = new Date().toDateString();
+
+    // This information is created in a cookie when a log message is saved from the
+    // topic editor
+    firstname = getCookie('userfirstname') || 'Red Hat';
+    surname = getCookie('usersurname') || 'Engineering Content Services';
+    email = getCookie('useremail') || 'www.redhat.com';
 
     revHistoryFragment =  '            <revision>\n';
     revHistoryFragment += '            <!-- Automated Revision History Entry -->\n';
     revHistoryFragment += '                <!-- manually update revnumber, or publish will update it for you -->\n';
     revHistoryFragment += '                <revnumber>1.0-0</revnumber>\n';
     revHistoryFragment += '                <date>' + ourDate + '</date>\n';
+    revHistoryFragment += '                <author>\n';
+    revHistoryFragment += '                    <firstname>' + firstname + '</firstname>\n';
+    revHistoryFragment += '                    <surname>' + surname + '</surname>\n';
+    revHistoryFragment += '                    <email>' + email + '</email>\n';
+    revHistoryFragment += '                </author>';
     revHistoryFragment += '                <revdescription>\n';
     revHistoryFragment += '                    <simplelist>\n';
 
@@ -542,9 +553,9 @@ function getLogMessage (url, id, rev, cb) {
             if (logDetails && logDetails.user && logDetails.user.description) {
                 author = logDetails.user.description.split(' ');
             }
-            var firstname = (author[0]) ? author[0] : '';
-            var surname = (author[1]) ? author[1] : '';
-            var email = (author[2]) ? author [2] : '';
+            var firstname = (author[0]) ? author[0] : 'Red Hat';
+            var surname = (author[1]) ? author[1] : 'Engineering Content Services';
+            var email = (author[2]) ? author [2] : 'www.redhat.com';
 
             var _log = {
                 topic: id,
