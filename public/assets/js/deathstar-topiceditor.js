@@ -228,6 +228,8 @@ window.onbeforeunload = function(e) {
 // callback function for use when a node server is generating the live HTML preview
 function handleHTMLPreviewResponse (preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
+        Model.htmlpreview(preview);
+        /*
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
@@ -238,7 +240,7 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
             if (section !== null) {
                 Model.htmlpreview(section[0].innerHTML);
             }
-        }
+        } */
     } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
 
@@ -850,9 +852,12 @@ function togglePlainText (e) {
                     if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0] &&
                             event.dataTransfer.files[0].type == 'image/png' && window.FileReader) {
                         var reader = new FileReader;
-                        var _filename = event.dataTransfer.files[0].filename;
+                        var _filename = event.dataTransfer.files[0].name;
                         reader.onload = function() {
-                            imgData = reader.result;
+                            var imgData = reader.result;
+
+                            var byteEncodedImage   = new Int8Array( imgData );
+                            var encodedImage = Array.apply( [], byteEncodedImage );
 
                             // Create an image in PressGang
                             var _url = skynetURL + '/seam/resource/rest/1/image/create/json?expand=' + encodeURI(JSON.stringify(
@@ -877,44 +882,57 @@ function togglePlainText (e) {
                                 dataType: "json",
                                 contentType: "application/json; charset=utf-8",
                                 // and on success, upload the image data
-                                success: function imageCreatedNowPostContent (result) {
+                                success: function imageCreatedNowGetUploadID (result) {
                                     var imgid = result.id;
-                                    if (result.id) {
-                                        _url = skynetURL + '/seam/resource/rest/1/image/update/json?expand=' +
-                                            encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
-                                        content = {configuredParameters: ["languageImages", "id"],
-                                            languageImages_OTM: {items: [{item:{
-                                                configuredParameters: ['imageData', 'filename'],
-                                                filename: _filename,
+                                    if (!result.id) { return; }
+                                    _url = skynetURL + '/seam/resource/rest/1/image/get/json/'+imgid+ '?expand=' +
+                                        encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
+
+                                    $.ajax({
+                                        url: _url,
+                                        type: "GET",
+                                        contentType: "application/json; charset=utf-8",
+                                        success: function imageCreatedNowPostContent (result) {
+                                            var uploadID = result.languageImages_OTM.items[0].item.id
+                                            _url = skynetURL + '/seam/resource/rest/1/image/update/json?expand=' +
+                                                encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
+                                            content = {configuredParameters: ["languageImages", "description"],
                                                 id: imgid,
-                                                imageData: imgData
-                                            }, state: 3}]}}
-                                        $.ajax({
-                                            url: _url,
-                                            type: "POST",
-                                            data: JSON.stringify(content),
-                                            dataType: "json",
-                                            contentType: "application/json; charset=utf-8",
-                                            // and on success, update the editor
-                                            success: function () {
-                                                window.editor.replaceSelection('<figure>\n' +
-                                                    '    <title>Title</title>\n' +
-                                                    '    <mediaobject>\n' +
-                                                    '        <imageobject>\n' +
-                                                    '            <imagedata align="center" fileref="images/'+ imgid + '.png"/>\n' +
-                                                    '        </imageobject>\n' +
-                                                    '        <textobject>\n' +
-                                                    '            <phrase>Description</phrase>\n' +
-                                                    '        </textobject>\n' +
-                                                    '    </mediaobject>\n' +
-                                                    '</figure>\n');
-                                            }
-                                        });
-                                    }
+                                                description: "Uploaded from Press Star",
+                                                languageImages_OTM: {items: [{item:{
+                                                    configuredParameters: ['imageData', 'filename'],
+                                                    filename: _filename,
+                                                    id: uploadID,
+                                                    imageData: encodedImage
+                                                }, state: 3}]}}
+                                            $.ajax({
+                                                url: _url,
+                                                type: "POST",
+                                                data: JSON.stringify(content),
+                                                dataType: "json",
+                                                contentType: "application/json; charset=utf-8",
+                                                // and on success, update the editor
+                                                success: function () {
+                                                    window.editor.replaceSelection('<figure>\n' +
+                                                        '    <title>Title</title>\n' +
+                                                        '    <mediaobject>\n' +
+                                                        '        <imageobject>\n' +
+                                                        '            <imagedata align="center" fileref="images/'+ imgid + '.png"/>\n' +
+                                                        '        </imageobject>\n' +
+                                                        '        <textobject>\n' +
+                                                        '            <phrase>Description</phrase>\n' +
+                                                        '        </textobject>\n' +
+                                                        '    </mediaobject>\n' +
+                                                        '</figure>\n');
+                                                    updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
                         }
-                        reader.readAsText(event.dataTransfer.files[0]);
+                        reader.readAsArrayBuffer(event.dataTransfer.files[0]);
 
                         return true;  // stop the editor response
                     }
