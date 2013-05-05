@@ -5,12 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/control-panel.ejs" afterPath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/control-panel.ejs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" afterPath="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" afterPath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/livePatch.js" afterPath="$PROJECT_DIR$/lib/livePatch.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" afterPath="$PROJECT_DIR$/publican-deathstar/publican-deathstar.spec" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js" afterPath="$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deathstar-2.0.iws" />
@@ -35,6 +29,12 @@
     <file path="/revision-history-spec.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367593874239" ignored="false" />
     <file path="/a.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367589661970" ignored="false" />
     <file path="$USER_HOME$/mnt/deathstar-2.0/publican-deathstar/en-US/scripts/publican-pressgang-utils.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367678713702" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/tar/publican-deathstar-0.48/en-US/Conventions.xml" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/rpm/publican-deathstar-0.48/tmp/en-US/xml_tmp/Conventions.xml" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/rpm/publican-deathstar-0.48/en-US/Conventions.xml" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/rpm/publican-deathstar-0.48/tmp/en-US/xml/Conventions.xml" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/rpm/publican-deathstar-0.48/publish/deathstar/en-US/Conventions.xml" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
+    <file path="$PROJECT_DIR$/publican-deathstar/tmp/tar/publican-deathstar-0.48/en-US/scripts/publican-pressgang-utils.js" changelist="fb7f92c3-9e31-448f-9f6b-42c7d7495f0e" time="1367772046153" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,10 +54,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="publican-pressgang-utils.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="publican-pressgang-utils.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="317" column="160" selection-start="12643" selection-end="12643" vertical-scroll-proportion="-33.346153">
+            <state line="154" column="186" selection-start="5526" selection-end="5526" vertical-scroll-proportion="0.18121442">
               <folding />
             </state>
           </provider>
@@ -83,10 +83,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="deathstar-topiceditor.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="deathstar-topiceditor.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="571" column="26" selection-start="23296" selection-end="23296" vertical-scroll-proportion="0.46633664">
+            <state line="594" column="8" selection-start="24126" selection-end="24126" vertical-scroll-proportion="-50.590908">
               <folding>
                 <marker date="1367708365000" expanded="true" signature="34678:34796" placeholder="..." />
                 <marker date="1367708365000" expanded="true" signature="34723:34773" placeholder="..." />
@@ -151,7 +151,7 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/publican-deathstar" />
   </component>
   <component name="GitLogSettings">
     <option name="myDateState">
@@ -175,8 +175,8 @@
         <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/control-panel.ejs" />
         <option value="$PROJECT_DIR$/publican-deathstar/en-US/spec/revision-history-spec.js" />
         <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js" />
-        <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js" />
         <option value="$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js" />
+        <option value="$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js" />
       </list>
     </option>
   </component>
@@ -682,13 +682,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="317" column="160" selection-start="12643" selection-end="12643" vertical-scroll-proportion="-33.346153">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/deathstar.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="97" column="170" selection-start="3490" selection-end="3490" vertical-scroll-proportion="-15.307693">
@@ -700,7 +693,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/assets/js/deathstar-topiceditor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="571" column="26" selection-start="23296" selection-end="23296" vertical-scroll-proportion="0.46633664">
+        <state line="594" column="8" selection-start="24126" selection-end="24126" vertical-scroll-proportion="-50.590908">
           <folding>
             <marker date="1367708365000" expanded="true" signature="34678:34796" placeholder="..." />
             <marker date="1367708365000" expanded="true" signature="34723:34773" placeholder="..." />
@@ -753,6 +746,13 @@
             <marker date="1367708365000" expanded="true" signature="38823:38973" placeholder="..." />
             <marker date="1367708365000" expanded="true" signature="38866:38952" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/publican-deathstar/en-US/scripts/publican-pressgang-utils.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="154" column="186" selection-start="5526" selection-end="5526" vertical-scroll-proportion="0.18121442">
+          <folding />
         </state>
       </provider>
     </entry>
