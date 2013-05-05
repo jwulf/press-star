@@ -81,6 +81,8 @@ function updateRevHistory (e) {
                  _latest_rev_history_entry = $(doc.getElementsByTagName('date')[0]);
 
                 _latest_rev_history_entry =  (_latest_rev_history_entry) ? _latest_rev_history_entry.text() : undefined;
+
+
                 console.log('Revision History entry: ' + _latest_rev_history_entry);
                 timestamp = (_latest_rev_history_entry) ? new Date(Date.parse(_latest_rev_history_entry)) : undefined;
 
