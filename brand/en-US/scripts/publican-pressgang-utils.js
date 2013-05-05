@@ -163,7 +163,7 @@ function generateRevisionHistoryFragment(results, cb) {
     revHistoryFragment =  '            <revision>\n';
     revHistoryFragment += '            <!-- Automated Revision History Entry -->\n';
     revHistoryFragment += '                <!-- manually update revnumber, or publish will update it for you -->\n';
-    revHistoryFragment += '                <revnumber>1.0</revnumber>\n';
+    revHistoryFragment += '                <revnumber>1.0-0</revnumber>\n';
     revHistoryFragment += '                <date>' + ourDate + '</date>\n';
     revHistoryFragment += '                <revdescription>\n';
     revHistoryFragment += '                    <simplelist>\n';
