@@ -6,13 +6,11 @@ var pressgang_userid,
     UNKNOWN_USER = 89, // default "unknown user" ID
     topicRevision; // used to check whether a new revision has been created on save
     
-var previewRenderErrorMsg = '<p>Could not transform</p>'
+var previewRenderErrorMsg = '<p>Could not transform</p>';
 // window.previewserverurl="http://127.0.0.1:8888";
-var nodeServer;
 window.refreshTime = 1000;
 window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
-// window.restProxy="http://127.0.0.1:8888/";
 window.mutex = 0;
 var validationServerResponse,
     port,
@@ -303,7 +301,7 @@ function doActualSave (log_level, log_msg) {
     saveTopic(saveObject, saveTopicCallback);
     
     function saveTopicCallback(data) {
-        if (data.status == 200) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
+        if (data.status == 200) { // We got a success response from the PressStar, which proxied it from PressGang if it's live
          
             var json = JSON.parse(data.responseText);
                 
@@ -347,7 +345,7 @@ function doActualSave (log_level, log_msg) {
                         ' then a new revision is not created.', 'alert-info');
                 }
             }
-        } else { // Not code 0 from the Death Star
+        } else { // Not code 0 from the Press Star
             showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
             topicEdited();
             //enableSaveRevert();
@@ -519,7 +517,7 @@ function loadSkynetTopic() {
             if (json.errno) {
                 var _msg = json.errno +  ' ' + json.syscall;
                 if (json.errno == 'ENOTFOUND' && json.syscall == 'getaddrinfo') _msg = 'Error retrieving topic from Press Gang';
-                showStatusMessage(_msg, 'Can the Death Star server reach ' + skynetURL +'?', 'alert-error');    
+                showStatusMessage(_msg, 'Can the PressStar server reach ' + skynetURL +'?', 'alert-error');
             } else{
                 if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
                 if (pageIsEditor) {
