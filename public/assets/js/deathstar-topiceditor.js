@@ -3,8 +3,9 @@
 
 // We use this until we can get identity sorted out
 var pressgang_userid,
-    UNKNOWN_USER = 89; // default "unknown user" ID
-
+    UNKNOWN_USER = 89, // default "unknown user" ID
+    topicRevision; // used to check whether a new revision has been created on save
+    
 var previewRenderErrorMsg = '<p>Could not transform</p>'
 // window.previewserverurl="http://127.0.0.1:8888";
 var nodeServer;
@@ -13,8 +14,7 @@ window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
 // window.restProxy="http://127.0.0.1:8888/";
 window.mutex = 0;
-var validXML = false,
-    validationServerResponse,
+var validationServerResponse,
     port,
     urlpath,
     serverURL,
@@ -25,9 +25,22 @@ var validXML = false,
     helpHintsOn,
     editorPlainText,
     editor,
-    oldVal, 
+    oldVal,
+    originalTitle, // the original title of the page - used when flashing the tab for attention
+    flash, // the timer for flashing the window title. Lets us clear it from wherever
+    pressGangUIURL,
     globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
-    specID; // editor links now include the specID of the book they come from. This allows default log messages to identify the book
+    specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
+    revHistoryFragment,
+    Model = {
+        modified: ko.observable(),
+        validated: ko.observable(),
+        revision: ko.observable(),
+        title: ko.observable(),
+        htmlpreview: ko.observable(),
+        helpHintsOn: ko.observable(false)
+    };
+
 
 // Execute on page load
 $(function() {
@@ -40,8 +53,8 @@ $(function() {
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
     if (pageIsEditor) {
-        // if the Save button is not disabled, do the save event
-        if (!$("#save-button").prop("disabled")) doSave();
+        // if the topic has been modified do the save event
+        if (Model.modified()) doSave();
     }
     event.preventDefault();
     return false;
@@ -63,11 +76,16 @@ $(document).keydown(function(event) {
     if (!(String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) && !(event.which == 19)) return true;
 
     if (pageIsEditor) {
-        if (!$("#save-button").prop("disabled")) doSave();
+        if (Model.modified()) doSave();
     }
     event.preventDefault();
     return false;
 });
+
+function topicEdited() {
+    Model.validated(false);
+    Model.modified(true);
+}
 
 function getLogMessage (e) {
     
@@ -126,8 +144,7 @@ function doCommitLogSave () {
         user; // iterator for the PressGang user list
         
     _log_msg = $('#commitmsg').val();
-    
-    
+     
     // If they change their username in the commit dialog, or it hasn't been set, then we verify it with pressgang
     // and set their userid
 
@@ -142,22 +159,30 @@ function doCommitLogSave () {
         
         The user gives us a user name, and we retrieve the unique ID to match from PressGang */
 
-    //REFACTOR - this needs to come out of this method into its own function
+    //REFACTOR: this needs to come out of this method into its own function
     
     if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
         pressgang_userid = UNKNOWN_USER;
             // Get all the users!
             var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
             
+        
+        // REFACTOR:
+        // Rather than getting all the users, we can query for the specific user like this:
+        // http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/query;username=jwulf?expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%20%7B%22name%22%3A%20%22users%22%7D%7D%5D%7D
+        
         // NOTE:  Persist the user identity on the server when going offline!!!
         // Getting a user identity needs to be part of the offlining process
         
         $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
             {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
             function (result) {
+                // Chrome gets result as a JSON object, FF 20 on Linux gets it as a string ???
+                // jQuery $.get does "intelligent guess" for the returned datatype if none is specified
+                // Try setting the datatype explicitly to json in $.get
+                // Also hack around with JSON.parse:
+                if (typeof result == 'string') result = JSON.parse(result); 
 
-		 // Chrome gets result as a JSON object, FF 20 on Linux gets it as a string ???
-                if (typeof result == 'string') result = JSON.parse(result);         
                 for (var users = 0; users < result.items.length; users ++) {
                     user = result.items[users].item;
                     if (user.name == thisusername) { pressgang_userid = user.id; break;}
@@ -175,7 +200,7 @@ function doCommitLogSave () {
                         closeMask ();       
                     }
                 }
-            });
+            }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
         doActualSave(globalLogLevel, _log_msg);
         closeMask ();
@@ -189,12 +214,6 @@ function closeMask () {
     return false;
 }
 
-
-function disable(selector) {
-    $(selector).prop("disabled", true);
-    $(selector).popover('hide');
-}
-
 function timedRefresh() {
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
     if (window.timerID != 0) {
@@ -204,23 +223,21 @@ function timedRefresh() {
 }
 
 window.onbeforeunload = function(e) {
-    if (!$("#save-button").prop("disabled") === true) return 'You have unsaved changes.';
+    if (Model.modified()) return 'You have unsaved changes.';
 };
 
 // callback function for use when a node server is generating the live HTML preview
-function handleHTMLPreviewResponse(preview, serverFunction) {
+function handleHTMLPreviewResponse (preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
-        if (section !== null) {
-            $(".div-preview").empty();
-            $(".div-preview").append(section[0]);
+        if (section.length !== 0) {
+            Model.htmlpreview(section[0].innerHTML);
         } else { // the topic preview is empty, or is not a section, could it be an appendix, i.e: a Revision History?
             section = doc.getElementsByClassName("appendix");
             if (section !== null) {
-                $(".div-preview").empty();
-                $(".div-preview").append(section[0]);
+                Model.htmlpreview(section[0].innerHTML);
             }
         }
     } else {
@@ -230,7 +247,7 @@ function handleHTMLPreviewResponse(preview, serverFunction) {
 }
 
 function doValidate(me, callback) {
-    if (!$("#validate-button").prop("disabled") == true || callback) {
+    if (!Model.validated() || callback) {
         showStatusMessage("Performing validation check...", '', 'alert-info');
         serversideValidateTopic(editor, callback);
     }
@@ -238,11 +255,10 @@ function doValidate(me, callback) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if ($("#save-button").prop('disabled') === false) { // If the Save button is enabled
-        disableSaveRevert();
-        // if the validate button is enabled, then we'll call validation before saving
-        if ($("#validate-button").prop('disabled') == false)
-        { // This needs to be a callback, because validation is asynchronous
+    if (Model.modified) { 
+        // if the topic is not validated we'll call validation before saving
+        if (!Model.validated())
+        { 
             doValidate(null, doActualSave);
         } else {
             doActualSave();
@@ -257,9 +273,9 @@ function doActualSave (log_level, log_msg) {
     // Grab the preview HTML now, when save is called.
     if ($('#div-preview-inline').find('.titlepage')) builtHTML = $('#div-preview-inline').html();
 
-    if (!validXML && validationServerResponse == 1) {
+    if (!Model.validated() && validationServerResponse == 1) {
         alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
-        $("#validate-button").prop("disabled", false);
+        Model.validated(false);
     }
 
     if (validationServerResponse == 0) alert("Unable to perform validation. Saving without validation.");
@@ -272,28 +288,79 @@ function doActualSave (log_level, log_msg) {
         xmlText = editor.getValue();
     }
     
-    saveTopic(pressgang_userid, skynetURL, topicID, specID, xmlText, log_level, log_msg, saveTopicCallback);
+    var saveObject = {
+                        userid: pressgang_userid,
+                        url: skynetURL,
+                        id: topicID,
+                        specid: specID,
+                        xml: xmlText,
+                        html: builtHTML,
+                        log_level: log_level,
+                        log_msg: log_msg,
+                        revision: topicRevision
+                        };
+    
+    saveTopic(saveObject, saveTopicCallback);
     
     function saveTopicCallback(data) {
-        if (data.code == 0) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
-            showStatusMessage("Saved OK", '', 'alert-success');
-            disable("#save-button");
-            disable("#revert-button");
-            $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
-
-            // Send the topic HTML to the server for patching
-            if (builtHTML) {
-                sendPatchNotification(skynetURL, topicID, builtHTML);
-                console.log('Sending Patch Notification for topic %s', topicID);
+        if (data.status == 200) { // We got a sucess response from the Death Star, which proxied it from PressGang if it's live
+         
+            var json = JSON.parse(data.responseText);
+                
+            if (json.revisionconflict) { // Topic was not saved because of revision conflict
+                showStatusMessage("Revision conflict - you're editing " + topicRevision + ', in the meantime someone saved ' + json.revision + 
+                    '<span class="pull-right"><small>[<a href="#">Click for details</a>]</small></span>', 
+                    'While you were editing, someone saved a <a target="_blank" href="' + pressGangUIURL + 
+                    '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
+                    json.revision + '</a> of this topic.', 'alert-warning');
+                topicEdited();
+                // enableSaveRevert();
+                flashTitle('Revision Conflict');
+                // We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
+            } else {
+                // Load up the transformed xml from the saved topic
+                if (pageIsEditor) {
+                    window.editor.setValue(json.xml);
+                    $('#code').each(function(){this.value = json.xml;});
+                    Model.modified(false);
+                }
+                if (json.revision != topicRevision) { //check if the topic returned from skynizzle has a different revision number
+                    topicRevision = json.revision;
+                    showStatusMessage('Saved OK: revision <a href="#">' + topicRevision + 
+                        '</a> created. <span class="pull-right"><small>[<a href="#">Click for more detail</a>]</small></span', 
+                        'The topic was saved and a new revision <a target="_blank" href="' + pressGangUIURL + 
+                        '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
+                    json.revision + '</a> created.' , 'alert-success');
+                    $('#commitmsg').val(' '); // Scrub any commit message from the dialog, because it went through
+                    updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+                    //doValidate(); // The Validation message was overwriting the Save result message
+                    setPageTitle(json.title);
+                    clearInterval(flash);
+    
+                } else {
+                    showStatusMessage('No new revision was saved. ' + 
+                        '<span class="pull-right"><small>[<a href="#">Click for more details</a>]' + 
+                        '</small></span>',
+                        'You must change the topic XML to save a new revision. ' + 
+                        'Extraneous whitespace is stripped from topics before they are saved. ' + 
+                        'If the only changes you make are stripped away, ' +
+                        ' then a new revision is not created.', 'alert-info');
+                }
             }
-
-            if (!validXML) doValidate();
         } else { // Not code 0 from the Death Star
-           showStatusMessage("Error saving. Status code: " + data.code + ' : ' + data.msg, '', 'alert-error');
-            enableSaveRevert();
+            showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
+            topicEdited();
+            //enableSaveRevert();
         }
     }
 }
+
+function flashTitle(msg) {
+    originalTitle = window.title;
+    flash = setInterval(function () {
+         window.title = (window.title == originalTitle) ? msg: originalTitle;
+    }, 750);
+};
 
 // Sends the editor content to a node server for validation
 function serversideValidateTopic(editor, cb) {
@@ -304,12 +371,11 @@ function serversideValidateTopic(editor, cb) {
         validationServerResponse = 1;
         if (data === "0") {
             showStatusMessage("Topic XML is valid Docbook 4.5", '', 'alert-success');
-            validXML = true;
-            disable("#validate-button");
+            Model.validated(true);
             if (cb && typeof(cb) == "function") cb();
         } else {
             showStatusMessage(data.errorSummary + '<span class="pull-right"><small>[<a id="click-to-reveal-hide" href="#"></a>]</small></span>', data.errorDetails , 'alert-error');
-            validXML = false;
+            Model.validated(false);
             cb && cb();
         }
     }
@@ -335,7 +401,7 @@ function serversideValidateTopic(editor, cb) {
     });
 }
 
-function updateXMLPreviewRoute(cm, preview) {
+function updateXMLPreviewRoute (cm, preview) {
     // serverFunction = "validate";
     serverFunction = "preview";
     serversideUpdateXMLPreview(cm, "preview");
@@ -384,13 +450,15 @@ function generateRESTParameters() {
     }
  
     skynetURL = params.skyneturl;
+    pressGangUIURL = skynetURL.substr(0, skynetURL.indexOf('TopicIndex')) + 'pressgang-ccms-ui/';
     topicID = params.topicid;
     sectionNum = params.sectionNum;
     specID = params.specID;
+    revHistoryFragment = params.revhistoryupdate || false;
 }
 
 // This function sends the editor content to a node server to get back a rendered HTML view
-function serversideUpdateXMLPreview(cm, serverFunction) {
+function serversideUpdateXMLPreview (cm, serverFunction) {
     var xmlText;
 
     // If we weren't called from the 2 second timer, we must have been called by the 
@@ -425,23 +493,16 @@ function serversideUpdateXMLPreview(cm, serverFunction) {
 
 }
 
-/*function onUnload()
-{
-  if ( document.getElementbyId("button-save") && ! document.getElementById("button-save").disabled)
-  {
-    var r=confirm("You have unsaved changes. Do you want to discard them?");
-  }
-}*/
-
 function setPageTitle (topicTitle) {
     var titleHTML;
     var pageTitle;
     //  $("#page-title").html(topicID + ": ");
     if (topicTitle) {
-        pageTitle = topicID + ': ' + topicTitle;
-        titleHTML = '<a href="' + skynetButtonURL + '" target="_blank">' + pageTitle + '</a>';
+        pageTitle =  ('"' + topicTitle + '"' + ' - ID: ' + topicID + '  <small>[rev: ' + topicRevision + ']</small>');
+        titleHTML = '<a href="'  + pressGangUIURL + 
+                    '#SearchResultsAndTopicView;query;topicIds=' + topicID + '" target="_blank">' + pageTitle + '</a>';
         $("#page-title").html(titleHTML);
-        document.title = pageTitle;
+        document.title = topicID + ' - ' + topicTitle;
     }
 }
 
@@ -451,9 +512,31 @@ function injectPreviewLink() {
 }
 
 function loadSkynetTopic() {
-    if (alwaysUseServerToLoadTopics || editingOffline)
+    var  alwaysUseServerToLoadTopics = true;
+    if (alwaysUseServerToLoadTopics)
     {
-        loadTopicViaServer();
+        loadTopicViaDeathStar(skynetURL, topicID, function (json) {
+            if (json.errno) {
+                var _msg = json.errno +  ' ' + json.syscall;
+                if (json.errno == 'ENOTFOUND' && json.syscall == 'getaddrinfo') _msg = 'Error retrieving topic from Press Gang';
+                showStatusMessage(_msg, 'Can the Death Star server reach ' + skynetURL +'?', 'alert-error');    
+            } else{
+                if (json.xml == "") json.xml = "<section>\n\t<title>" + json.title + "</title>\n\n\t<para>Editor initialized empty topic content</para>\n\n</section>";
+                if (pageIsEditor) {
+                    window.editor.setValue(json.xml);
+                    $('#code').each(function(){this.value = json.xml;});
+                    Model.modified(false);
+                    doValidate();
+                    if (revHistoryFragment) {
+                        window.opener.getRevHistoryFragment(json.xml, injectRevHistoryFragment);
+                    }
+                }
+                topicRevision = json.revision;
+                setPageTitle(json.title);
+                updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
+                clearInterval(flash);
+            }
+        });
     } else {
         // This function loads the topic xml via JSONP, without a proxy        
         // It requires your web browser to have a connection to the PressGang server (On the same network or VPN)
@@ -464,16 +547,29 @@ function loadSkynetTopic() {
                 if (pageIsEditor) {
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
-                    disableSaveRevert();
+                    Model.modified(false);
                     doValidate();
-                    injectPreviewLink();
                 }
+                topicRevision = json.revision;
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
-                window.title = json.title;
+
             });
         }
     }
+}
+
+// Passed in to the page through the revhistoryupdate parameter
+function injectRevHistoryFragment(content, fragment){
+
+    var doc = $.parseXML(content);
+    var newEntry = $.parseXML(fragment);
+     $('revhistory', doc).prepend($('revision', newEntry)[0]);
+    var newHTML = new XMLSerializer().serializeToString(doc);
+    window.editor.setValue(newHTML);
+    $('#code').each(function(){this.value = newHTML;});
+    Model.validated(false);
+    Model.modified(true);
 }
 
 function newTopicXML () {
@@ -491,7 +587,7 @@ function serverTopicLoadCallback(topicAjaxRequest) {
         if (topicAjaxRequest.status == 200 || topicAjaxRequest.status == 304) {
             // Load the server response into the editor
             window.editor.setValue(topicAjaxRequest.response);
-            disableSaveRevert();
+            Model.modified(false);
             doValidate();
             updateXMLPreviewRoute(editor, document.getElementsByClassName("div-preview"));
             editorTitle = document.getElementById("page-title");
@@ -507,10 +603,10 @@ function doRevert() {
 }
 
 function toggleHelpHints(e) {
-    helpHintsOn = !helpHintsOn;
-    toggleButton('#helpHintToggle', helpHintsOn);
+    Model.helpHintsOn(!Model.helpHintsOn());
+    toggleButton('#helpHintToggle', Model.helpHintsOn());
     
-    if (helpHintsOn) {
+    if (Model.helpHintsOn()) {
         $('.btn').popover({
             'trigger': 'hover'
         });
@@ -520,7 +616,7 @@ function toggleHelpHints(e) {
         $('.btn').popover('disable')
     }
 
-    if (e) setCookie('helpHintsOn', helpHintsOn, 365);
+    if (e) setCookie('helpHintsOn', Model.helpHintsOn(), 365);
     return false;
 }
 
@@ -567,7 +663,14 @@ function resizePanes() {
 // This is the onload function for the editor page
 function initializeTopicEditPage() {
 
-
+    // Activate the knockout.js bindings
+    ko.applyBindings(Model);
+    
+    // Whenever the topic is set modified, we set validated to false
+    Model.modified.subscribe(function(modified) {
+        Model.validated(!Model.modified);    
+    });
+    
     editorPlainText = true;
     togglePlainText(false);
 
@@ -624,12 +727,10 @@ function initializeTopicEditPage() {
     // Toggle Help Hints
     $('#helpHintToggle').click(toggleHelpHints);
     
-    helpHintsOn = true;
-    toggleHelpHints();
-    if (getCookie('helpHintsOn') == 'true') {
-        $('#helpHintsToggle').button('toggle');
-        toggleHelpHints();
-    }
+    Model.helpHintsOn((getCookie('helpHintsOn') == 'true'));
+    
+    $('#helpHintsToggle').button('toggle');
+    
 
     // Bind event handlers
     $("#validate-button").click(doValidate);
@@ -691,7 +792,7 @@ function initializeTopicEditPage() {
 
     generateRESTParameters();
     loadSkynetTopic();
-    skynetButtonURL = "http://" + skynetURL + "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + topicID;
+    skynetButtonURL = pressGangUIURL + '#SearchResultsAndTopicView;query;topicIds=' + topicID;
         
     // Set up identity user identity
     
@@ -727,15 +828,17 @@ function togglePlainText (e) {
                 }
             },
             onChange: function(cm, e) {
-                enableSaveRevert();
-                makeValidityAmbiguous();
+                // commenting out to test effect in Firefox when saving topics
+                // currently the refresh with the new xml from the server is causing
+                // this to fire and obscure the "Saved successfully" messsage
+            //    enableSaveRevert();
+            //    makeValidityAmbiguous();
             },
             onKeyEvent: function(cm, e) {
                 if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
                 k = e.keyCode;
                 if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                    enableSaveRevert();
-                    makeValidityAmbiguous();
+                    topicEdited();
                 }
                 return false; // return false tells Codemirror to also process the key;
             },
@@ -751,15 +854,13 @@ function togglePlainText (e) {
     else {
         window.editor.toTextArea();
         $('#code').change(function() {
-            enableSaveRevert();
-            makeValidityAmbiguous();
+            topicEdited();
         });
         $('#code').keydown(function(e) {
             if (window.timerID == 0) window.timerID = setTimeout("timedRefresh()", window.refreshTime);
             k = e.keyCode;
             if (k != 16 && k != 17 && k != 18 && k != 20 && k != 19 && k != 27 && k != 36 && k != 37 && k != 38 && k != 39 && k != 40 && k != 45) {
-                enableSaveRevert();
-                makeValidityAmbiguous();
+                topicEdited();
             }
         });
         editorPlainText = true;
@@ -775,8 +876,7 @@ function togglePlainText (e) {
 function setTimer() {
     setTimeout(function() {
         if ($('#code').val() != oldVal) {
-            makeValidityAmbiguous();
-            enableSaveRevert();
+            topicEdited();
             updateXMLPreviewRoute($('#code').val(), document.getElementsByClassName("div-preview"));
             oldVal = $('#code').val();
         }
@@ -924,7 +1024,7 @@ function injectTemplate() {
                             '                  <para role="changelog-' + month[n] + '-' + y + '">\n' + 
                             '                     Updated ' + longMonth[n] + ' ' + y + '.\n' + 
                             '                  </para>\n' + 
-                            '                  <!-- add the role "changes-' + month[n] + '-' + y + '" to all elements affected by the change" -->\n' + 
+                            '                  <!-- add the attribute role="changes-' + month[n] + '-' + y + '" to all elements affected by the change" -->\n' + 
                             '               </listitem>\n' + 
                             '            </itemizedlist>\n' + 
                             '         </listitem>\n' + 
@@ -932,7 +1032,7 @@ function injectTemplate() {
                             '   </variablelist>\n'
     };
     window.editor.replaceSelection(templates[this.id]);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -958,7 +1058,7 @@ function injectCodetabs() {
   </varlistentry>\n\
 </variablelist>\n";
     window.editor.replaceSelection(codetabblock);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -975,7 +1075,7 @@ function injectCodetabsLite() {
         newcode = codetabblock1 + codetabblock2 + codetabblock3;
     }
     window.editor.replaceSelection(newcode);
-    makeValidityAmbiguous();
+    topicEdited();
     updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
 }
 
@@ -995,7 +1095,7 @@ function doTagWrap() {
         tag = tag.replace('<', '');
         tag = tag.replace('>', '');
         window.editor.replaceSelection('<' + tag + '>' + currenttext + '</' + closetag + '>');
-        makeValidityAmbiguous();
+        topicEdited();
         updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
     }
     return false;

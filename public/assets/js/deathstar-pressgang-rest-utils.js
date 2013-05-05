@@ -1,7 +1,7 @@
 var pressgang_rest_v1_url = '/seam/resource/rest/1/',
     deathstar_rest_v1_url = '/rest/1/';
 
-function saveTopic(userid, url, id, specid, xml, log_level, log_msg, cb) {
+function saveTopic(saveObject, cb) {
 // Give us a single point where we can route the save action via the browser
 // or the Death Star server.
 
@@ -10,7 +10,8 @@ function saveTopic(userid, url, id, specid, xml, log_level, log_msg, cb) {
 // To have the Death Star performing pre-processing and cache the save in off-line mode
 // call saveTopicViaDeathStar()
 
-    saveTopicViaDeathStar(userid, url, id, specid, xml, log_level, log_msg, cb);
+//    userid, url, id, specid, xml, html, log_level, log_msg
+    saveTopicViaDeathStar(saveObject, cb);
 }
 
 
@@ -58,54 +59,37 @@ function saveTopicToPressGangFromBrowser (userid, url, id, specid, xml, log_leve
 }
 
 /* Save a topic to the PressGang server */
-function saveTopicViaDeathStar (userid, url, id, specid, xml, log_level, log_msg, cb) {
-   var _url, _cb, _log_level, _log_msg;
-    
-    // Deal with the optionality of log_level and log_msg;
-    _cb = (typeof log_level === 'function') ? log_level : cb;
+function saveTopicViaDeathStar (save,cb) {
+   var _url;
     
     // Log level defaults to 1 when none is supplied
-    _log_level = (log_level && typeof log_level !== 'function') ? log_level : 1;
+    save.log_level = (save.log_level) ? save.log_level : 1;
     
-    if (url && id && xml) {
+    if (save.url && save.id && save.xml) {
         // url is the url of the pressgang instance, and the identifier of the topic
         // _url is the url for our ajax call to the Death Star
         
         // Add a leading 'http://' if the url doesn't already have one
-        url = (url.indexOf('http://') === 0) ? url = url : url = 'http://' + url;
+        save.url = (save.url.indexOf('http://') === 0) ? save.url = save.url : save.url = 'http://' + save.url;
         
         _url = deathstar_rest_v1_url+ 'topicupdate';
         
         $.ajax ({
             url: _url,
             type: "POST",
-            data: JSON.stringify({
-                        url: url,
-                        id: id, 
-                        xml: xml,
-                        log_level: _log_level,
-                        log_msg: log_msg,
-                        userid: userid,
-                        specid: specid
-                        }),
+            data: JSON.stringify(save),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            complete: saveTopicViaDeathStarCallback, 
+            complete: cb, 
         });
     }      
-    
-    function saveTopicViaDeathStarCallback(data) {
-        if (data.status == 200) { // Communication with Death Star was good
-            return _cb({code: 0, msg: "Saved  OK"});           
-        } else {
-            return _cb({code: data.status, msg: data.statusText});   
-        }
-    }
 }
 
 
 /* Send a livePatch notification to the Death Star server. 
     The server will then patch all books that use this topic
+    
+    Patching is now done in the topicdriver on the server, so this is not called
 */
 
 function sendPatchNotification (url, id, html) {
@@ -144,8 +128,17 @@ function loadTopicFromPressGangInBrowser (url, id, cb) {
     }
 }
 
-function loadTopicViaDeathStar () {
+function loadTopicViaDeathStar (url, id, cb) {
+    var _url;
+    // Add a leading 'http://' if the url doesn't already have one
+    _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
     
+    $.get('/rest/1/gettopic', {url: _url, id: id}, cb);
+    
+    // Here's what you get back in the callback when the PG server cannot be reached: 
+    //{code: "ENOTFOUND", errno: "ENOTFOUND", syscall: "getaddrinfo"} 
+    
+    //Otherwise you get a topic
 } 
 
 

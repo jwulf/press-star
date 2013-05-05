@@ -1,15 +1,15 @@
 var fs=require('fs'),
     spawn = require('child_process').spawn,
-    carrier = require('carrier'),
-    builder = require('./../lib/build.js'),
-    cylon = require('pressgang-cylon'),    
-    uuid = require('node-uuid'),
+    carrier = require('carrier'),   
     Library = require('./../lib/Books'),
     Stream = require('stream').Stream,
     livePatch = require('./../lib/livePatch'),
+    assembler = require('./../lib/assembler'),
+    uuid = require('node-uuid'),
     ephemeral = require('./../lib/ephemeralStreams');
 
 exports.socketHandler = socketHandler;
+exports.pushSpec = pushSpec;
 
 var cmd_running = false;    
 
@@ -62,9 +62,23 @@ function socketHandler (client){
             }
     });
     
-    client.on('disconnect', function() {
+    // Send a notification for any book event - used by index pages to refresh Library state
+    client.on('bookNotificationSubscribe', function () {
+        console.log('Client subscribed for Book Notifications');
+        Library.NotificationStream.on('change', function (data) {
+            client.emit('bookNotification', data);
+        }); 
+    });
+    
+    client.on('disconnect', function () {
         console.log('Bye client :(');
+    
+    /*
+       Do we need to remove stream listeners in the disconnect function, or are they
+       automatically destroyed?
+    */
     }); 
+
 }
 
 function getStream (data, client){
@@ -81,37 +95,47 @@ function getStream (data, client){
     }
 }
 
+/* pushSpec function
+
+    Invoked by the content spec editor "Push" and "Push Align" button, and also by a topic save that involves modifying
+    the topic title. In the case of the content spec editor-initiated actions, a websocket client is passed in to the
+    function. This client is used to provide feedback on the push operation to the user.
+
+    When the explicitly user-initiated push completes, if it is successful a rebuild of the book is triggered.
+
+    In the case of the post-topic-title-changing-edit push align, the operation is performed silently in the background.
+    On a successful realignment of the spec with the new topic title(s), no rebuild operation is performed, as the
+    book is live patched.
+
+ */
 function pushSpec (data, client) {
     var Books = Library.Books;
-    var BUILD_SUCCEEDED = 0,
-        filenumber=1;
+    var BUILD_SUCCEEDED = 0;
     
     console.log('Received content spec push request: ' + data.command);
-    
-    while (fs.existsSync("/tmp/cspec"+ filenumber))
-        filenumber++;
-    var filename="/tmp/cspec"+filenumber;
+
+    var filename="/tmp/" + uuid.v1();
 
     console.log('Creating local file: ' + filename);
-    console.log('Client pushed: ' + data);
+    //console.log('Client pushed: ' + data);
     
     fs.writeFile(filename, data.spec, function(err){
         if(err) {
                 console.log(err);
-                client.emit('cmdoutput', 'Failed to create file on server');
+                if (client) client.emit('cmdoutput', 'Failed to create file on server');
                 cmd_running = false;
         } else {
             console.log("Saved spec file" + filename);
             var command = 'csprocessor';
             var server = data.server;
-            client.emit('cmdstart','started');
+            if (client) client.emit('cmdstart','started');
             
             console.log('Commencing ' + data.command + ' operation');
             var msg = 'Commencing ' + data.command;
 			if (data.opts) msg = msg + data.opts;
 			msg = msg + ' operation against ' + server;
-            client.emit('cmdoutput', msg);
-            client.emit('cmdoutput','');
+            if (client) client.emit('cmdoutput', msg);
+            if (client) client.emit('cmdoutput','');
 			
             var cmd = [];
 			cmd.push(data.command);
@@ -125,40 +149,31 @@ function pushSpec (data, client) {
             push.stdout.setEncoding('utf8');
             // add a 'data' event listener for the spawn instance
             var linereader = carrier.carry(push.stdout);
-            linereader.on('line', function(line){client.emit('cmdoutput',line); });
+            linereader.on('line', function(line){if (client) client.emit('cmdoutput',line); });
          
             //push.stdout.on('data', function(data) { client.emit('cmdoutput',data); console.log(data); });
             // add an 'end' event listener to close the writeable stream
             push.stdout.on('end', function(data) {
-                client.emit('cmdfinish','done');
+                if (client) client.emit('cmdfinish','done');
             });
             // when the spawn child process exits, check if there were any errors 
             push.on('exit', function(code) {
-                client.emit('cmdexit', code);
+                if (client) client.emit('cmdexit', code);
                 console.log('Exiting Content Spec push with code: ' + code);
                 
                 // If the push succeeds, then we will spawn a rebuild of the book, if we're hosting it
                 if (code == BUILD_SUCCEEDED && data.command == 'push') {
-                    console.log('Initiating post-content-spec-push rebuild');
-                    cylon.stripMetadata('http://' + data.server, data.spec, function specMetadataCallback(err, md) {
-                        console.log(md);
-                        if (md){
-                            if (md.serverurl &&  md.id){
-                                console.log('Checking for book...');
-                                if (Books[md.serverurl] && Books[md.serverurl][md.id]) {
-                                    console.log('We got that book...');
-                                    builder.build(md.serverurl, md.id);
-                                }
-                            }
-                        }   
-                    });
-                    
+                    // don't rebuild for the topic title spec align (clientless)
+                    if (Books[data.server] && Books[data.server][data.spec] && client) {
+                        console.log('Initiating post-content-spec-push rebuild');
+                        console.log('We got that book...');
+                        assembler.build(md.serverurl, md.id);
+                    }
                 }
                 cmd_running = false;         
                 fs.unlink(filename, function(err)
                 {
                     if (err) {console.log(err);}
-                    else{console.log("Successfully deleted "+ filename);}
                 });
             });
         }

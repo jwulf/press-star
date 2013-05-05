@@ -9,8 +9,7 @@
     "express": "3.0.0rc5",
     "ejs": "*",
     "stylus": "*",
-    "pressgang-rest": "0.0.7",
-    "pressgang-cylon": "0.0.2",
+    "pressgang-rest": "0.1.2",
     "restler": "2.0.1",
     "socket.io": "0.9.10",
     "node_xslt": "0.1.7",
@@ -22,7 +21,10 @@
     "jsdom": "0.5.5",
     "nexpect": "0.2.4",
     "node-krb5": "0.0.3",
-    "cheerio": "0.10.8" 
+    "cheerio": "0.10.8",
+    "carrier": "*",
+    "xmlrpc": "1.1.0",
+    "contextify": "0.1.5"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",

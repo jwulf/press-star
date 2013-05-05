@@ -15,27 +15,6 @@ function getDate() {
      + date.getFullYear() + ' ' + hours + ':' + pad(date.getMinutes()) + ':'   
      + pad(date.getSeconds()) + ' ' + meridian;  
 }  
- 
-
-function disableSaveRevert()
-{
-    $('.save-button').prop('disabled', true);
-    $('.save-button').addClass('disabled');
-    $('.save-button').addClass('disabled-link');
-    $('#save-button').popover('hide');
-    $('#save-button').prop('disabled', true);
-    $('#revert-button').prop('disabled', true);
-    $('#revert-button').prop('hide');
-}
-
-function makeValidityAmbiguous(){
-  if (validXML)
-  {
-    $("#validate-button").prop("disabled", false);
-    showStatusMessage('Modified', '', 'alert-info');
-  }
-    enableSaveRevert();
-}
 
 function showStatusMessage(message, error, alertType)
 {
@@ -49,18 +28,6 @@ function showStatusMessage(message, error, alertType)
     adjustValidationLinkText();
 }
 
-function enableSaveRevert()
-{
-  if (! skynetURL === false)
-  {
-    $('#save-button').prop('disabled', false);
-    $('.save-button').prop('disabled', false);
-    $('.save-button').removeClass('disabled');
-    $('.save-button').removeClass('disabled-link');
-    $('#revert-button').prop('disabled', false);
-    $('#skynet-button').prop('disabled', false);
-  }
-}
 
 
 

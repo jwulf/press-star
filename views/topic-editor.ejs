@@ -30,10 +30,12 @@
         <script src="assets/js/closetag.js"></script>
         <script src="assets/js/xml.js"></script>
         <script src="assets/js/typo.js"></script>
+        <script src="assets/js/knockout-2.2.1.js"></script>
         <script src="assets/js/deathstar-editor-common.js"></script>
         <script src="assets/js/deathstar-pressgang-rest-utils.js"></script>
         <script src="assets/js/deathstar-editor.js"></script>
         <script src="assets/js/deathstar-topiceditor.js"></script>
+
         <script>var alwaysUseServerToLoadTopics = <%= alwaysUseServerToLoadTopics %>, editingOffline = <%= offline %>;</script>
     </head>
     
@@ -76,7 +78,7 @@
             </div> <!-- subnav tabbable -->
         </div> <!-- ui-layout-center -->
         <div class="ui-layout-east">
-            <div id="div-preview-inline" class="div-preview"></div>
+            <div id="div-preview-inline" data-bind="html: htmlpreview" class="div-preview"></div>
         </div>
 
         <% include topic-editor-log-msg.ejs %>
