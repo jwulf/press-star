@@ -945,8 +945,7 @@ function togglePlainText (e) {
         resizePanes();
         editor.getWrapperElement().addEventListener("paste",
             function(e) {
-                alert(e);
-                console.log(e);
+
         });
     }
     else {
