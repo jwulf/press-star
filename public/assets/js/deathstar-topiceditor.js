@@ -7,7 +7,6 @@ var pressgang_userid,
     topicRevision; // used to check whether a new revision has been created on save
     
 var previewRenderErrorMsg = '<p>Could not transform</p>';
-// window.previewserverurl="http://127.0.0.1:8888";
 window.refreshTime = 1000;
 window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
@@ -45,9 +44,11 @@ $(function() {
     // Attach Save handlers
     $('.save-menu').click(getLogMessage);
     $('#commitmsg-button').click(doCommitLogSave);
+
+
 });
 
-    
+
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
     if (pageIsEditor) {
@@ -312,12 +313,10 @@ function doActualSave (log_level, log_msg) {
                     '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
                     json.revision + '</a> of this topic.', 'alert-warning');
                 topicEdited();
-                // enableSaveRevert();
                 flashTitle('Revision Conflict');
-                // We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
+                // TODO: We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
             } else {
-                // Load up the transformed xml from the saved topic
-                if (pageIsEditor) {
+                if (pageIsEditor) { // Reload the new xml
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
                     Model.modified(false);
@@ -348,7 +347,6 @@ function doActualSave (log_level, log_msg) {
         } else { // Not code 0 from the Press Star
             showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
             topicEdited();
-            //enableSaveRevert();
         }
     }
 }
@@ -707,6 +705,7 @@ function initializeTopicEditPage() {
         return CodeMirror.overlayMode(mode, overlay);
     });
 
+
     // Toggle Close Tag
     $('#tagCloseToggle').click(toggleAutoCloseTag);
 
@@ -765,25 +764,18 @@ function initializeTopicEditPage() {
         useStateCookie: true,
         cookie: {
             //  State Management options
-            name: "deathstar-topic-editor-layout" // If not specified, will use Layout.name
-            ,
-            autoSave: true // Save cookie when page exits?
-            ,
-            autoLoad: true // Load cookie when Layout inits?
+            name: "deathstar-topic-editor-layout", // If not specified, will use Layout.name
+            autoSave: true, // Save cookie when page exits?
+            autoLoad: true, // Load cookie when Layout inits?
             //  Cookie Options
-            ,
             domain: "",
             path: "",
-            expires: "30" // 'days' -- blank = session cookie
-            ,
-            secure: false
+            expires: "30", // 'days' -- blank = session cookie
+            secure: false,
             //  State to save in the cookie - must be pane-specific
-            ,
             keys: "north.size,south.size,east.size,west.size," +
-
-            "north.isClosed,south.isClosed,east.isClosed,west.isClosed," +
-
-            "north.isHidden,south.isHidden,east.isHidden,west.isHidden"
+                "north.isClosed,south.isClosed,east.isClosed,west.isClosed," +
+                "north.isHidden,south.isHidden,east.isHidden,west.isHidden"
         }
     });
     resizePanes();
@@ -845,9 +837,99 @@ function togglePlainText (e) {
             height: myHeight,
             width: myWidth,
             disableSpellcheck: false,
-            lineNumbers: true
+            lineNumbers: true,
+            onDragEvent: function(instance, event) {
+
+                // http://stackoverflow.com/questions/6604622/file-drag-and-drop-event-in-jquery
+
+                //stop the browser from opening the file
+                event.preventDefault();
+
+                if (event.type == 'drop') {
+
+                    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0] &&
+                            event.dataTransfer.files[0].type == 'image/png' && window.FileReader) {
+                        var reader = new FileReader;
+                        var _filename = event.dataTransfer.files[0].filename;
+                        reader.onload = function() {
+                            imgData = reader.result;
+
+                            // Create an image in PressGang
+                            var _url = skynetURL + '/seam/resource/rest/1/image/create/json?expand=' + encodeURI(JSON.stringify(
+                                {"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}
+                            ));
+                            var content = {
+                                configuredParameters: ['languageImages'],
+                                languageImages_OTM: {
+                                    items: [
+                                        { item:
+                                        {configuredParameters: ['locale'],
+                                            locale: "en-US"
+                                        },
+                                            state: "1" }]
+                                }
+                            };
+
+                            $.ajax({
+                                url: _url,
+                                type: "POST",
+                                data: JSON.stringify(content),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                // and on success, upload the image data
+                                success: function imageCreatedNowPostContent (result) {
+                                    var imgid = result.id;
+                                    if (result.id) {
+                                        _url = skynetURL + '/seam/resource/rest/1/image/update/json?expand=' +
+                                            encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
+                                        content = {configuredParameters: ["languageImages", "id"],
+                                            languageImages_OTM: {items: [{item:{
+                                                configuredParameters: ['imageData', 'filename'],
+                                                filename: _filename,
+                                                id: imgid,
+                                                imageData: imgData
+                                            }, state: 3}]}}
+                                        $.ajax({
+                                            url: _url,
+                                            type: "POST",
+                                            data: JSON.stringify(content),
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8",
+                                            // and on success, update the editor
+                                            success: function () {
+                                                window.editor.replaceSelection('<figure>\n' +
+                                                    '    <title>Title</title>\n' +
+                                                    '    <mediaobject>\n' +
+                                                    '        <imageobject>\n' +
+                                                    '            <imagedata align="center" fileref="images/'+ imgid + '.png"/>\n' +
+                                                    '        </imageobject>\n' +
+                                                    '        <textobject>\n' +
+                                                    '            <phrase>Description</phrase>\n' +
+                                                    '        </textobject>\n' +
+                                                    '    </mediaobject>\n' +
+                                                    '</figure>\n');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        reader.readAsText(event.dataTransfer.files[0]);
+
+                        return true;  // stop the editor response
+                    }
+
+                };
+            }
+                // query {"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}
+                //     {"description":"Ninja Rockstar Javascript", "languageImages_OTM":{"items":[{"item":{"image":null, "imageData":[], "thumbnail":null, "imageDataBase64":null, "locale":null, "filename":"ninja rockstar.jpeg", "revisions":null, "id":2420, "revision":null, "configuredParameters":["imageData","filename"], "expand":null, "logDetails":null}, "state":3}], "size":null, "expand":null, "startExpandIndex":null, "endExpandIndex":null}, "revisions":null, "selfLink":null, "editLink":null, "deleteLink":null, "addLink":null, "id":2397, "revision":null, "configuredParameters":["description","languageImages"], "expand":null, "logDetails":null}
         });
         resizePanes();
+        editor.getWrapperElement().addEventListener("paste",
+            function(e) {
+                alert(e);
+                console.log(e);
+        });
     }
     else {
         window.editor.toTextArea();
