@@ -190,6 +190,16 @@ function doCommitLogSave () {
                 if (pressgang_userid != UNKNOWN_USER) { // cool, we found them in there
                     setCookie('username', thisusername, 365);
                     setCookie('pressgang_userid', pressgang_userid, 365);
+                    var author = result.items[users].item.description.split(' ');
+
+                    var firstname = (author[0]) ? author[0] : 'Red Hat';
+                    setCookie('userfirstname', firstname, 365);
+                    var surname = (author[1]) ? author[1] : 'Engineering Content Services';
+                    setCookie('usersurname', surname, 365);
+                    var email = (author[2]) ? author [2] : 'www.redhat.com';
+                    setCookie('useremail', email, 365);
+
+                result.items[users].item
                     doActualSave(globalLogLevel, _log_msg);
                     closeMask ();
                 }
@@ -275,7 +285,8 @@ function doActualSave (log_level, log_msg) {
     if ($('#div-preview-inline').find('.titlepage')) builtHTML = $('#div-preview-inline').html();
 
     if (!Model.validated() && validationServerResponse == 1) {
-        alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
+        // TODO: figure out why this is triggering false positive on a commit log message save
+       // alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
         Model.validated(false);
     }
 
