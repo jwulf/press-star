@@ -52,7 +52,7 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 </xsl:template>
 
 <!-- depth of section labelling -->
-<xsl:param name="section.autolabel.max.depth" select="2"/>
+<!-- <xsl:param name="section.autolabel.max.depth" select="2"/>    -->
 
 <!-- Make videos work in Firefox -->
 <xsl:template match="videoobject">
