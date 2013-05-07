@@ -108,15 +108,10 @@ function socketHandler (client){
                 livePatch.patchStreams[url][id].removeListener('data', patchListener);
             }
         }
-        if (ephemeralID) { ephemeral.streams[ephemeralID].stream.removeListener(ephemeralListener);}
-    
-    /*
-       Do we need to remove stream listeners in the disconnect function, or are they
-       automatically destroyed?
+        if (ephemeralID && ephemeral.streams[ephemeralID] && ephemeral.streams[ephemeralID].stream) {
+            ephemeral.streams[ephemeralID].stream.removeListener(ephemeralListener);
+        }
 
-       Perhaps both - they might be garbage collected after some time, but a low memory server
-       can run out before that happens.
-    */
     });
 
 }
