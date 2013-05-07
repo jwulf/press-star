@@ -45,6 +45,12 @@ $(function() {
     $('.save-menu').click(getLogMessage);
     $('#commitmsg-button').click(doCommitLogSave);
 
+    window.addEventListener('popstate', function(event) {
+        generateRESTParameters();
+        loadSkynetTopic();
+    });
+
+    window.opener.registerCallback(invokeOpen);
 
 });
 
@@ -235,6 +241,11 @@ window.onbeforeunload = function(e) {
     if (Model.modified()) return 'You have unsaved changes.';
 };
 
+window.addEventListener('unload', function(event) {
+    // I'm closing - let the book know that I'll be gone.
+    // window.opener.unregisterCallback();
+});
+
 // callback function for use when a node server is generating the live HTML preview
 function handleHTMLPreviewResponse (preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
@@ -253,7 +264,6 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
         } */
     } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
-
     }
 }
 
@@ -444,6 +454,13 @@ function clientsideUpdateXMLPreview(cm, preview) {
     catch (err) {
         donothing = 1;
     }
+}
+
+function invokeOpen(_url) {
+    //push History
+    history.pushState({}, Model.title, _url);
+    generateRESTParameters();
+    loadSkynetTopic();
 }
 
 function generateRESTParameters() {
