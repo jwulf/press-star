@@ -29,13 +29,16 @@ var validationServerResponse,
     globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
     specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
     revHistoryFragment,
+    STOP = false, // stop flashing
+    FLASH = true, // start flashing
     Model = {
-        modified: ko.observable(),
+        modified: ko.observable(false),
         validated: ko.observable(),
         revision: ko.observable(),
         title: ko.observable(),
         htmlpreview: ko.observable(),
-        helpHintsOn: ko.observable(false)
+        helpHintsOn: ko.observable(false),
+        pageTitle: ko.observable()
     };
 
 
@@ -45,9 +48,18 @@ $(function() {
     $('.save-menu').click(getLogMessage);
     $('#commitmsg-button').click(doCommitLogSave);
 
+    // Deal with the browser back button using the History API
     window.addEventListener('popstate', function(event) {
-        generateRESTParameters();
-        loadSkynetTopic();
+        if (Model.modified() && event.cancelable && !alert('You have unsaved changes')) {
+            return false;
+        } else {
+            generateRESTParameters();
+            loadSkynetTopic();
+        }
+    });
+
+    window.addEventListener('focus', function (event) {
+        flashTitle(STOP);
     });
 
     window.opener.registerCallback(invokeOpen);
@@ -276,7 +288,7 @@ function doValidate(me, callback) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if (Model.modified) { 
+    if (Model.modified()) {
         // if the topic is not validated we'll call validation before saving
         if (!Model.validated())
         { 
@@ -355,7 +367,7 @@ function doActualSave (log_level, log_msg) {
                     updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                     //doValidate(); // The Validation message was overwriting the Save result message
                     setPageTitle(json.title);
-                    clearInterval(flash);
+                    flashtTitle(STOP);
     
                 } else {
                     showStatusMessage('No new revision was saved. ' + 
@@ -375,10 +387,19 @@ function doActualSave (log_level, log_msg) {
 }
 
 function flashTitle(msg) {
-    originalTitle = window.title;
-    flash = setInterval(function () {
-         window.title = (window.title == originalTitle) ? msg: originalTitle;
-    }, 750);
+    if (msg === false) {
+        if (flash) {
+            clearInterval(flash);
+            flash = null;
+        }
+        document.title = (Model.pageTitle());
+    } else {
+        flashTitle(STOP); // clear any existing flashing first
+        originalTitle = Model.pageTitle();
+        flash = setInterval(function () {
+             document.title = (document.title == originalTitle) ? msg: originalTitle;
+        }, 750);
+    }
 };
 
 // Sends the editor content to a node server for validation
@@ -457,10 +478,14 @@ function clientsideUpdateXMLPreview(cm, preview) {
 }
 
 function invokeOpen(_url) {
-    //push History
-    history.pushState({}, Model.title, _url);
-    generateRESTParameters();
-    loadSkynetTopic();
+    if (Model.modified() && !alert('You have unsaved changes.')) {
+        return; // cancel load
+    } else {
+        //push History
+        history.pushState({}, Model.title(), _url);
+        generateRESTParameters();
+        loadSkynetTopic(FLASH);
+    }
 }
 
 function generateRESTParameters() {
@@ -528,7 +553,8 @@ function setPageTitle (topicTitle) {
         titleHTML = '<a href="'  + pressGangUIURL + 
                     '#SearchResultsAndTopicView;query;topicIds=' + topicID + '" target="_blank">' + pageTitle + '</a>';
         $("#page-title").html(titleHTML);
-        document.title = topicID + ' - ' + topicTitle;
+        Model.pageTitle(topicID + ' - ' + topicTitle);
+        document.title = Model.pageTitle();
     }
 }
 
@@ -537,7 +563,7 @@ function injectPreviewLink() {
     $("#preview-link").html('<a href="preview.html?skyneturl=http://' + skynetURL + '&topicid=' + topicID + '">Preview Link</a>');
 }
 
-function loadSkynetTopic() {
+function loadSkynetTopic(_flash) {
     var  alwaysUseServerToLoadTopics = true;
     if (alwaysUseServerToLoadTopics)
     {
@@ -558,9 +584,10 @@ function loadSkynetTopic() {
                     }
                 }
                 topicRevision = json.revision;
+                Model.title(json.title)
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
-                clearInterval(flash);
+                _flash && flashTitle('Editing');
             }
         });
     } else {
