@@ -1,0 +1,11 @@
+<div class="global-warning" style="position: fixed; bottom: 15px; left: 15px; text-align: left; cursor: default; box-shadow: rgba(0, 0, 0, 0.247059) 0px 0px 8px;">
+    <div class="inner" style="display: inline-block; width: 360px; padding: 15px; text-align: left; font-size: 14px; background-color: rgb(66, 66, 66); line-height: 1.2em; color: rgb(255, 255, 255); background-position: initial initial; background-repeat: initial initial;">
+        <ul>
+        <% for (var msg in messages) { %>
+            <li> <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 5px;"><%= messages[msg].title %></h2>
+            <span style="margin-bottom: 3px;"><%= messages[msg].body %></span></li>
+        <% }%>
+            </ul>
+        <span style="display: block; margin-top: 5px; cursor: pointer; text-decoration: underline;">Dismiss</span>
+    </div>
+</div>

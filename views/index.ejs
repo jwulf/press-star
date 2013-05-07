@@ -10,6 +10,7 @@
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/scripts/jquery-1.9.1.min.js"></script>   
     <script src="/bootstrap/js/bootstrap.js"></script>
+    <script src="/scripts/ejs_production.js"></script>
     <script src="/scripts/index.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>window.sourceURL="<%= partialURL %>"</script>
@@ -59,19 +60,9 @@
          </form>
        </div>
 
-              <div class="global-warning" style="position: fixed; bottom: 15px; left: 15px; text-align: left; cursor: default; box-shadow: rgba(0, 0, 0, 0.247059) 0px 0px 8px;">
-              <div class="inner" style="display: inline-block; width: 360px; padding: 15px; text-align: left; font-size: 14px; background-color: rgb(66, 66, 66); line-height: 1.2em; color: rgb(255, 255, 255); background-position: initial initial; background-repeat: initial initial;">
-              <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">New features: <br> 1. Revision History and Entity file Integration</h2>
-              <span>Add the directives:<br><br> #_DSD:REVISION HISTORY = XX  <br> #_DSD:ENTITY FILE= XX <br><br> to your content spec to get custom Revision History topic and Entity file topic integration.</span>
-              <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">2. Automated Revision History</h2>
-                                           <span>Once you incorporate your Revision History, use the "Update Revision History" button to get your major commit messages rolled up to a revhistory entry.</span>
-             <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">3. Change topic titles in the editor</h2>
-              <span>Just change the &lt;title&gt; element of the topic. Live patching will work, and your spec will be aligned in the background.</span>
-               <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">4. Drop images to upload them</h2>
-                             <span>Drop .png images into the editor to have them upload and insert at the current cursor location.</span>
-            <span style="display: block; margin-top: 5px; cursor: pointer; text-decoration: underline;">Dismiss</span>
+    <div id="motd"></div>
 
-              </div></div>
+
 
   </body>
 </html>
