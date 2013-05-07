@@ -11,21 +11,68 @@ var fs=require('fs'),
 exports.socketHandler = socketHandler;
 exports.pushSpec = pushSpec;
 
-var cmd_running = false;    
+var cmd_running = false;
 
 function socketHandler (client){
-    var Books = Library.Books; // Got to do this here, because it's dynamically populated
-    
+    var Books = Library.Books, // Got to do this here, because it's dynamically populated
+        url, id, ephemeralID;
+
+    var bookListener = function (data) {
+        client.emit('statechange', {md : Books[url][id].getAll()});
+    };
+
+    var libraryListener = function (data) {
+        client.emit('bookNotification', data);
+    };
+
+    var ephemeralListener = function (data){
+        client.emit('cmdoutput', data);
+    };
+
+    var patchListener =  function (topicPatchData) {
+        if (topicPatchData.bookRebuilt) {
+            client.emit('bookRebuiltNotification','The book was rebuilt');
+        } else
+        if (topicPatchData.notification) {
+            console.log('sending notification');
+            client.emit ('notification', topicPatchData.data);
+        } else
+        {
+            console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + id);
+            //this.emit('data', topicPatchData);
+            client.emit('patchBookinBrowser', topicPatchData);
+            return true;
+        }
+    }
+
+
     console.log('Client connected');
     client.send('{"success": 1}');
     client.on('msg', function(data) {
         console.log('Client just sent:', data); 
     }); 
     client.on('pushspec', function(data){pushSpec(data, client);});
-    client.on('getStream', function(data) {getStream(data, client);});
+
+    client.on('getStream', function getStream (data){
+        console.log('Websocket requested for ephemeral stream ' + data.streamID);
+        ephemeralID = data.streamID;
+        if (! ephemeral.streams[ephemeralID]) {
+            console.log('Stream does not exist - job finished?');
+            client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
+        } else {
+            client.emit('cmdoutput', ephemeral.streams[ephemeralID].header);
+
+            ephemeral.streams[ephemeralID].stream.on('data', ephemeralListener);
+        }
+    });
     
-    client.on('patchSubscribe', function(data) { 
-        var id = data.id, url = data.skynetURL;
+    client.on('patchSubscribe', function(data) {
+        // we can only subscribe to one at a time - to avoid memory leaks
+        if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
+            livePatch.patchStreams.removeListener('data', patchListener);
+        }
+
+        id = data.id, url = data.skynetURL;
         console.log('Patch Subscription for Spec ID: ' + data.id);
         if (id  && url)
             
@@ -35,64 +82,43 @@ function socketHandler (client){
              */
             if (Books[url] && Books[url][id]) {
                 console.log('Subscribing to book state change');
-                Books[url][id].on('change', function (data) { 
-                    client.emit('statechange', {md : Books[url][id].getAll()});
-                });
+
+                Books[url][id].on('change', bookListener);
             }
-            
-            if (livePatch.patchStreams[url][id]) {
-                var myPatchStream = new Stream();
-                myPatchStream.readable = myPatchStream.writable = true;
-                myPatchStream.write = function (topicPatchData) {
-                    if (topicPatchData.bookRebuilt) {
-                        client.emit('bookRebuiltNotification','The book was rebuilt');    
-                    } else 
-                    if (topicPatchData.notification) {
-                        console.log('sending notification');
-                        client.emit ('notification', topicPatchData.data);
-                    } else 
-                    {
-                        console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + id);
-                        this.emit('data', data);
-                        client.emit('patchBookinBrowser', topicPatchData); 
-                        return true;
-                    } 
-                }
-                livePatch.patchStreams[data.skynetURL][data.id].pipe(myPatchStream);
+
+        if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
+                livePatch.patchStreams[url][id].on('data', patchListener);
             }
     });
     
     // Send a notification for any book event - used by index pages to refresh Library state
     client.on('bookNotificationSubscribe', function () {
         console.log('Client subscribed for Book Notifications');
-        Library.NotificationStream.on('change', function (data) {
-            client.emit('bookNotification', data);
-        }); 
+        Library.NotificationStream.on('change', libraryListener);
     });
     
     client.on('disconnect', function () {
         console.log('Bye client :(');
+        if (Books[url] && Books[url][id]) {
+            Books[url][id].removeListener('change', bookListener);
+        }
+        Library.NotificationStream.removeListener('change', libraryListener);
+        if (url && id){
+            if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
+                livePatch.patchStreams[url][id].removeListener('data', patchListener);
+            }
+        }
+        if (ephemeralID) { ephemeral.streams[ephemeralID].stream.removeListener(ephemeralListener);}
     
     /*
        Do we need to remove stream listeners in the disconnect function, or are they
        automatically destroyed?
+
+       Perhaps both - they might be garbage collected after some time, but a low memory server
+       can run out before that happens.
     */
-    }); 
+    });
 
-}
-
-function getStream (data, client){
-    console.log('Websocket requested for ephemeral stream ' + data.streamID);
-    if (! ephemeral.streams[data.streamID]) {
-        console.log('Stream does not exist - job finished?');
-        client.emit('cmdoutput', 'No output stream for this job. Has it completed?');
-    } else {
-        client.emit('cmdoutput', ephemeral.streams[data.streamID].header);
-        
-        ephemeral.streams[data.streamID].stream.on('data', function (data){
-            client.emit('cmdoutput', data); 
-        });
-    }
 }
 
 /* pushSpec function

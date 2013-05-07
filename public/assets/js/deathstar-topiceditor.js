@@ -1,5 +1,9 @@
-// TODO:
-// 1. Add the ability to click on the title and edit it
+/* JavaDoc Info: http://code.google.com/closure/compiler/docs/js-for-compiler.html
+ * {!Object}	non-nullable type (never NULL)
+ * {?string}	nullable type (sometimes NULL) - default for {Object}
+ * {number=}	optional parameter
+ * {*}			ALL types
+ */
 
 // We use this until we can get identity sorted out
 var pressgang_userid,
@@ -26,7 +30,6 @@ var validationServerResponse,
     originalTitle, // the original title of the page - used when flashing the tab for attention
     flash, // the timer for flashing the window title. Lets us clear it from wherever
     pressGangUIURL,
-    globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
     specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
     revHistoryFragment,
     STOP = false, // stop flashing
@@ -38,7 +41,9 @@ var validationServerResponse,
         title: ko.observable(),
         htmlpreview: ko.observable(),
         helpHintsOn: ko.observable(false),
-        pageTitle: ko.observable()
+        pageTitle: ko.observable(),
+        loglevel: ko.observable(),  // 1 = minor, 2 = major
+        logmsg: ko.observable()
     };
 
 
@@ -50,12 +55,11 @@ $(function() {
 
     // Deal with the browser back button using the History API
     window.addEventListener('popstate', function(event) {
-        if (Model.modified() && event.cancelable && !alert('You have unsaved changes')) {
+        if (Model.modified() && event.cancelable && confirm('Discard all changes and load new topic?')) {
             return false;
-        } else {
-            generateRESTParameters();
-            loadSkynetTopic();
         }
+        generateRESTParameters();
+        loadSkynetTopic();
     });
 
     window.addEventListener('focus', function (event) {
@@ -65,7 +69,6 @@ $(function() {
     window.opener.registerCallback(invokeOpen);
 
 });
-
 
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
@@ -99,26 +102,25 @@ $(document).keydown(function(event) {
     return false;
 });
 
+// Required because the observable function is only invoked
+// when a state changes, and not every time an attempt is
+// made to assign a value to it
 function topicEdited() {
     Model.validated(false);
     Model.modified(true);
 }
 
 function getLogMessage (e) {
-    
     var loginBox = '#login-box',
         _log_level, msg,
         log_levels = {minor: 1, major: 2},
         log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"};
         
-    // I put the "minor" and "major" keys in the rel attribute of the commit menu items    
-    globalLogLevel = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
+    // I put the "minor" and "major" keys in the rel attribute of the commit menu items
+    // should go in a data- element
+    Model.log_level = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
     
-    $('#commit-msg-type').html(log_level_text[globalLogLevel]);
-    $('#commitmsg-save').attr('rel', globalLogLevel); // set the rel attribute on the commit message save button
-    // There is something very dirty about all this attaching data to DOM elements or putting it in global variables
-    // I'm feeling the need to implement some kind of model layer with wiring to elements
-    // Soon, my precious, soon...
+    $('#commit-msg-type').html(log_level_text[Model.loglevel]);
     
     //Fade in the Popup
     $(loginBox).fadeIn(300);
@@ -166,8 +168,8 @@ function doCommitLogSave () {
     // and set their userid
 
     pressgang_userid = getCookie('pressgang_userid'); // Do we have a PressGang user ID stored?
-    var username = getCookie('username'); // Do we have a username stored?
-    var thisusername = $('#userid').val(); // What name are they using for this commit?
+     username = getCookie('username'); // Do we have a username stored?
+     thisusername = $('#userid').val(); // What name are they using for this commit?
     
     /* If we have not verified a PressGang ID for this user, or they are requesting a commit
         with a different user ID than the one we verified, we verify their ID. 
@@ -177,13 +179,11 @@ function doCommitLogSave () {
         The user gives us a user name, and we retrieve the unique ID to match from PressGang */
 
     //REFACTOR: this needs to come out of this method into its own function
-    
     if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
         pressgang_userid = UNKNOWN_USER;
             // Get all the users!
             var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
-            
-        
+
         // REFACTOR:
         // Rather than getting all the users, we can query for the specific user like this:
         // http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/query;username=jwulf?expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%20%7B%22name%22%3A%20%22users%22%7D%7D%5D%7D
@@ -202,10 +202,10 @@ function doCommitLogSave () {
 
                 for (var users = 0; users < result.items.length; users ++) {
                     user = result.items[users].item;
-                    if (user.name == thisusername) { pressgang_userid = user.id; break;}
+                    if (user.name === thisusername) { pressgang_userid = user.id; break;}
                 }
                 
-                if (pressgang_userid != UNKNOWN_USER) { // cool, we found them in there
+                if (pressgang_userid !== UNKNOWN_USER) { // cool, we found them in there
                     setCookie('username', thisusername, 365);
                     setCookie('pressgang_userid', pressgang_userid, 365);
                     var author = result.items[users].item.description.split(' ');
@@ -217,19 +217,18 @@ function doCommitLogSave () {
                     var email = (author[2]) ? author [2] : 'www.redhat.com';
                     setCookie('useremail', email, 365);
 
-                result.items[users].item
-                    doActualSave(globalLogLevel, _log_msg);
+                    doActualSave(Model.loglevel, _log_msg);
                     closeMask ();
                 }
-                if (pressgang_userid == UNKNOWN_USER) { // We're still unknown!
+                if (pressgang_userid === UNKNOWN_USER) { // We're still unknown!
                     if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
-                        doActualSave(globalLogLevel, _log_msg);
-                        closeMask ();       
+                        doActualSave(Model.loglevel, _log_msg);
+                        closeMask ();
                     }
                 }
             }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
-        doActualSave(globalLogLevel, _log_msg);
+        doActualSave(Model.loglevel, _log_msg);
         closeMask ();
     }
 }
@@ -250,7 +249,7 @@ function timedRefresh() {
 }
 
 window.onbeforeunload = function(e) {
-    if (Model.modified()) return 'You have unsaved changes.';
+    if (Model.modified()) return confirm('Discard unsaved changes?');
 };
 
 window.addEventListener('unload', function(event) {
@@ -308,7 +307,7 @@ function doActualSave (log_level, log_msg) {
 
     if (!Model.validated() && validationServerResponse == 1) {
         // TODO: figure out why this is triggering false positive on a commit log message save
-       // alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
+        alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
         Model.validated(false);
     }
 

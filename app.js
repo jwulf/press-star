@@ -3,6 +3,9 @@
  * Module dependencies.
  */
 
+//var memwatch = require('memwatch');
+//memwatch.on('leak', function(info) { console.log(info)});
+
 var express = require('express'),
     routes = require('./routes'),
     user = require('./routes/user'),
@@ -15,6 +18,7 @@ var express = require('express'),
     restapi = require('./routes/restapi'),
     state = require('./lib/appstate'),
     initializeAppState = require('./lib/appstate').initialize();
+
 
 var app = express();
 
