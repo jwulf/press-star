@@ -10,6 +10,7 @@ var flash,
     work,
     updatingRevHistory = false,
     revHistoryFragment,
+    openNewURL,
     md; // Book metadata
 
 function url_query (query, url) {
@@ -74,6 +75,25 @@ function deathstarItUp ()
         toggle(e, 'floatingtoc');
         return false;
     });
+
+    $('a.edittopiclink').click(function editTopicClick (e) {
+
+        // Check if we have a child editor window
+        if (openNewURL)
+        { // if we do, invoke the open operation
+            openNewURL && openNewURL($(this).attr('href'));
+            e.preventDefault();
+            return false;
+        } else {
+            window.open($(this).attr('href'), '_blank');
+            e.preventDefault();
+            return false;
+        }
+    });
+}
+
+function registerCallback(callback) {
+    openNewURL = callback;
 }
 
 function updateRevHistory (e) {
