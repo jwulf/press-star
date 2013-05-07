@@ -1,14 +1,9 @@
-<div class="section" id="idp13670544">
-    <div class="titlepage">
-        <div>
-            <div>
-                <h2 class="title" id="idp13670544">1.2. History of the Death Star</h2>
-            </div>
-        </div>
-        <hr>
-    </div>
-    <div class="para">
-        <p> </p>
-		Josh didn't like a button, so he built a battlestation.
-	</div>
-</div>
+
+
+Spec Editor:
+morrow: Is there a reason why you need to always click 'Validate' twice? Any way to fix that?
+[1:26pm] morrow: And also, why 'Confirm Navigation - You have unsaved changes...' pops up, even though Push has been successful?
+
+Topic Editor:
+Navigating on state pop or invoke has wrong message. Check the Revert one for ht ecoorrect
+

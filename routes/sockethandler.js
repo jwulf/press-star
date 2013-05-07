@@ -167,7 +167,7 @@ function pushSpec (data, client) {
                     if (Books[data.server] && Books[data.server][data.spec] && client) {
                         console.log('Initiating post-content-spec-push rebuild');
                         console.log('We got that book...');
-                        assembler.build(md.serverurl, md.id);
+                        assembler.build(data.serverurl, data.id);
                     }
                 }
                 cmd_running = false;         
