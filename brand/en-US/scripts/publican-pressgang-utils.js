@@ -22,6 +22,27 @@ function url_query_extract (query, url) {
 }
 
 /**
+ *
+ *
+ * @param {string} url URL of the PressGang Server.
+ * @param {number} id ID of the topic to retrieve.
+ * @param {?number} rev  Optional, specific revision to retrieve.
+ * @param {function (result)} cb Callback function for the REST get.
+ */
+function getTopicViaBrowser(url, id, rev, cb){
+    var _req;
+
+    if (typeof rev === "function") {
+        cb = rev;
+        rev = false;
+    }
+    _req = url + '/seam/resource/rest/1/topic/get/json/' + id;
+    _req = (rev) ? _req + '/r/' + rev : _req; // append a rev number if one is specified
+
+    $.get(_req, {},cb);
+}
+
+/**
  *  Save the Topic directly to PressGang - no Death Star routing
  *  @param {number} userid  PressGang user id.
  *  @param {string} url PressGang server URL.

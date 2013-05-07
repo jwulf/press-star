@@ -85,6 +85,18 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
   color: white;
 }
 
+.pg-topic-update-available a {
+    border: 1px dotted green;
+}
+.fixedRevTopic a:visited {color: green;}
+.fixedRevTopic a:link {color: green;}
+.fixedRevTopic a:focus,
+.fixedRevTopic a:hover{
+    background-color: green;
+    color: white;
+}
+
+
 .RoleCreateBugPara a {
   display:inline-block;
   border: 1px dotted red;

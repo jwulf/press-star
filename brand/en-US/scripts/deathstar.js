@@ -90,8 +90,32 @@ function deathstarItUp ()
             return false;
         }
     });
+    scanForUpstreamUpdates();
 }
 
+function scanForUpstreamUpdates () {
+    var _revision, _id, _upstream_revision, _this;
+    $('.fixedRevTopic').each(function () {
+            _this = this;   // different this inside the callback
+            _revision = this.dataset.pgTopicRev;
+            _id = this.dataset.pgTopicId;
+            getTopicViaBrowser(skynetURL, _id, function (result) {
+                if (result.revision && result.revision > _revision) {
+                  $(_this).addClass('pg-topic-update-available').find('a').text('Updated upstream');
+                }
+            });
+        }
+    );
+}
+
+/**
+ * Register a callback function from a child editor
+ * Invoked from a child editor window.
+ * Used to open topics in the editor without reloading
+ * the editor page
+ * @param callback {function (url) } the callback function
+ * in the child editor to call to have the editor load a topic
+ */
 function registerCallback(callback) {
     openNewURL = callback;
 }
