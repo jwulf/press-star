@@ -7,3 +7,14 @@ morrow: Is there a reason why you need to always click 'Validate' twice? Any way
 Topic Editor:
 Navigating on state pop or invoke has wrong message. Check the Revert one for ht ecoorrect
 
+After clicking publish, the page does not update with the new status
+
+After clicking remove the page does not update with the new status
+
+
+When a book's metadata is changed during a spec push, it should be re-read on the Star.
+It should also be re-read before doing the publish event.
+
+enforce arbitrary limitations of brew wrt revision history, in the topic editor
+
+Assembly log on publish not copied
