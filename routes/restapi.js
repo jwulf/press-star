@@ -153,7 +153,7 @@ function removebook (req,res){
                 livePatch.removeTopicDependenciesForBook(url, id); 
                 delete Library.Books[url][id];
                 Library.write();
-                Library.NotificationStream.write({update: "remove"});
+                Library.LibraryNotificationStream.write({update: "remove"});
                 return res.send({code:0, msg: 'Book deleted'});
             }
     res.send({code:1, msg: 'Book not found'});
@@ -166,7 +166,7 @@ function addbook (req, res){
     if (url && id)
         checkout(url, id, './books', function (err, spec){
                 if (err) return res.send({'code' : 1, 'msg' : err});
-                Library.NotificationStream.write({update: "add"});
+                Library.LibraryNotificationStream.write({update: "add"});
                 return res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
             }
         );        

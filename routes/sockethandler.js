@@ -95,8 +95,8 @@ function socketHandler (client){
     // Send a notification for any book event - used by index pages to refresh Library state
     client.on('bookNotificationSubscribe', function () {
         console.log('Client subscribed for Book Notifications');
-        Library.NotificationStream.on('change', libraryListener);
-        Library.NotificationStream.on('data', libraryListener);
+        Library.LibraryNotificationStream.on('change', libraryListener);
+        Library.LibraryNotificationStream.on('data', libraryListener);
     });
     
     client.on('disconnect', function () {
@@ -104,7 +104,7 @@ function socketHandler (client){
         if (Books[url] && Books[url][id]) {
             Books[url][id].removeListener('change', bookListener);
         }
-        Library.NotificationStream.removeListener('change', libraryListener);
+        Library.LibraryNotificationStream.removeListener('change', libraryListener);
         if (url && id){
             if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
                 livePatch.bookNotificationStreams[url][id].removeListener('data', patchListener);
