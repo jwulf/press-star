@@ -12,9 +12,73 @@
         <link href="assets/css/deathstar.css" rel="stylesheet">
         <link href="assets/css/jquery-ui-1.8.23.custom.css" rel="stylesheet">
         <!-- <link href="assets/css/docs.css" rel="stylesheet"> -->
+        <script src="assets/js/basket.full.min.js"></script>
+
         <script type="text/javascript">
            var pageIsEditor = true;
+           basket
+                   .require({ url: 'assets/js/jquery-1.9.1.min.js', unique: 1 })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/jquery-ui.min.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/bootstrap-tab.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/bootstrap-tooltip.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/bootstrap-popover.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/bootstrap-button.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/bootstrap-dropdown.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/jquery.layout-latest.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/codemirror.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/codemirror-search.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/codemirror-searchcursor.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/codemirror-dialog.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/closetag.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/xml.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/typo.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/knockout-2.2.1.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/deathstar-editor-common.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/deathstar-pressgang-rest-utils.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/deathstar-editor.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/deathstar-topiceditor.js', unique: 1});
+                   });
         </script>
+
+        <!-- basket cases -->
+        <!--
         <script src="assets/js/jquery-1.9.1.min.js"></script>
         <script src="assets/js/jquery-ui.min.js"></script>
         <script src="assets/js/bootstrap-tab.js"></script>
@@ -35,7 +99,7 @@
         <script src="assets/js/deathstar-pressgang-rest-utils.js"></script>
         <script src="assets/js/deathstar-editor.js"></script>
         <script src="assets/js/deathstar-topiceditor.js"></script>
-
+        -->
         <script>var alwaysUseServerToLoadTopics = <%= alwaysUseServerToLoadTopics %>, editingOffline = <%= offline %>;</script>
     </head>
     
