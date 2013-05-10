@@ -61,7 +61,7 @@ function restroute (req, res){
 }
 
 function getBooks(req,res) {
-    res.send(jsondb.Books);
+    res.send(jsondb.shadowBooks);
 }
 
 function getBookmd (req, res) {
@@ -153,6 +153,7 @@ function removebook (req,res){
                 livePatch.removeTopicDependenciesForBook(url, id); 
                 delete jsondb.Books[url][id];
                 jsondb.write();
+                jsondb.NotificationStream.write({update: "remove"});
                 return res.send({code:0, msg: 'Book deleted'});
             }
     res.send({code:1, msg: 'Book not found'});
@@ -165,7 +166,8 @@ function addbook (req, res){
     if (url && id)
         checkout(url, id, './books', function (err, spec){
                 if (err) return res.send({'code' : 1, 'msg' : err});
-                res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
+                jsondb.NotificationStream.write({update: "add"});
+                return res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
             }
         );        
 }

@@ -96,6 +96,7 @@ function socketHandler (client){
     client.on('bookNotificationSubscribe', function () {
         console.log('Client subscribed for Book Notifications');
         Library.NotificationStream.on('change', libraryListener);
+        Library.NotificationStream.on('data', libraryListener);
     });
     
     client.on('disconnect', function () {
