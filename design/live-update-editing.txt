@@ -70,7 +70,7 @@ function afterBuildTopicDependencyScanner () {
 
 The book brand opens a web socket with the Death Star server, and passes in its pathURL. This pathURL is used as an index to an array of streams. The stream is connected to the websocket. 
 
-patchStreams: {
+bookNotificationStreams: {
     'http:skynet.something.com:8080/TopicIndex/': {
         6453: <stream>,
         3454: <stream>
@@ -81,13 +81,13 @@ patchStreams: {
 
 socketHandler.js:
 client.on('patchSubscribe', function(data) { 
-    if (data.pathURL && patchStreams[data.pathURL]) {
+    if (data.pathURL && bookNotificationStreams[data.pathURL]) {
         var myPatchStream = new Stream();
         myPatchStream.readable = myPatchStream.writable = true;
         myPatchStream.on('data', function (data){
             client.emit('cmdoutput', data); 
         });
-        myPatchStream.pipe(patchStreams[data.pathURL]);
+        myPatchStream.pipe(bookNotificationStreams[data.pathURL]);
     }
 }
 
@@ -101,7 +101,7 @@ for (build in buildsThatUseThisPatch)
 
 function patchBook (build, topicID, html) {
     // Patch the book
-    patchStreams.build.write({topicID: topicID, html: myPatchedHtml});
+    bookNotificationStreams.build.write({topicID: topicID, html: myPatchedHtml});
 }
 
 

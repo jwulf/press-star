@@ -69,8 +69,8 @@ function socketHandler (client){
     
     client.on('patchSubscribe', function(data) {
         // we can only subscribe to one at a time - to avoid memory leaks
-        if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
-            livePatch.patchStreams.removeListener('data', patchListener);
+        if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
+            livePatch.bookNotificationStreams.removeListener('data', patchListener);
         }
 
         id = data.id, url = data.skynetURL;
@@ -87,8 +87,8 @@ function socketHandler (client){
                 Books[url][id].on('change', bookListener);
             }
 
-        if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
-                livePatch.patchStreams[url][id].on('data', patchListener);
+        if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
+                livePatch.bookNotificationStreams[url][id].on('data', patchListener);
             }
     });
     
@@ -106,8 +106,8 @@ function socketHandler (client){
         }
         Library.NotificationStream.removeListener('change', libraryListener);
         if (url && id){
-            if (livePatch.patchStreams[url] && livePatch.patchStreams[url][id]) {
-                livePatch.patchStreams[url][id].removeListener('data', patchListener);
+            if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
+                livePatch.bookNotificationStreams[url][id].removeListener('data', patchListener);
             }
         }
         if (ephemeralID && ephemeral.streams[ephemeralID] && ephemeral.streams[ephemeralID].stream) {
