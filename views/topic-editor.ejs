@@ -6,7 +6,7 @@
         <link href="assets/css/default.css" rel="stylesheet">
         <link href="assets/css/bootstrap.css" rel="stylesheet">
         <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+        <!-- <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet"> -->
         <link href="assets/css/codemirror.css" rel="stylesheet">
         <link href="assets/css/codemirror-dialog.css" rel="stylesheet">
         <link href="assets/css/deathstar.css" rel="stylesheet">
@@ -67,7 +67,7 @@
                     <% include topic-editor-edit.ejs %>
 
                    <div class="tab-pane fade" id="preview">
-                        <div id="div-preview-pane" class="div-preview"></div>
+                        <div id="div-preview-pane" data-bind="html: htmlpreview" class="div-preview"></div>
                     </div>
                     
                     <% include topic-editor-help.ejs %>

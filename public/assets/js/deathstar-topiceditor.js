@@ -1,5 +1,9 @@
-// TODO:
-// 1. Add the ability to click on the title and edit it
+/* JavaDoc Info: http://code.google.com/closure/compiler/docs/js-for-compiler.html
+ * {!Object}	non-nullable type (never NULL)
+ * {?string}	nullable type (sometimes NULL) - default for {Object}
+ * {number=}	optional parameter
+ * {*}			ALL types
+ */
 
 // We use this until we can get identity sorted out
 var pressgang_userid,
@@ -7,7 +11,6 @@ var pressgang_userid,
     topicRevision; // used to check whether a new revision has been created on save
     
 var previewRenderErrorMsg = '<p>Could not transform</p>';
-// window.previewserverurl="http://127.0.0.1:8888";
 window.refreshTime = 1000;
 window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
@@ -27,16 +30,20 @@ var validationServerResponse,
     originalTitle, // the original title of the page - used when flashing the tab for attention
     flash, // the timer for flashing the window title. Lets us clear it from wherever
     pressGangUIURL,
-    globalLogLevel, // a dirty global to hold the log level for a commit message. 1= minor, 2=major
     specID, // editor links now include the specID of the book they come from. This allows default log messages to identify the book
     revHistoryFragment,
+    STOP = false, // stop flashing
+    FLASH = true, // start flashing
     Model = {
-        modified: ko.observable(),
+        modified: ko.observable(false),
         validated: ko.observable(),
         revision: ko.observable(),
         title: ko.observable(),
         htmlpreview: ko.observable(),
-        helpHintsOn: ko.observable(false)
+        helpHintsOn: ko.observable(false),
+        pageTitle: ko.observable(),
+        loglevel: ko.observable(),  // 1 = minor, 2 = major
+        logmsg: ko.observable()
     };
 
 
@@ -45,9 +52,24 @@ $(function() {
     // Attach Save handlers
     $('.save-menu').click(getLogMessage);
     $('#commitmsg-button').click(doCommitLogSave);
+
+    // Deal with the browser back button using the History API
+    window.addEventListener('popstate', function(event) {
+        if (Model.modified() && event.cancelable && confirm('Discard all changes and load new topic?')) {
+            return false;
+        }
+        generateRESTParameters();
+        loadSkynetTopic();
+    });
+
+    window.addEventListener('focus', function (event) {
+        flashTitle(STOP);
+    });
+
+    window.opener.registerCallback(invokeOpen);
+
 });
 
-    
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
     if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
     if (pageIsEditor) {
@@ -80,26 +102,25 @@ $(document).keydown(function(event) {
     return false;
 });
 
+// Required because the observable function is only invoked
+// when a state changes, and not every time an attempt is
+// made to assign a value to it
 function topicEdited() {
     Model.validated(false);
     Model.modified(true);
 }
 
 function getLogMessage (e) {
-    
     var loginBox = '#login-box',
         _log_level, msg,
         log_levels = {minor: 1, major: 2},
         log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"};
         
-    // I put the "minor" and "major" keys in the rel attribute of the commit menu items    
-    globalLogLevel = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
+    // I put the "minor" and "major" keys in the rel attribute of the commit menu items
+    // should go in a data- element
+    Model.log_level = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
     
-    $('#commit-msg-type').html(log_level_text[globalLogLevel]);
-    $('#commitmsg-save').attr('rel', globalLogLevel); // set the rel attribute on the commit message save button
-    // There is something very dirty about all this attaching data to DOM elements or putting it in global variables
-    // I'm feeling the need to implement some kind of model layer with wiring to elements
-    // Soon, my precious, soon...
+    $('#commit-msg-type').html(log_level_text[Model.loglevel]);
     
     //Fade in the Popup
     $(loginBox).fadeIn(300);
@@ -147,8 +168,8 @@ function doCommitLogSave () {
     // and set their userid
 
     pressgang_userid = getCookie('pressgang_userid'); // Do we have a PressGang user ID stored?
-    var username = getCookie('username'); // Do we have a username stored?
-    var thisusername = $('#userid').val(); // What name are they using for this commit?
+     username = getCookie('username'); // Do we have a username stored?
+     thisusername = $('#userid').val(); // What name are they using for this commit?
     
     /* If we have not verified a PressGang ID for this user, or they are requesting a commit
         with a different user ID than the one we verified, we verify their ID. 
@@ -158,13 +179,11 @@ function doCommitLogSave () {
         The user gives us a user name, and we retrieve the unique ID to match from PressGang */
 
     //REFACTOR: this needs to come out of this method into its own function
-    
     if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
         pressgang_userid = UNKNOWN_USER;
             // Get all the users!
             var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
-            
-        
+
         // REFACTOR:
         // Rather than getting all the users, we can query for the specific user like this:
         // http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/query;username=jwulf?expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%20%7B%22name%22%3A%20%22users%22%7D%7D%5D%7D
@@ -183,24 +202,33 @@ function doCommitLogSave () {
 
                 for (var users = 0; users < result.items.length; users ++) {
                     user = result.items[users].item;
-                    if (user.name == thisusername) { pressgang_userid = user.id; break;}
+                    if (user.name === thisusername) { pressgang_userid = user.id; break;}
                 }
                 
-                if (pressgang_userid != UNKNOWN_USER) { // cool, we found them in there
+                if (pressgang_userid !== UNKNOWN_USER) { // cool, we found them in there
                     setCookie('username', thisusername, 365);
                     setCookie('pressgang_userid', pressgang_userid, 365);
-                    doActualSave(globalLogLevel, _log_msg);
+                    var author = result.items[users].item.description.split(' ');
+
+                    var firstname = (author[0]) ? author[0] : 'Red Hat';
+                    setCookie('userfirstname', firstname, 365);
+                    var surname = (author[1]) ? author[1] : 'Engineering Content Services';
+                    setCookie('usersurname', surname, 365);
+                    var email = (author[2]) ? author [2] : 'www.redhat.com';
+                    setCookie('useremail', email, 365);
+
+                    doActualSave(Model.loglevel, _log_msg);
                     closeMask ();
                 }
-                if (pressgang_userid == UNKNOWN_USER) { // We're still unknown!
+                if (pressgang_userid === UNKNOWN_USER) { // We're still unknown!
                     if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
-                        doActualSave(globalLogLevel, _log_msg);
-                        closeMask ();       
+                        doActualSave(Model.loglevel, _log_msg);
+                        closeMask ();
                     }
                 }
             }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
-        doActualSave(globalLogLevel, _log_msg);
+        doActualSave(Model.loglevel, _log_msg);
         closeMask ();
     }
 }
@@ -221,12 +249,19 @@ function timedRefresh() {
 }
 
 window.onbeforeunload = function(e) {
-    if (Model.modified()) return 'You have unsaved changes.';
+    if (Model.modified()) return confirm('Discard unsaved changes?');
 };
+
+window.addEventListener('unload', function(event) {
+    // I'm closing - let the book know that I'll be gone.
+    // window.opener.unregisterCallback();
+});
 
 // callback function for use when a node server is generating the live HTML preview
 function handleHTMLPreviewResponse (preview, serverFunction) {
     if (preview != previewRenderErrorMsg) {
+        Model.htmlpreview(preview);
+        /*
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
         var section = doc.getElementsByClassName("section");
@@ -237,10 +272,9 @@ function handleHTMLPreviewResponse (preview, serverFunction) {
             if (section !== null) {
                 Model.htmlpreview(section[0].innerHTML);
             }
-        }
+        } */
     } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
-
     }
 }
 
@@ -253,7 +287,7 @@ function doValidate(me, callback) {
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
 function doSave() {
-    if (Model.modified) { 
+    if (Model.modified()) {
         // if the topic is not validated we'll call validation before saving
         if (!Model.validated())
         { 
@@ -272,6 +306,7 @@ function doActualSave (log_level, log_msg) {
     if ($('#div-preview-inline').find('.titlepage')) builtHTML = $('#div-preview-inline').html();
 
     if (!Model.validated() && validationServerResponse == 1) {
+        // TODO: figure out why this is triggering false positive on a commit log message save
         alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
         Model.validated(false);
     }
@@ -312,12 +347,10 @@ function doActualSave (log_level, log_msg) {
                     '#SearchResultsAndTopicView;query;topicIds=' + topicID + '">new revision: ' + 
                     json.revision + '</a> of this topic.', 'alert-warning');
                 topicEdited();
-                // enableSaveRevert();
                 flashTitle('Revision Conflict');
-                // We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
+                // TODO: We will display a diff of the two in a mask similar to the commit message dialog, and allow you to overwrite the other save, or cancel back to your editor.
             } else {
-                // Load up the transformed xml from the saved topic
-                if (pageIsEditor) {
+                if (pageIsEditor) { // Reload the new xml
                     window.editor.setValue(json.xml);
                     $('#code').each(function(){this.value = json.xml;});
                     Model.modified(false);
@@ -333,7 +366,7 @@ function doActualSave (log_level, log_msg) {
                     updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                     //doValidate(); // The Validation message was overwriting the Save result message
                     setPageTitle(json.title);
-                    clearInterval(flash);
+                    flashtTitle(STOP);
     
                 } else {
                     showStatusMessage('No new revision was saved. ' + 
@@ -348,16 +381,24 @@ function doActualSave (log_level, log_msg) {
         } else { // Not code 0 from the Press Star
             showStatusMessage("Error saving. Status code: " + data.status + ' : ' + data.msg, '', 'alert-error');
             topicEdited();
-            //enableSaveRevert();
         }
     }
 }
 
 function flashTitle(msg) {
-    originalTitle = window.title;
-    flash = setInterval(function () {
-         window.title = (window.title == originalTitle) ? msg: originalTitle;
-    }, 750);
+    if (msg === false) {
+        if (flash) {
+            clearInterval(flash);
+            flash = null;
+        }
+        document.title = (Model.pageTitle());
+    } else {
+        flashTitle(STOP); // clear any existing flashing first
+        originalTitle = Model.pageTitle();
+        flash = setInterval(function () {
+             document.title = (document.title == originalTitle) ? msg: originalTitle;
+        }, 750);
+    }
 };
 
 // Sends the editor content to a node server for validation
@@ -435,6 +476,17 @@ function clientsideUpdateXMLPreview(cm, preview) {
     }
 }
 
+function invokeOpen(_url) {
+    if (Model.modified() && !confirm('Discard your unsaved changes?')) {
+        return; // cancel load
+    } else {
+        //push History
+        history.pushState({}, Model.title(), _url);
+        generateRESTParameters();
+        loadSkynetTopic(FLASH);
+    }
+}
+
 function generateRESTParameters() {
  //   var params = extractURLParameters();
     
@@ -500,7 +552,8 @@ function setPageTitle (topicTitle) {
         titleHTML = '<a href="'  + pressGangUIURL + 
                     '#SearchResultsAndTopicView;query;topicIds=' + topicID + '" target="_blank">' + pageTitle + '</a>';
         $("#page-title").html(titleHTML);
-        document.title = topicID + ' - ' + topicTitle;
+        Model.pageTitle(topicID + ' - ' + topicTitle);
+        document.title = Model.pageTitle();
     }
 }
 
@@ -509,7 +562,7 @@ function injectPreviewLink() {
     $("#preview-link").html('<a href="preview.html?skyneturl=http://' + skynetURL + '&topicid=' + topicID + '">Preview Link</a>');
 }
 
-function loadSkynetTopic() {
+function loadSkynetTopic(_flash) {
     var  alwaysUseServerToLoadTopics = true;
     if (alwaysUseServerToLoadTopics)
     {
@@ -530,9 +583,10 @@ function loadSkynetTopic() {
                     }
                 }
                 topicRevision = json.revision;
+                Model.title(json.title)
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
-                clearInterval(flash);
+                _flash && flashTitle('Editing');
             }
         });
     } else {
@@ -707,6 +761,7 @@ function initializeTopicEditPage() {
         return CodeMirror.overlayMode(mode, overlay);
     });
 
+
     // Toggle Close Tag
     $('#tagCloseToggle').click(toggleAutoCloseTag);
 
@@ -765,25 +820,18 @@ function initializeTopicEditPage() {
         useStateCookie: true,
         cookie: {
             //  State Management options
-            name: "deathstar-topic-editor-layout" // If not specified, will use Layout.name
-            ,
-            autoSave: true // Save cookie when page exits?
-            ,
-            autoLoad: true // Load cookie when Layout inits?
+            name: "deathstar-topic-editor-layout", // If not specified, will use Layout.name
+            autoSave: true, // Save cookie when page exits?
+            autoLoad: true, // Load cookie when Layout inits?
             //  Cookie Options
-            ,
             domain: "",
             path: "",
-            expires: "30" // 'days' -- blank = session cookie
-            ,
-            secure: false
+            expires: "30", // 'days' -- blank = session cookie
+            secure: false,
             //  State to save in the cookie - must be pane-specific
-            ,
             keys: "north.size,south.size,east.size,west.size," +
-
-            "north.isClosed,south.isClosed,east.isClosed,west.isClosed," +
-
-            "north.isHidden,south.isHidden,east.isHidden,west.isHidden"
+                "north.isClosed,south.isClosed,east.isClosed,west.isClosed," +
+                "north.isHidden,south.isHidden,east.isHidden,west.isHidden"
         }
     });
     resizePanes();
@@ -845,9 +893,114 @@ function togglePlainText (e) {
             height: myHeight,
             width: myWidth,
             disableSpellcheck: false,
-            lineNumbers: true
+            lineNumbers: true,
+            onDragEvent: function(instance, event) {
+
+                // http://stackoverflow.com/questions/6604622/file-drag-and-drop-event-in-jquery
+
+                //stop the browser from opening the file
+                event.preventDefault();
+
+                if (event.type == 'drop') {
+
+                    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0] &&
+                            event.dataTransfer.files[0].type == 'image/png' && window.FileReader) {
+                        var reader = new FileReader;
+                        var _filename = event.dataTransfer.files[0].name;
+                        reader.onload = function() {
+                            var imgData = reader.result;
+
+                            var byteEncodedImage   = new Int8Array( imgData );
+                            var encodedImage = Array.apply( [], byteEncodedImage );
+
+                            // Create an image in PressGang
+                            var _url = skynetURL + '/seam/resource/rest/1/image/create/json?expand=' + encodeURI(JSON.stringify(
+                                {"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}
+                            ));
+                            var content = {
+                                configuredParameters: ['languageImages'],
+                                languageImages_OTM: {
+                                    items: [
+                                        { item:
+                                        {configuredParameters: ['locale'],
+                                            locale: "en-US"
+                                        },
+                                            state: "1" }]
+                                }
+                            };
+
+                            $.ajax({
+                                url: _url,
+                                type: "POST",
+                                data: JSON.stringify(content),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                // and on success, upload the image data
+                                success: function imageCreatedNowGetUploadID (result) {
+                                    var imgid = result.id;
+                                    if (!result.id) { return; }
+                                    _url = skynetURL + '/seam/resource/rest/1/image/get/json/'+imgid+ '?expand=' +
+                                        encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
+
+                                    $.ajax({
+                                        url: _url,
+                                        type: "GET",
+                                        contentType: "application/json; charset=utf-8",
+                                        success: function imageCreatedNowPostContent (result) {
+                                            var uploadID = result.languageImages_OTM.items[0].item.id
+                                            _url = skynetURL + '/seam/resource/rest/1/image/update/json?expand=' +
+                                                encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
+                                            content = {configuredParameters: ["languageImages", "description"],
+                                                id: imgid,
+                                                description: "Uploaded from Press Star",
+                                                languageImages_OTM: {items: [{item:{
+                                                    configuredParameters: ['imageData', 'filename'],
+                                                    filename: _filename,
+                                                    id: uploadID,
+                                                    imageData: encodedImage
+                                                }, state: 3}]}}
+                                            $.ajax({
+                                                url: _url,
+                                                type: "POST",
+                                                data: JSON.stringify(content),
+                                                dataType: "json",
+                                                contentType: "application/json; charset=utf-8",
+                                                // and on success, update the editor
+                                                success: function () {
+                                                    window.editor.replaceSelection('<figure>\n' +
+                                                        '    <title>Title</title>\n' +
+                                                        '    <mediaobject>\n' +
+                                                        '        <imageobject>\n' +
+                                                        '            <imagedata align="center" fileref="images/'+ imgid + '.png"/>\n' +
+                                                        '        </imageobject>\n' +
+                                                        '        <textobject>\n' +
+                                                        '            <phrase>Description</phrase>\n' +
+                                                        '        </textobject>\n' +
+                                                        '    </mediaobject>\n' +
+                                                        '</figure>\n');
+                                                    updateXMLPreviewRoute(editor.getValue(), document.getElementsByClassName("div-preview"));
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        reader.readAsArrayBuffer(event.dataTransfer.files[0]);
+
+                        return true;  // stop the editor response
+                    }
+
+                };
+            }
+                // query {"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}
+                //     {"description":"Ninja Rockstar Javascript", "languageImages_OTM":{"items":[{"item":{"image":null, "imageData":[], "thumbnail":null, "imageDataBase64":null, "locale":null, "filename":"ninja rockstar.jpeg", "revisions":null, "id":2420, "revision":null, "configuredParameters":["imageData","filename"], "expand":null, "logDetails":null}, "state":3}], "size":null, "expand":null, "startExpandIndex":null, "endExpandIndex":null}, "revisions":null, "selfLink":null, "editLink":null, "deleteLink":null, "addLink":null, "id":2397, "revision":null, "configuredParameters":["description","languageImages"], "expand":null, "logDetails":null}
         });
         resizePanes();
+        editor.getWrapperElement().addEventListener("paste",
+            function(e) {
+
+        });
     }
     else {
         window.editor.toTextArea();

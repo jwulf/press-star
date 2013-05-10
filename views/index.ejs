@@ -10,6 +10,7 @@
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
     <script src="/scripts/jquery-1.9.1.min.js"></script>   
     <script src="/bootstrap/js/bootstrap.js"></script>
+    <script src="/scripts/ejs_production.js"></script>
     <script src="/scripts/index.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>window.sourceURL="<%= partialURL %>"</script>
@@ -45,10 +46,10 @@
                <input id="password" class="wipe-me" name="kerbpwd" value="" type="password" placeholder="Kerberos Password">
                </label>
 
-               <label class="commit-message">
+              <!-- <label class="commit-message">
                    <span>Commit message</span>
                    <input id="commitmsg" name="commitmsg" class="wipe-me" value="" type="text" autocomplete="on" placeholder="Commit Message">
-               </label>
+               </label> -->
                <button id="publish-button" class="submit button" type="button">Publish</button>
 
                <p>
@@ -59,16 +60,9 @@
          </form>
        </div>
 
-              <div class="global-warning" style="position: fixed; bottom: 15px; left: 15px; text-align: left; cursor: default; box-shadow: rgba(0, 0, 0, 0.247059) 0px 0px 8px;">
-              <div class="inner" style="display: inline-block; width: 360px; padding: 15px; text-align: left; font-size: 14px; background-color: rgb(66, 66, 66); line-height: 1.2em; color: rgb(255, 255, 255); background-position: initial initial; background-repeat: initial initial;">
-              <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">New features: <br> 1. Revision History and Entity file Integration</h2>
-              <span>Add the directives:<br><br> #_DSD:REVISION HISTORY = XX  <br> #_DSD:ENTITY FILE= XX <br><br> to your content spec to get custom Revision History topic and Entity file topic integration.</span>
-             <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">2. Change topic titles in the editor</h2>
-              <span>Just change the &lt;title&gt; element of the topic. Live patching will work, and your spec will be aligned in the background.</span>
+    <div id="motd"></div>
 
-            <span style="display: block; margin-top: 5px; cursor: pointer; text-decoration: underline;">Dismiss</span>
 
-              </div></div>
 
   </body>
 </html>

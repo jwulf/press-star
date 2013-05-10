@@ -1,3 +1,35 @@
-{
-    "1" : "Revision History and Entities file are now integrated. Add #_DSD:REVISION HISTORY = <Topic> to your content spec."
+{ "messages":
+    {
+        "1" : {
+            "key": 1,
+            "title" : "Message of the Day",
+            "body" : "One message, and once each day. Take note, because they don't repeat!"
+        },
+        "2" : {
+            "key": 2,
+            "title": "Revision History and Entity file Integration",
+            "body": "Add the directives:<br><br> #_DSD:REVISION HISTORY = XX  <br> #_DSD:ENTITY FILE= XX <br><br> to your content spec to get custom Revision History topic and Entity file topic integration"
+        },
+        "3" : {
+            "key": 3,
+            "title": "Automated Revision History",
+            "body": "Once you incorporate your Revision History, use the 'Update Revision History' button to get your major commit messages rolled up to a revhistory entry"
+        },
+        "4" : {
+            "key": 4,
+            "title": "Change topic titles in the editor",
+            "body": "Just change the xml &lt;title&gt; element in the editor"
+        },
+        "5" : {
+            "key": 5,
+            "title": "Drag and Drop image upload",
+            "body": "Drop .png images into the editor to have them upload and insert at the current cursor location"
+        },
+        "6" : {
+            "key": 6,
+            "title": "Fixed Rev topic tracking",
+            "body": "Fixed Revision topics notify you when they are changed upstream"
+        }
+    }
 }
+

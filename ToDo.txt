@@ -1,28 +1,20 @@
-Publish
 
-Passport.js integration
- - books with owners
- - profiles
-   - snippets
-   - kerb ID
 
-Figure out why publican-deathstar code tabs styling is off.
+Spec Editor:
+morrow: Is there a reason why you need to always click 'Validate' twice? Any way to fix that?
+[1:26pm] morrow: And also, why 'Confirm Navigation - You have unsaved changes...' pops up, even though Push has been successful?
 
-Add codetabs js to the editor (in a maintainable fashion) 
-Add changelog js to the editor
+Topic Editor:
+Navigating on state pop or invoke has wrong message. Check the Revert one for ht ecoorrect
 
-<h2> style in bootstrap - currently overriding the Publican style
+After clicking publish, the page does not update with the new status
 
-Add changelog injection macro to the editor
+After clicking remove the page does not update with the new status
 
-Add-Book feedback using bootstrap styles
-Add-book as pop-over dialog screen
 
-Figure out how to do the nice line feeds for the build log listener stream
+When a book's metadata is changed during a spec push, it should be re-read on the Star.
+It should also be re-read before doing the publish event.
 
-X Remove Book
-X Partial refresh on build request
-X Periodic partial refresh
-X Build Log hooked up
-X Add Book
+enforce arbitrary limitations of brew wrt revision history, in the topic editor
 
+Assembly log on publish not copied
