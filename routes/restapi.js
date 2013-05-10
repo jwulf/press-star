@@ -55,7 +55,13 @@ function restroute (req, res){
     else
     if (op == 'topicupdate') {topics.topicupdate(req, res)}
     else 
-    if (op =='gettopic') {topics.gettopicRESTEndpoint(req,res)};
+    if (op =='gettopic') {topics.gettopicRESTEndpoint(req,res);}
+    else
+    if (op === 'getbooks') {getBooks(req, res);};
+}
+
+function getBooks(req,res) {
+    res.send(jsondb.Books);
 }
 
 function getBookmd (req, res) {

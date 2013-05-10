@@ -184,7 +184,8 @@ function connectSocket () {
              */
              
             socket.on('bookNotification', function (data) {
-                console.log('Book Notification: ' + data); 
+                console.log('Book Notification: ');
+                console.log(data);
                 indexRefresh();
             });
         }

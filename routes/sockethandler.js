@@ -18,7 +18,9 @@ function socketHandler (client){
         url, id, ephemeralID;
 
     var bookListener = function (data) {
-        client.emit('statechange', {md : Books[url][id].getAll()});
+        console.log('Book state change: ');
+        console.log(data);
+        client.emit('statechange', data);
     };
 
     var libraryListener = function (data) {
@@ -34,7 +36,6 @@ function socketHandler (client){
             client.emit('bookRebuiltNotification','The book was rebuilt');
         } else
         if (topicPatchData.notification) {
-            console.log('sending notification');
             client.emit ('notification', topicPatchData.data);
         } else
         {

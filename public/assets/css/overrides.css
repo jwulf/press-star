@@ -1,7 +1,5 @@
 /* @import url(http://fonts.googleapis.com/css?family=PT+Mono|Open+Sans:400italic,400,600); */
 
-
-
 /* The Publican website menu.css has a line-height set to 1em */
 
 body, h1, h2, h3, h4, h5, h6, pre, li, div {
@@ -11,7 +9,7 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
 .simplesect:after{content:""; display: block; clear: both; height:0px; width: 100%; float:none;}
 
 .RoleCreateBugPara a{
-  padding: padding: 0em 0.8em 0.2em;
+  padding:  0em 0.8em 0.2em;
   background-color:white;
   margin:0em .5em;
   font-size:12px; 
@@ -149,7 +147,7 @@ span.remark{
 
 /* css for the code switcher */
 .codetabs pre{
-  border: 1px solid color: #AAA;
+  border: 1px solid; color: #AAA;
 }
 
 .code-select-li{
