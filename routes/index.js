@@ -2,8 +2,8 @@
 /*
  * GET home page.
  */
-var jsondb = require('./../lib/Books');
+var Library = require('./../lib/Library');
 
 exports.index = function(req, res){
-    res.render('index', { books: jsondb.sortedBooks, data: jsondb.Books, mode: 'home'});
+    res.render('index', { books: Library.sortedBooks, data: Library.Books, mode: 'home'});
 };

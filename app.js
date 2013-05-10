@@ -12,9 +12,9 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     sockethandler = require('./routes/sockethandler'),
-    initJsondb = require('./lib/Books').initialize(),
+    initializeLibrary = require('./lib/Library').initialize(),
     initTopicDependencies = require('./lib/livePatch').initialize(),
-    jsondb = require('./lib/Books'),
+    Library = require('./lib/Library'),
     restapi = require('./routes/restapi'),
     state = require('./lib/appstate'),
     initializeAppState = require('./lib/appstate').initialize();
@@ -68,7 +68,7 @@ app.get('/edit', function (req, res) {
 
 app.get('/publish', function (req, res) {
     console.log('publish requested');
-    res.render('index', { books: jsondb.sortedBooks, data: jsondb.Books, title: 'Death Star 2.0', mode: 'publish'});
+    res.render('index', { books: Library.sortedBooks, data: Library.Books, title: 'Death Star 2.0', mode: 'publish'});
 });
 
 app.get('/add', function (req, res) {
@@ -81,20 +81,20 @@ app.get('/about', function (req,res){
 });
 
 app.get('/booklist', function (req, res) {
-    //console.log(jsondb.sortedBooks);
-    res.render('booklist-partial', {layout: false, books: jsondb.sortedBooks, data: jsondb.Books, app: state.appstate, title: 'Death Star 2.0' });
+    //console.log(Library.sortedBooks);
+    res.render('booklist-partial', {layout: false, books: Library.sortedBooks, data: Library.Books, app: state.appstate, title: 'Death Star 2.0' });
 });
 
 app.get('/remove', function(req, res){
-    res.render('index', { books: jsondb.sortedBooks, data: jsondb.Books, title: 'Death Star 2.0', mode: 'remove' });    
+    res.render('index', { books: Library.sortedBooks, data: Library.Books, title: 'Death Star 2.0', mode: 'remove' });    
 });
 
 app.get('/publishlist', function (req, res){
-    res.render('booklist-publish', {layout: false, books: jsondb.sortedBooks, data: jsondb.Books});    
+    res.render('booklist-publish', {layout: false, books: Library.sortedBooks, data: Library.Books});    
 });
 
 app.get('/removelist', function (req, res){
-    res.render('booklist-remove', {layout: false, books: jsondb.sortedBooks, data: jsondb.Books, title: 'Remove Books'})
+    res.render('booklist-remove', {layout: false, books: Library.sortedBooks, data: Library.Books, title: 'Remove Books'})
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){

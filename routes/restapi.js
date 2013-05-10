@@ -2,7 +2,7 @@ var pressgang = require('pressgang-rest'),
     xmlpreview = require('./../lib/xmlpreview'),
     dtdvalidate = require('./../lib/dtdvalidate'),
     livePatch = require('./../lib/livePatch'),
-    jsondb = require('./../lib/Books'),
+    Library = require('./../lib/Library'),
     krb5 = require('node-krb5'),
     ephemeral = require('./../lib/ephemeralStreams'),
     topics = require('./../lib/topicdriver'),
@@ -61,13 +61,13 @@ function restroute (req, res){
 }
 
 function getBooks(req,res) {
-    res.send(jsondb.shadowBooks);
+    res.send(Library.shadowBooks);
 }
 
 function getBookmd (req, res) {
     var url = req.query.url,
         id = req.query.id,
-        Books = jsondb.Books;
+        Books = Library.Books;
         
     if (url && id) {
         if (Books[url] && Books[url][id]) {
@@ -132,8 +132,8 @@ function build (req, res) {
 
 function rebuildAll (req, res) {
     var count = 0;
-    for (var url in jsondb.Books)
-        for (var id in jsondb.Books[url]) {
+    for (var url in Library.Books)
+        for (var id in Library.Books[url]) {
             builder.build(url, id);
             count ++;
         }
@@ -144,16 +144,16 @@ function rebuildAll (req, res) {
 function removebook (req,res){
     var url = req.query.url,
         id = req.query.id;
-    if (jsondb.Books[url])
-        if (jsondb.Books[url][id])
+    if (Library.Books[url])
+        if (Library.Books[url][id])
             {
-                var pathURL = 'builds/' + id + '-' + jsondb.Books[url][id].builtFilename;
+                var pathURL = 'builds/' + id + '-' + Library.Books[url][id].builtFilename;
                 wrench.rmdirRecursive(pathURL, function (err) {console.log(err + 'removing' + pathURL)});
                 // Nuke all the current subscriptions for this book
                 livePatch.removeTopicDependenciesForBook(url, id); 
-                delete jsondb.Books[url][id];
-                jsondb.write();
-                jsondb.NotificationStream.write({update: "remove"});
+                delete Library.Books[url][id];
+                Library.write();
+                Library.NotificationStream.write({update: "remove"});
                 return res.send({code:0, msg: 'Book deleted'});
             }
     res.send({code:1, msg: 'Book not found'});
@@ -166,7 +166,7 @@ function addbook (req, res){
     if (url && id)
         checkout(url, id, './books', function (err, spec){
                 if (err) return res.send({'code' : 1, 'msg' : err});
-                jsondb.NotificationStream.write({update: "add"});
+                Library.NotificationStream.write({update: "add"});
                 return res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
             }
         );        
@@ -175,7 +175,7 @@ function addbook (req, res){
 function checkout (url, id, dir, cb){
     console.log('Check out operation')
     // First, check if the book is already checked out
-    if (jsondb.Books[url] && jsondb.Books[url][id]) {
+    if (Library.Books[url] && Library.Books[url][id]) {
         console.log('Book already checked out');
         return cb('According to our records, this book has already been added.');
     } 
@@ -185,7 +185,7 @@ function checkout (url, id, dir, cb){
         if (err) return cb(err, spec);
 
         // If everything went ok, update the database
-        jsondb.addBook(spec.metadata, cb);
+        Library.addBook(spec.metadata, cb);
         livePatch.generateStreams();
     }); 
 

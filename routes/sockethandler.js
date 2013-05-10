@@ -1,7 +1,7 @@
 var fs=require('fs'),
     spawn = require('child_process').spawn,
     carrier = require('carrier'),   
-    Library = require('./../lib/Books'),
+    Library = require('./../lib/Library'),
     Stream = require('stream').Stream,
     livePatch = require('./../lib/livePatch'),
     assembler = require('./../lib/assembler'),
