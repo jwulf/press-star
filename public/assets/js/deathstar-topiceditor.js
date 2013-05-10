@@ -477,7 +477,7 @@ function clientsideUpdateXMLPreview(cm, preview) {
 }
 
 function invokeOpen(_url) {
-    if (Model.modified() && !alert('You have unsaved changes.')) {
+    if (Model.modified() && !confirm('Discard your unsaved changes?')) {
         return; // cancel load
     } else {
         //push History
