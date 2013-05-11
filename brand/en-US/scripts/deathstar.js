@@ -11,7 +11,14 @@ var flash,
     updatingRevHistory = false,
     revHistoryFragment,
     openNewURL,
-    md; // Book metadata
+    Bookmd = { // Book metadata
+        building: false,
+        publishing: false,
+        onPublishQueue: false,
+        onBuildQueue: false,
+        id: 0,
+        onQueue: false
+    };
 
 function url_query (query, url) {
     // Parse URL Queries
@@ -203,7 +210,7 @@ function getRevHistoryFragment(content, callback) {
 }
 
 function revHistoryFeedback (percentage) {
-    updateControlPanel(md, percentage);
+    updateControlPanel(Bookmd, percentage);
 }
 
 function retract_menu (id) {
@@ -272,7 +279,9 @@ function connectSocket () {
                 retries = 0;
                 beenConnected = true;
                 console.log('Websocket connected to server');
-                socket.emit('patchSubscribe', {skynetURL: skynetURL, id: thisBookID});
+                socket.emit('subscribeToBookPatch', {url: skynetURL, id: thisBookID});
+                socket.emit('subscribeToBookState', {url: skynetURL, id: thisBookID});
+                socket.emit('subscribeToBookNotification', {url: skynetURL, id: thisBookID});
 
                 socket.on('disconnect', function () {
                     displayNotification('Lost connection to server...', NO_FLASH);
@@ -282,9 +291,11 @@ function connectSocket () {
                 });
             });
 
-            socket.on('patchBookinBrowser', patchTopic);
-            socket.on('bookRebuiltNotification', bookRebuiltNotification);
+            socket.on('patch', patchTopic);
+            socket.on('statechange', updateBookMetadata);
+            //socket.on('bookRebuiltNotification', bookRebuiltNotification);
             socket.on('notification', routeNotification);
+
 
             /* State change is sent every time the book's metadata structure changes on the
              server. It is used to update client-side views of building / publishing / error status
@@ -294,19 +305,21 @@ function connectSocket () {
              server.
              */
 
-            socket.on('statechange', processStateChange);
         }
     }
 }
 
-function processStateChange (data) {
-    if (data.md)
-        updateControlPanel(data.md);
+function updateBookMetadata (data) {
+    console.log(data);
+    Bookmd[data._name] = data._value;
+    updateControlPanel(Bookmd);
 }
 
 function getBookmd () {
     $.get('/rest/1/getBookmd', {url: skynetURL, id: thisBookID},
         function (result) {
+            console.log(result);
+            Bookmd = result;
             md = result;
             updateControlPanel(md);
         });
@@ -330,8 +343,10 @@ function clickGoHome (e) {
 }
 
 function routeNotification (data) {
-    if (data.buildnotification) {
-        buildNotification(data);
+    console.log('Notification:');
+    console.log(data);
+    if (data.bookRebuilt) {
+       bookRebuiltNotification(data);
     } else {
         displayNotification(data);
     }
@@ -472,8 +487,7 @@ function patchTopic (msg) {
 
             var _a = $(target.find('.title')[0]).children('a').detach();  // grab the anchor target
             $(target.find('.title')[0]).text(old_section_num + ' ' + new_title_text); // new title
-            $(target.find('.title')[0]).prepend(_a); // replace anchor target
-
+            $(target.find('.title')[0]).prepend(_a);
             var _id = _a.attr('id'); // anchor
             console.log('scanning TOC for ' + _id);
             $("[href='#" + _id + "']").text(old_section_num + ' ' + new_title_text); // TOC links

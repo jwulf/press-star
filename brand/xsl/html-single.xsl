@@ -11,12 +11,52 @@
 <xsl:import 
 href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
 
+<xsl:template name="user.footer.content">
+    <div class="skynetBookID"><xsl:value-of select="//productname[1]"/>/<xsl:value-of select="//title[1]"/></div>
+</xsl:template>
+
 <!-- inject our javascript into the footer -->
 <!-- http://www.sagehill.net/docbookxsl/InsertExtHtml.html -->
 <!-- Inject a div.skynetBookID with Product_Name/Book_Name
   This is used for cookies for the book -->
-<xsl:template name="user.footer.content">
-    <div class="skynetBookID"><xsl:value-of select="//productname[1]"/>/<xsl:value-of select="//title[1]"/></div>
+<xsl:template name="system.head.content">
+    <script src="Common_Content/scripts/skynetURL.js"></script>
+    <script src="Common_Content/scripts/basket.full.min.js"></script>
+    <script src="Common_Content/scripts/deathstar.js"></script>
+    <script type="text/javascript">
+        basket
+            .require({ url: 'Common_Content/scripts/jquery-1.9.1.min.js', unique: 1 })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/code-lang-switcher.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/changelogs.js', unique: 1});
+            })
+           // .then(function () {
+           //     basket.require({ url: 'Common_Content/scripts/deathstar.js', unique: 1});
+           // })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/skynet-book.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/utils.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/ejs_production.js', unique: 1});
+            })
+           // .then(function () {
+           //     basket.require({ url: 'Common_Content/scripts/knockout-2.2.1.js', unique: 1});
+           // })
+            .then(function () {
+                basket.require({ url: 'Common_Content/scripts/publican-pressgang-utils.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: '/socket.io/socket.io.js', unique: 1});
+            });
+    </script>
+
+    <!-- basket cases -->
+    <!--
     <script src="Common_Content/scripts/jquery-1.9.1.min.js"></script>
     <script src="Common_Content/scripts/code-lang-switcher.js"></script>
     <script src="Common_Content/scripts/changelogs.js"></script>
@@ -24,9 +64,11 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
     <script src="Common_Content/scripts/skynetURL.js"></script>
     <script src="Common_Content/scripts/utils.js"></script>
     <script src="Common_Content/scripts/ejs_production.js"></script>
+    <script src="Common_Content/scripts/knockout-2.2.1.js"></script>
     <script src="Common_Content/scripts/deathstar.js"></script>
     <script src="Common_Content/scripts/publican-pressgang-utils.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    -->
 </xsl:template>
 
 <!-- set the onload of the page -->

@@ -3,7 +3,7 @@
 
 Name:		publican-deathstar
 Summary:	Common documentation files for %{brand}
-Version:	0.48
+Version:	0.50
 Release:	1%{?dist}
 License:	GPL v2
 Group:		Applications/Text
@@ -53,6 +53,10 @@ rm -rf $RPM_BUILD_ROOT
 %{wwwdir}/%{brand}
 
 %changelog
+* Sat May 11 2013 Joshua Wulf <jwulf@redhat.com> 0.50
+- Basket.js caching of JavaScript in localstorage
+- Support for new Press Star eventing architecture
+
 * Thu May 01 2013 Joshua Wulf <jwulf@redhat.com> 0.48
 - Support for changing topic title from editor
 - Automated Revision History Generation

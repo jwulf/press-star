@@ -2,8 +2,8 @@
 
 <div class="ctrl-btn rebuild-btn">
     <% if (bookmd.building) { %>
-        <a id="rebuild-link" rel="/buildlog.html?buildid=<%= bookmd.buildID %>" href="#">
-            <% if (bookmd.onQueue) { %>
+        <a id="rebuild-link" rel="/buildlog.html?buildid=<%= bookmd.uuid %>" href="#">
+            <% if (bookmd.onBuildQueue) { %>
                 <span class="css3-blink">On Queue...</span>
             <% } else { %>
                 <span class="css3-blink">Rebuilding...</span>
