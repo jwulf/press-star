@@ -1,0 +1,85 @@
+
+<table border="0" cellpadding="20">
+    <% for (var each in books) { var id = books[each].id, url = books[each].url, title = books[each].title, my=data[url][id] %>
+    <tr>
+        <td>
+            <h4>
+                <a href="<%= 'builds/' + id + '-' + my.builtFilename %>" target="book"><%= title %> [<%= id %>]</a>
+            </h4>
+        </td>
+        <td>
+            <center>
+                <h4>
+                    <% if (! (my.publishing ||  my.building) ) { %>
+                    <span class="active-indicator-button login-window"><a class="login-window" href="javascript:;" onClick="clickToPublish('<%= url%>', '<%= id %>'); return false;">Publish</a></span>
+                    <% } else {%>
+                    <% if (my.inBrew) { %>
+                    <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">In Brew</a></span>
+                    <% } else if (my.onPublishQueue) { %>
+                    <span class="active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Queued</a></span>
+                    <% } else if (my.building) { %>
+                    <span class="css3-blink active-indicator-button"><a target="_blank" href="/buildlog.html?buildid=<%= my.buildID %>">Building</a></span>
+                    <% } else if (my.publishing) { %>
+                    <span class="css3-blink active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Publishing</a></span>
+                    <% } %>
+                    <% } %>
+                </h4>
+            </center>
+        </td>
+        <td>
+            <center>
+                <h4>
+                    <% if (my.publishing) { %>
+                    <span class="action-button btn-log"><a href="javascript:;" onclick="$.get('/rest/1/stopPublish?uid=<%= my.publishID %>', function(result){console.log(result);});">End Publish Job</a></span>
+                    <% } else { %>
+                    <% if (my.hasPublishLog) { %>
+                    <span class="action-button btn-log"><a target="_blank" href="<%= 'builds/' + id + '-' + my.builtFilename + '/publish.log'%>">Publish Log</a></span>
+                    <% } %>
+                    <% } %>
+                </h4>
+            </center>
+        </td>
+        <td>
+            <center>
+                <h4>
+                    <% if (my.brewTask) { %>
+                    <% if (my.publishing) { %>
+                    <span class="active-indicator-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>
+                    <% } else { %>
+                    <span class="action-button btn-log"><a href="<%= my.brewTask %>" target="_blank">Brew Task</a></span>
+                    <% } %>
+                    <% } %>
+                </h4>
+            </center>
+        </td>
+    </tr>
+    <% } %>
+</table>
+
+<div id="login-box" class="login-popup">
+    <a href="#" class="close"><img src="close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
+    <form class="signin" action="">
+        <fieldset class="textbox">
+            <label class="username">
+                <span>Kerberos ID</span>
+                <input id="username" name="kerbid" value="" type="text" autocomplete="on" autofocus placeholder="Kerberos ID">
+            </label>
+
+            <label class="password">
+                <span>Kerberos Password</span>
+                <input id="password" class="wipe-me" name="kerbpwd" value="" type="password" placeholder="Kerberos Password">
+            </label>
+
+            <!-- <label class="commit-message">
+                 <span>Commit message</span>
+                 <input id="commitmsg" name="commitmsg" class="wipe-me" value="" type="text" autocomplete="on" placeholder="Commit Message">
+             </label> -->
+            <button id="publish-button" class="submit button" type="button">Publish</button>
+
+            <p>
+                Your credentials will not be stored.
+            </p>
+
+        </fieldset>
+    </form>
+</div>

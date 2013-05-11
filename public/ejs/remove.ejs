@@ -1,0 +1,26 @@
+<table border="0" cellpadding="20">
+    <% for (var each in books) { var id = books[each].id, title = books[each].title, url = books[each].url, my = data[url][id] %>
+    <tr>
+        <td>
+            <h4>
+                <% if (my.builtFilename) { %>
+                <a href="<%= 'builds/' + id + '-' + my.builtFilename %>" target="book"><%= title %> [<%= id %>]</a>
+                <% } else { %>
+                <span title="This book has not been built yet - click 'Build Book' to initiate a build"><%= title %> [<%= id %>]</span>
+                <% } %>
+                </h3>
+        </td>
+        <td><center><h4>
+            <% if (my.building) { %>
+            <span class="active-indicator-button css3-blink"><a target="_blank" href="/buildlog.html?buildid=<%= my.buildID %>">Building</a></span>
+            <% } %>
+            <% if (my.publishing) { %>
+            <span class="css3-blink active-indicator-button"><a target="_blank" href="/publishstream.html?publishid=<%= my.publishID %>">Publishing</a></span>
+            <% } %>
+            <% if (! (my.building || my.publishing) ) { %>
+            <span class="active-indicator-button"><a href="#" onClick="$.get('/rest/1/remove?url=<%= url%>&id=<%= id %>'); return false;">Remove</a></span>
+            <% } %>
+        </h4></center></td>
+    </tr>
+    <% } %>
+</table>

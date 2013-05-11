@@ -1,0 +1,27 @@
+Here are the interested parties:
+
+
+Book
+    interested in: patches
+
+Book control panel
+    interested in: Book state changes
+
+
+Library
+    interested in: All book state changes
+    interested in: Library events (add/remove)
+
+
+bookNotificationStream - pipes patch events and Book state events for specific book
+
+LibraryNotificationStream - pipes all Book state events + Library events
+
+
+
+bookNotificationStream add listener to Library.Book[url][id].on('change')
+
+LibraryNotificationStream.add listener to Library.Book[url][id].on('change')
+
+Patch Event - Book[url][id].emit('patch')
+

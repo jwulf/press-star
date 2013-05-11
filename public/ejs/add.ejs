@@ -1,0 +1,19 @@
+<form class="form-search" onsubmit="addBook(); return false;">
+    <fieldset>
+        <legend>Add Book</legend>
+        <div class="control-group">
+            <label class="control-label" for="serverurl">Server URL:</label>
+            <input type="text" id="serverurl" name="serverURL" size="400" value="<%= defaultURL %>"></td>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="specid-input">Content Spec ID:</label>
+            <div class="input-append">
+                <input class="span2" id="specid-input" name="specID" autofocus type="text">
+                <button id="add-button" class="btn btn-primary" disabled type="button">Add</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+<br>
+<div id="result"></div>
+

@@ -17,20 +17,30 @@ function socketHandler (client){
     var Books = Library.Books, // Got to do this here, because it's dynamically populated
         url, id, ephemeralID;
 
-    var bookListener = function (data) {
-        console.log('Book state change: ');
-        console.log(data);
+    // Publishes changes to event emitting keys
+    var bookStateListener = function (data) {
         client.emit('statechange', data);
     };
 
+    // Publishes build and publish events
+    var bookNotificationListener = function (data) {
+        console.log('Emit notification:');
+        console.log(data);
+        client.emit('notification', data);
+    }
+
+    // Publishes all book event emitting keys, plus Library events like add and remove
     var libraryListener = function (data) {
-        client.emit('bookNotification', data);
+        //console.log('socket emitting library data');
+        client.emit('librarychange', data);
     };
 
+    // Publishes build and publish streams
     var ephemeralListener = function (data){
         client.emit('cmdoutput', data);
     };
 
+    // Publishes patches
     var patchListener =  function (topicPatchData) {
         if (topicPatchData.bookRebuilt) {
             client.emit('bookRebuiltNotification','The book was rebuilt');
@@ -41,7 +51,7 @@ function socketHandler (client){
         {
             console.log('Pushing patch to a listening book for Topic ' + topicPatchData.topicID + ' in Spec ' + id);
             //this.emit('data', topicPatchData);
-            client.emit('patchBookinBrowser', topicPatchData);
+            client.emit('patch', topicPatchData);
             return true;
         }
     }
@@ -66,53 +76,80 @@ function socketHandler (client){
             ephemeral.streams[ephemeralID].stream.on('data', ephemeralListener);
         }
     });
-    
-    client.on('patchSubscribe', function(data) {
+
+    client.on('subscribeToBookState', function(data) {
         // we can only subscribe to one at a time - to avoid memory leaks
-        if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
-            livePatch.bookNotificationStreams.removeListener('data', patchListener);
+        // if you want all of the books, use librarySubscribe
+        if (Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].removeListener('change', bookStateListener);
         }
 
-        id = data.id, url = data.skynetURL;
-        console.log('Patch Subscription for Spec ID: ' + data.id);
-        if (id  && url)
-            
-            /* Hook into the Book event emitter. This is fired whenever the Book
-             metadata is updated. It allows client-side templating to use the 
-             new JSON data to reactively re-render a real-time view of the state of the book
-             */
-            if (Books[url] && Books[url][id]) {
-                console.log('Subscribing to book state change');
+        id = data.id, url = data.url;
+        console.log('Book State Subscription for Spec ID: ' + data.id);
 
-                Books[url][id].on('change', bookListener);
-            }
+        /* Hook into the Book event emitter. This is fired whenever the Book
+         metadata is updated. It allows client-side templating to use the
+         new JSON data to reactively re-render a real-time view of the state of the book
+         */
 
-        if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
-                livePatch.bookNotificationStreams[url][id].on('data', patchListener);
-            }
+        if (id && url && Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].on('change', bookStateListener);
+        }
+    });
+
+    client.on('subscribeToBookNotification', function(data) {
+        // we can only subscribe to one at a time - to avoid memory leaks
+        if (Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].removeListener('notify', bookNotificationListener);
+        }
+
+        id = data.id, url = data.url;
+        console.log('Book Notification Subscription for Spec ID: ' + data.id);
+
+        if (id  && url && Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].on('notify', bookNotificationListener);
+        }
     });
     
-    // Send a notification for any book event - used by index pages to refresh Library state
-    client.on('bookNotificationSubscribe', function () {
-        console.log('Client subscribed for Book Notifications');
-        Library.LibraryNotificationStream.on('change', libraryListener);
+    client.on('subscribeToBookPatch', function(data) {
+        // we can only subscribe to one at a time - to avoid memory leaks
+        if (Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].removeListener('patch', patchListener);
+        }
+
+        id = data.id, url = data.url;
+        console.log('Patch Subscription for Spec ID: ' + data.id);
+
+        if (id  && url && Library.Books[url] && Library.Books[url][id]) {
+                Library.Books[url][id].on('patch', patchListener);
+        }
+    });
+    
+    // Send a notification for all book events, and library events like book added or removed
+    // Used by index pages to refresh Library state
+    client.on('subscribeToLibrary', function () {
+        console.log('Library Notification Subscription');
         Library.LibraryNotificationStream.on('data', libraryListener);
     });
     
     client.on('disconnect', function () {
         console.log('Bye client :(');
-        if (Books[url] && Books[url][id]) {
-            Books[url][id].removeListener('change', bookListener);
+        if (Library.Books[url] && Library.Books[url][id]) {
+            Library.Books[url][id].removeListener('change', bookStateListener);
+            Library.Books[url][id].removeListener('patch', patchListener);
+            Library.Books[url][id].removeListener('notify', bookNotificationListener);
         }
-        Library.LibraryNotificationStream.removeListener('change', libraryListener);
+        Library.LibraryNotificationStream.removeListener('data', libraryListener);
         if (url && id){
-            if (livePatch.bookNotificationStreams[url] && livePatch.bookNotificationStreams[url][id]) {
-                livePatch.bookNotificationStreams[url][id].removeListener('data', patchListener);
+            if (Library.Books[url] && Library.Books[url][id]) {
+
             }
         }
-        if (ephemeralID && ephemeral.streams[ephemeralID] && ephemeral.streams[ephemeralID].stream) {
+
+        // This stream is destroyed, so we probably don't need to manually manage this
+       /* if (ephemeralID && ephemeral.streams[ephemeralID] && ephemeral.streams[ephemeralID].stream && ephemeralListener) {
             ephemeral.streams[ephemeralID].stream.removeListener(ephemeralListener);
-        }
+        }*/
 
     });
 

@@ -61,17 +61,18 @@ function restroute (req, res){
 }
 
 function getBooks(req,res) {
+    console.log(Library.shadowBooks);
     res.send(Library.shadowBooks);
 }
 
 function getBookmd (req, res) {
     var url = req.query.url,
         id = req.query.id,
-        Books = Library.Books;
+        Books = Library.shadowBooks;
         
     if (url && id) {
         if (Books[url] && Books[url][id]) {
-            res.send(Books[url][id].getAll());
+            res.send(Books[url][id]);
         }
         else res.send({code:1, msg: 'Book not found'});
     }
@@ -186,7 +187,6 @@ function checkout (url, id, dir, cb){
 
         // If everything went ok, update the database
         Library.addBook(spec.metadata, cb);
-        livePatch.generateStreams();
     }); 
 
 }

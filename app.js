@@ -54,6 +54,28 @@ app.all('/*', function(req, res, next) {
   next();
 });
 
+app.get('/client-index', function (req, res) {
+    res.render('index');
+});
+
+app.get('/add', function (req, res) {
+    res.render('index');
+});
+
+app.get('/remove', function (req, res) {
+    res.render('index');
+});
+
+app.get('/publish', function (req, res) {
+    res.render('index');
+});
+
+app.get('/issues', function (req, res) {
+    res.render('index');
+});
+
+
+
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.post('/rest/:version/:operation', restapi.restroute);

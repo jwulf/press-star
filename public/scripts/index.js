@@ -168,7 +168,7 @@ function connectSocket () {
             socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
                 socketConnected = true;
                 console.log('Websocket connected to server');
-                socket.emit('bookNotificationSubscribe');
+                socket.emit('subscribeToLibrary');
                 
                 socket.on('disconnect', function () { 
                     socketConnected = false;
@@ -183,8 +183,8 @@ function connectSocket () {
              server.
              */
              
-            socket.on('bookNotification', function (data) {
-                console.log('Book Notification: ');
+            socket.on('librarychange', function (data) {
+                console.log('Library Notification: ');
                 console.log(data);
                 indexRefresh();
             });

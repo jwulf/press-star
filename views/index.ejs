@@ -1,68 +1,41 @@
-<% var partialURLs = { home: 'booklist', add: 'none', remove: 'removelist', publish: 'publishlist'};
-    var partialURL;
-    if (mode && partialURLs[mode]) partialURL = partialURLs[mode]; %>
-
-<!DOCTYPE html>
 <html>
-  <head>
-    <title>Death Star 2.0 beta</title>
+<head>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-    <script src="/scripts/jquery-1.9.1.min.js"></script>   
-    <script src="/bootstrap/js/bootstrap.js"></script>
-    <script src="/scripts/ejs_production.js"></script>
-    <script src="/scripts/index.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>window.sourceURL="<%= partialURL %>"</script>
-  </head>
-  <body onload="pageSetup()">
-    
-</div>
-    <% include index-menu.ejs %>
+    <script src="scripts/client-index.js"></script>
+    <script src="assets/js/basket.full.min.js"></script>
 
-    <div id="booklist">
-        <% if (mode == 'home' ) { %>
-            <% include booklist-partial.ejs %>
-        <% } %>
-        <% if (mode == 'remove') { %>
-            <% include booklist-remove.ejs %>
-        <% } %>
-        <% if (mode == 'publish') { %>
-            <% include booklist-publish.ejs %>
-        <% } %>
-   </div>
+    <script type="text/javascript">
+        var pageIsEditor = true;
+        basket
+            .require({ url: 'assets/js/jquery-1.9.1.min.js', unique: 1 })
+            .then(function () {
+                basket.require({ url: '/scripts/knockout-2.2.1.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: '/scripts/ejs_production.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: '/bootstrap/js/bootstrap.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: '/bootstrap/js/bootstrap.js', unique: 1});
+            })
+            .then(function () {
+                basket.require({ url: '/socket.io/socket.io.js', unique: 1});
+            });
+    </script>
+</head>
 
-     <div id="login-box" class="login-popup">
-           <a href="#" class="close"><img src="close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
-           <form class="signin" action="">
-               <fieldset class="textbox">
-               <label class="username">
-                   <span>Kerberos ID</span>
-                   <input id="username" name="kerbid" value="" type="text" autocomplete="on" autofocus placeholder="Kerberos ID">
-               </label>
+<body onload="onLoad()">
+    <ul class="folders" data-bind="foreach: pages">
+        <li data-bind="text: $data, css: { selected: $data == $root.chosenPageId() },
+        click: $root.goToPage"></li>
+    </ul>
 
-               <label class="password">
-               <span>Kerberos Password</span>
-               <input id="password" class="wipe-me" name="kerbpwd" value="" type="password" placeholder="Kerberos Password">
-               </label>
-
-              <!-- <label class="commit-message">
-                   <span>Commit message</span>
-                   <input id="commitmsg" name="commitmsg" class="wipe-me" value="" type="text" autocomplete="on" placeholder="Commit Message">
-               </label> -->
-               <button id="publish-button" class="submit button" type="button">Publish</button>
-
-               <p>
-               Your credentials will not be stored.
-               </p>
-
-               </fieldset>
-         </form>
-       </div>
-
+    <div id="page-view"></div>
     <div id="motd"></div>
+</body>
 
-
-
-  </body>
 </html>
+
