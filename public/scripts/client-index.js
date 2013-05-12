@@ -5,10 +5,11 @@ function PressStarViewModel() {
     // Data
     var self = this;
     self.defaultURL = 'http://skynet.usersys.redhat.com:8080/TopicIndex';
-    self.pages = ['Home', 'Add Book', 'Remove Book', '"Publish and be Damned!"', 'Issues / Features'];
+    self.pages = ['Home','Create New Book', 'Add Book', 'Remove Book', '"Publish and be Damned!"', 'Issues / Features'];
     self.templates = {
         'Issues / Features' : 'issues.ejs',
         'Home' : 'home.ejs',
+        'Create New Book': 'create.ejs',
         'Add Book' : 'add.ejs',
         'Remove Book': 'remove.ejs',
         '"Publish and be Damned!"' : 'publish.ejs'};
@@ -21,6 +22,7 @@ function PressStarViewModel() {
     };
     self.URLs = {
         '': 'Home',
+        'create': 'Create New Book',
         'add': 'Add Book',
         'remove': 'Remove Book',
         'publish': '"Publish and be Damned!"',

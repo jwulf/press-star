@@ -61,7 +61,6 @@ function restroute (req, res){
 }
 
 function getBooks(req,res) {
-    console.log(Library.shadowBooks);
     res.send(Library.shadowBooks);
 }
 

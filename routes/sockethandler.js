@@ -31,7 +31,8 @@ function socketHandler (client){
 
     // Publishes all book event emitting keys, plus Library events like add and remove
     var libraryListener = function (data) {
-        //console.log('socket emitting library data');
+       // console.log('socket emitting library data');
+        //console.log(data);
         client.emit('librarychange', data);
     };
 
