@@ -43,7 +43,14 @@ table.pg-table tr:hover td {
   background-color: #f5f5dc;
 }
 tr:hover * .action-button a {
-  color: #808080;
+  color: #ffa07a;
+}
+tr:hover * .action-button a:hover {
+  color: #f00;
+  border-bottom: 1px dotted;
+}
+.pg-product-title {
+  float: right;
 }
 tr td:first-child {
   -moz-border-radius-topleft: 15px;

@@ -3,7 +3,7 @@
         <% var rowcss = ['even', 'odd'], product = -1, thisproduct = '', newproduct; %>
         <% for (var each in books) { var title = books[each].title, id = books[each].id, url = books[each].url, thisBook = data[url][id] %>
         <% if (thisproduct !== thisBook.product) { product ++; thisproduct = thisBook.product; newproduct = true;  %>
-         <tr class="odd"><td><h4><%= thisBook.product %></h4></td></tr>
+         <tr class="odd"><td><h4 class="pg-product-title"><%= thisBook.product %></h4></td></tr>
         <% } %>
          <tr class="even" data-pg-class="<%= rowcss[product % 2] %>">
 
@@ -12,7 +12,7 @@
             <td>
                 <h4>
                     <% if (thisBook.builtFilename) { %>
-                    <span class=<% if (thisBook.buildError) { %>"active-indicator-button"<% } else { %>"book-title"<% } %>
+                    <span class=<% if (thisBook.buildError) { %>"active-indicator-button"<% } else { %>"book-title"<% } %>>
                     <a href="<%= 'builds/' + id + '-' + thisBook.builtFilename %>" target="_blank">
                       <%= thisBook.title %>
                         [<%= id %>]</a></span>

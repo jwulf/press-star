@@ -78,20 +78,29 @@ function connectSocket() {
             });
         });
 
-        socket.on('librarychange', echo);
+        socket.on('librarychange', libraryChange);
         //socket.on('bookRebuiltNotification', echo);
         //socket.on('notification', echo);
     }
 }
-function echo (data) {
-    console.log(data);
-    console.log(data);
+function libraryChange (data) {
+
     if (data.id && data.url && data._name) {
         viewModel.Books[data.url][data.id][data._name] = data._value;
         new EJS({url: viewModel.template}).update('page-view', {
             books: viewModel.sortedBooks,
             data: viewModel.Books,
             defaultURL: viewModel.defaultURL
+        });
+    }
+
+    if (data.update) {
+        renovateBookList(function () {
+            new EJS({url: viewModel.template}).update('page-view', {
+                books: viewModel.sortedBooks,
+                data: viewModel.Books,
+                defaultURL: viewModel.defaultURL
+            });
         });
     }
 }
