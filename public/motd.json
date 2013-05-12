@@ -2,8 +2,8 @@
     {
         "1" : {
             "key": 1,
-            "title" : "Message of the Day",
-            "body" : "One message, and once each day. Take note, because they don't repeat!"
+            "title" : "Operation Endor",
+            "body" : "Welcome to the new release, 'Operation Endor'. Big ups to jbiddle for the name. Check the Endor Readme in the top menu for details on the goodness."
         },
         "2" : {
             "key": 2,
