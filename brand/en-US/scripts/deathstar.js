@@ -183,7 +183,11 @@ function updateRevHistory (e) {
 
                 // At the moment our injected Revision History number is 1.0
                 // This is here as a stub to creating a more intelligent default
-                var revEntry = $(doc.getElementsByTagName('revnumber')[0]).text();
+                var revEntry = null; //$(doc.getElementsByTagName('revnumber')[0]).text();
+
+                $.get('/rest/1/getlatestpackagenumber', {url: skynetURL, id: thisBookID}, function (result){
+                    revEntry = result.pubsnum;
+                });
 
                 var sort_ascending = true;
                 getLogMessagesForBookSince(_target_date, skynetURL, sort_ascending, revHistoryFeedback, function(result){
@@ -191,7 +195,10 @@ function updateRevHistory (e) {
                     updatingRevHistory = false;
                     updateControlPanel(md); // turn off "Generating Revision History" message
                     if (result) {
-                        revHistoryFragment = result;
+                        revEntry = (revEntry) ? revEntry : '1.0-0';
+                        var _rev = $.parseXML(result);
+                        $(_rev).find('revision revnumber').first().text(revEntry);
+                        revHistoryFragment = (new XMLSerializer()).serializeToString(_rev);
                         // Open editor for Revision History topic, and inject the revision history fragment
                         window.open('/edit?skyneturl=' + skynetURL + '&topicid=' + _revhistoryid +
                                     '&revhistoryupdate=true', '_blank');
@@ -205,6 +212,7 @@ function updateRevHistory (e) {
     }
 }
 
+// inject the Revision History fragment to a child editor when requested by that window
 function getRevHistoryFragment(content, callback) {
     callback(content, revHistoryFragment);
 }
