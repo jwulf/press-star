@@ -132,26 +132,43 @@ function libraryChange (data) {
 
     console.log(data);
 
-    if (data.id && data.url && data._name) {
-        viewModel.Books[data.url][data.id][data._name] = data._value;
+    if (data.update) {
+        if (data.update === 'add') {
+            if (!(data.url && data.id)) { return; }
+            if (! viewModel.Books[data.url]) { viewModel.Books[data.url] = {}; }
+            if (!viewModel.Books[data.url][data.id]) { viewModel.Books[data.url][data.id] = {};}
+
+            viewModel.Books[data.url][data.id].title = data.title;
+            viewModel.Books[data.url][data.id].product = data.product;
+            sortBooks();
+        } else {
+            if (data.update === 'remove') {
+                delete viewModel.Books[data.url][data.id];
+                sortBooks();
+            }
+        }
+        if (viewModel.chosenPageId() === 'Add Book') { return; }
         new EJS({url: viewModel.template}).update('page-view', {
             books: viewModel.sortedBooks,
             data: viewModel.Books,
             defaultURL: viewModel.defaultURL
         });
-    }
-
-    if (data.update) {
-        if (data.update === 'add') {
-            viewModel
-        }
-        renovateBookList(function () {
+        /*renovateBookList(function () {
             if (viewModel.chosenPageId() === 'Add Book') { return; }
             new EJS({url: viewModel.template}).update('page-view', {
                 books: viewModel.sortedBooks,
                 data: viewModel.Books,
                 defaultURL: viewModel.defaultURL
             });
+        }); */
+    }
+
+    if (data.id && data.url && data._name) {
+        viewModel.Books[data.url][data.id][data._name] = data._value;
+        new EJS({url: viewModel.template}).update('page-view', {
+            books: viewModel.sortedBooks,
+            data: viewModel.Books,
+            defaultURL: viewModel.defaultURL
         });
     }
 }
@@ -183,25 +200,31 @@ function renovateBookList (callback) {
         var url, id, thisTitle, sortedBooks;
 
         viewModel.Books = md;
-        sortedBooks = [ ];
 
-        for (url in md) {
-            for (id in md[url]) {
-                thisTitle = md[url][id].product + ' - ' +  md[url][id].title;
-                sortedBooks.push({ title : thisTitle, url: url, id: id});
-            }
-        }
-        sortedBooks.sort( function (a, b){
-            var titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
-            if (titleA < titleB)
-                return -1;
-            if (titleA > titleB)
-                return 1;
-            return 0;
-        });
-        viewModel.sortedBooks = sortedBooks;
-        if (callback) { return callback(); }
+        sortBooks(callback);
     });
+}
+
+function sortBooks (cb) {
+    sortedBooks = [ ];
+    md = viewModel.Books;
+
+    for (url in md) {
+        for (id in md[url]) {
+            thisTitle = md[url][id].product + ' - ' +  md[url][id].title;
+            sortedBooks.push({ title : thisTitle, url: url, id: id});
+        }
+    }
+    sortedBooks.sort( function (a, b){
+        var titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
+        if (titleA < titleB)
+            return -1;
+        if (titleA > titleB)
+            return 1;
+        return 0;
+    });
+    viewModel.sortedBooks = sortedBooks;
+    if (cb) { return cb(); }
 }
 
 function addPageSetup () {
