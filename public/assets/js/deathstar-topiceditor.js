@@ -66,7 +66,7 @@ $(function() {
         flashTitle(STOP);
     });
 
-    window.opener.registerCallback(invokeOpen);
+    window.opener && window.opener.registerCallback && window.opener.registerCallback(invokeOpen);
 
 });
 
@@ -112,14 +112,17 @@ function topicEdited() {
 
 function getLogMessage (e) {
     var loginBox = '#login-box',
-        _log_level, msg,
+        _log_level, msg, _username,
         log_levels = {minor: 1, major: 2},
         log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"};
         
     // I put the "minor" and "major" keys in the rel attribute of the commit menu items
     // should go in a data- element
     Model.log_level = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
-    
+
+    _username = getCookie('username');
+    if ($('#username').val() === '') { $('#userid').val(_username) }
+
     $('#commit-msg-type').html(log_level_text[Model.loglevel]);
     
     //Fade in the Popup
@@ -218,18 +221,18 @@ function doCommitLogSave () {
                     setCookie('useremail', email, 365);
 
                     doActualSave(Model.loglevel, _log_msg);
-                    closeMask ();
+                    closeMask();
                 }
                 if (pressgang_userid === UNKNOWN_USER) { // We're still unknown!
                     if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
                         doActualSave(Model.loglevel, _log_msg);
-                        closeMask ();
+                        closeMask();
                     }
                 }
             }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
         doActualSave(Model.loglevel, _log_msg);
-        closeMask ();
+        closeMask();
     }
 }
 
@@ -286,7 +289,7 @@ function doValidate(me, callback) {
 }
 
 // Checks if the topic is valid, and then persists it using a node proxy to do the PUT
-function doSave() {
+function _doSave() {
     if (Model.modified()) {
         // if the topic is not validated we'll call validation before saving
         if (!Model.validated())
@@ -297,6 +300,10 @@ function doSave() {
         }
     }
     return false;
+}
+
+function doSave() {
+    clientsideIdentify(_doSave);
 }
 
 function doActualSave (log_level, log_msg) {
@@ -366,7 +373,7 @@ function doActualSave (log_level, log_msg) {
                     updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                     //doValidate(); // The Validation message was overwriting the Save result message
                     setPageTitle(json.title);
-                    flashtTitle(STOP);
+                    flashTitle(STOP);
     
                 } else {
                     showStatusMessage('No new revision was saved. ' + 

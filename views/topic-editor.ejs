@@ -73,7 +73,13 @@
                        basket.require({ url: 'assets/js/deathstar-editor.js', unique: 1});
                    })
                    .then(function () {
-                       basket.require({ url: 'assets/js/deathstar-topiceditor.js', unique: 1});
+                       basket.require({ url: 'assets/js/deathstar-topiceditor.js', unique: 3});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'scripts/ejs_production.js', unique: 1});
+                   })
+                   .then(function () {
+                       basket.require({ url: 'assets/js/pg-identity.js', unique: 1});
                    });
         </script>
 

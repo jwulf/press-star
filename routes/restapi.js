@@ -96,7 +96,8 @@ function publish (req, res) {
         id = req.query.id,
         kerbid = req.query.kerbid,
         kerbpwd = req.query.kerbpwd,
-        commitmsg = req.query.commitmsg;
+        commitmsg = req.query.commitmsg,
+        pguserid = req.query.pguserid;
     if (url && id && kerbid && kerbpwd) {
         console.log('Received a publish request for ' + url + ' ' + id + ' ' + commitmsg);
         
@@ -106,8 +107,8 @@ function publish (req, res) {
                 res.send({code: 1, msg: 'Kerberos authentication failed.'});
             } else {
                 console.log("Kerb credentials OK");
-                assembler.publish(url, id, kerbid, kerbpwd);
-//                publisher.publish(url, id, kerbid, kerbpwd, commitmsg);
+                assembler.publish(url, id, kerbid, kerbpwd, pguserid);
+//
                 res.send({code: 0, msg: 'Publish requested'});
             }
         });

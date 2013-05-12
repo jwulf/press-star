@@ -202,7 +202,7 @@ function pushSpec (data, client) {
 			cmd.push(data.command);
 			if (data.opts) cmd.push(data.opts);
 			cmd.push('-u');
-			cmd.push('jwulf');
+			cmd.push(data.username);
 			cmd.push('-H');
 			cmd.push(server);
 			cmd.push(filename);

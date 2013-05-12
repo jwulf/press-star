@@ -42,6 +42,9 @@
             .then(function () {
                 basket.require({ url: 'assets/js/jquery.layout-latest.js', unique: 1});
             })
+          //  .then(function () {
+          //      basket.require({ url: 'assets/js/pg-authenticate.js', unique: 1});
+          //  })
             .then(function () {
                 basket.require({ url: 'assets/js/codemirror.js', unique: 1});
             })
@@ -54,6 +57,15 @@
             .then(function () {
                 basket.require({ url: 'assets/js/knockout-2.2.1.js', unique: 1});
             })
+                .then(function () {
+                    basket.require({ url: 'assets/js/deathstar-editor-common.js', unique: 1});
+                })
+                .then(function () {
+                    basket.require({ url: 'assets/js/deathstar-pressgang-rest-utils.js', unique: 1});
+                })
+                .then(function () {
+                    basket.require({ url: 'scripts/ejs_production.js', unique: 1});
+                })
             .then(function () {
                 basket.require({ url: 'assets/js/codemirror-dialog.js', unique: 1});
             });
@@ -73,10 +85,11 @@
 	<script src="assets/js/codemirror-searchcursor.js"></script>
 	<script src="assets/js/codemirror-dialog.js"></script>
 	<script src="assets/js/closetag.js"></script>
-	<script src="assets/js/xml.js"></script> -->
+	<script src="assets/js/xml.js"></script>
     <script src="assets/js/deathstar-editor-common.js"></script>
-    <script src="assets/js/deathstar-pressgang-rest-utils.js"></script>
+    <script src="assets/js/deathstar-pressgang-rest-utils.js"></script> -->
     <script src="assets/js/deathstar-cspec-editor.js"></script>
+    <script src="assets/js/pg-identity.js"></script>
 </head>
 
 <body onload="specEditorload()">
@@ -140,12 +153,6 @@
 		<div id="div-preview-inline" class="div-preview cmd-output-pane"></div>
 	</div>
 
-	<!--<div class="ui-layout-south">
-		<div id="validation-toggle" class="validation-toggle">
-			<a id="status-message" href="#"></a>
-		</div>
-		<div id="div-validation" class="div-validation"></div>
-	</div> -->
 
 </body>
 </html>

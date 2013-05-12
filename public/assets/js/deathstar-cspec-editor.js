@@ -218,15 +218,21 @@ function pushSpecRoute(cmd, opts) {
 }
 
 function emitPush(cmd, opts) {
-    var cmdobj = {
-        'command': cmd,
-        'server': deets.skynetURL,
-        'spec': editor.getValue()
-    };
-    if (opts) cmdobj.opts = opts;
-    timestampOutput(' Initiating ' + cmd);
-    socket.emit('pushspec', cmdobj);
-    startServerTask();
+    var pgusername = getCookie('username');
+    if (pgusername) {
+        var cmdobj = {
+            command: cmd,
+            server: deets.skynetURL,
+            username: pgusername,
+            spec: editor.getValue()
+        };
+        if (opts) cmdobj.opts = opts;
+        timestampOutput(' Initiating ' + cmd);
+        socket.emit('pushspec', cmdobj);
+        startServerTask();
+    } else {
+        clientsideIdentify(function () {emitPush(cmd, opts)});
+    }
 }
 
 function validateSpec() {
@@ -235,14 +241,21 @@ function validateSpec() {
 }
 
 function emitValidate() {
-    timestampOutput(' Initiating validate');
-    newCmdOutput();
-    socket && (Model.socket_operation = 'validate') && socket.emit('pushspec', {
-        'command': 'validate',
-        'server': deets.skynetURL,
-        'spec': editor.getValue()
-    });
-    startServerTask();
+    var pgusername = getCookie('username');
+
+    if (pgusername) {
+        timestampOutput(' Initiating validate');
+        newCmdOutput();
+        socket && (Model.socket_operation = 'validate') && socket.emit('pushspec', {
+            command: 'validate',
+            server: deets.skynetURL,
+            spec: editor.getValue(),
+            username: pgusername
+        });
+        startServerTask();
+    } else {
+        clientsideIdentify(emitValidate);
+    }
 }
 
 function startServerTask() {

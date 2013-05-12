@@ -125,9 +125,15 @@ function checkMOTD () {
 
 }
 
-function publish (e) {
-    var args = $('.signin').serialize();
-    $.get('/rest/1/publish?url=' + currentURL + '&id=' + currentID + '&' + args, function (result) {
+function publish(e) {
+    clientsideIdentify(_publish);
+}
+
+function _publish (e) {
+
+    var args = $('.signin').serialize(), // kerb details
+        pguserid = getCookie('pressgang_userid');
+    $.get('/rest/1/publish?url=' + currentURL + '&id=' + currentID + '&pguserid=' + pguserid + '&' + args, function (result) {
         console.log(result);  
         if (1 == result.code) { 
             alert(result.msg); 
