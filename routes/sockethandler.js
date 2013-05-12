@@ -223,12 +223,13 @@ function pushSpec (data, client) {
                 console.log('Exiting Content Spec push with code: ' + code);
                 
                 // If the push succeeds, then we will spawn a rebuild of the book, if we're hosting it
-                if (code == BUILD_SUCCEEDED && data.command == 'push') {
+                if (code === BUILD_SUCCEEDED && data.command === 'push') {
+                    console.log('Pushed: %s %s ', data.server, data.id);
                     // don't rebuild for the topic title spec align (clientless)
-                    if (Books[data.server] && Books[data.server][data.spec] && client) {
+                    if (Books[data.server] && Books[data.server][data.id] && client) {
                         console.log('Initiating post-content-spec-push rebuild');
                         console.log('We got that book...');
-                        assembler.build(data.serverurl, data.id);
+                        assembler.build(data.server, data.id);
                     }
                 }
                 cmd_running = false;         

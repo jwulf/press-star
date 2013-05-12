@@ -1,12 +1,6 @@
-var deets = {
-    skynetURL: '',
-    nodeServer: '',
-    topicID: 0
-};
-var skynetURL, nodeServer, TopicID;
-var validXML;
-var socket, 
-    lastcmdclass,
+
+var url, id;
+var socket,
     Model = {
         modified: ko.observable(false),
         socket_operation: ''
@@ -62,18 +56,15 @@ function newCmdOutput(text) {
 }
 
 function specEditorload() {
-    deets = extractURLParameters();
-    skynetURL = deets.skynetURL;
-    $.getScript('/socket.io/socket.io.js', function() {
-        debugOutput('Socket.io loaded', true);
-    });
+    id = url_query('topicid')
+    url = url_query('skyneturl');
     pageSetup();
     loadSkynetTopic();
 }
 
 function loadSkynetTopic() {
     //loadTopicFromPressGangInBrowser( deets.skynetURL, deets.topicID, updateSpecText);
-    loadTopicViaDeathStar(deets.skynetURL, deets.topicID, updateSpecText);
+    loadTopicViaDeathStar(url, id, updateSpecText);
 }
 
 function revert() {
@@ -87,8 +78,8 @@ function revert() {
 function updateSpecText(json) {
     if (json.xml) {
         editor.setValue(json.xml);
-        $("#page-title").html("Content Spec: " + deets.topicID + " - " + json.title);
-        document.title = deets.topicID + ' - ' + json.title;
+        $("#page-title").html("Content Spec: " + id + " - " + json.title);
+        document.title = id + ' - ' + json.title;
         Model.modified(false);
     } else {
         alert('REST Communication Error while retrieving Spec: ' + json.code);
@@ -222,9 +213,10 @@ function emitPush(cmd, opts) {
     if (pgusername) {
         var cmdobj = {
             command: cmd,
-            server: deets.skynetURL,
+            server: url,
             username: pgusername,
-            spec: editor.getValue()
+            spec: editor.getValue(),
+            id: id
         };
         if (opts) cmdobj.opts = opts;
         timestampOutput(' Initiating ' + cmd);
@@ -241,20 +233,24 @@ function validateSpec() {
 }
 
 function emitValidate() {
+    clientsideIdentify(_emitValidate);
+}
+
+function _emitValidate() {
     var pgusername = getCookie('username');
 
-    if (pgusername) {
-        timestampOutput(' Initiating validate');
-        newCmdOutput();
-        socket && (Model.socket_operation = 'validate') && socket.emit('pushspec', {
+    timestampOutput(' Initiating validate');
+    newCmdOutput();
+    if (socket) {
+        Model.socket_operation = 'validate';
+        socket.emit('pushspec', {
             command: 'validate',
-            server: deets.skynetURL,
+            server: url,
             spec: editor.getValue(),
-            username: pgusername
+            username: pgusername,
+            id: id
         });
         startServerTask();
-    } else {
-        clientsideIdentify(emitValidate);
     }
 }
 

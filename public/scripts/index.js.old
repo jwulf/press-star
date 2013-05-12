@@ -90,7 +90,7 @@ function checkMOTD () {
 
     today = new Date().getDay();
     last_MOTD_day = getCookie('last_MOTD_day');
-    if (today === last_MOTD_day) { return }
+    if (today === parseInt(last_MOTD_day)) { return }
 
     setCookie('last_MOTD_day', today, 365);
     last_MOTD_seen = ( getCookie('last_MOTD_seen')) ? last_MOTD_seen : 0;
