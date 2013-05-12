@@ -14,29 +14,12 @@ var pressgang = require('pressgang-rest'),
     LOG_CONSOLE = ephemeral.LOG_CONSOLE;
 
 exports.restroute = restroute;
-exports.checkout = checkout;
-
-// REST API Definition
-
-// Add Book: Checks out a book on the deathstar
-
-// {operation: addbook, url: <pressgang url>, id: <spec id>, 
-//      [username: <pressgang user>, authtoken: <auth token>, authmethod: <authmethod>,
-//      restver: <pressgang REST ver>]}
-console.log("Loading stylesheet in rest router");
-
-console.log("Loaded stylesheet in rest router");
-
 
 function restroute (req, res){
     var op = req.params.operation;
     console.log('Rest router called: ' + op);
     if (op === 'dtdvalidate') { dtdvalidate.dtdvalidate (req, res);
         } else
-    if (op === 'buildbook') { buildbook(req, res); }
-        else
-    if (op === 'buildstatus') { buildstatus(req, res); }
-        else
     if (op === 'addbook') { addbook(req, res); }
         else
     if (op === 'xmlpreview') { xmlpreview.xmlPreview(req, res); }
@@ -175,63 +158,24 @@ function rebuildAll (req, res) {
     res.send({code: 0, msg: 'Sent ' + count + ' books to the rebuilder'});
 }
 
-
-function removebook (req,res){
+function removebook(req,res){
     var url = req.query.url,
         id = req.query.id;
-    if (Library.Books[url])
-        if (Library.Books[url][id])
-            {
-                var pathURL = 'builds/' + id + '-' + Library.Books[url][id].builtFilename;
-                wrench.rmdirRecursive(pathURL, function (err) {console.log(err + 'removing' + pathURL)});
-                // Nuke all the current subscriptions for this book
-                livePatch.removeTopicDependenciesForBook(url, id); 
-                delete Library.Books[url][id];
-                Library.write();
-                Library.LibraryNotificationStream.write({update: "remove"});
-                return res.send({code:0, msg: 'Book deleted'});
-            }
-    res.send({code:1, msg: 'Book not found'});
+    Library.removeBook(url, id, function(err, msg) {
+        if (err) { return res.send({code:1, msg: err}); }
+        return res.send({code:0, msg: msg});
+    });
 }
 
 function addbook (req, res){
     var url = req.query.url,
         id = req.query.id;
     console.log('Add book operation requested for ' + url + id);
-    if (url && id)
-        checkout(url, id, './books', function (err, spec){
-                if (err) return res.send({'code' : 1, 'msg' : err});
-                Library.LibraryNotificationStream.write({update: "add"});
-                return res.send({'code' : 0, 'msg' : 'Successfully checked out "' + spec.title + '"'});
-            }
-        );        
-}
-    
-function checkout (url, id, dir, cb){
-    console.log('Check out operation')
-    // First, check if the book is already checked out
-    if (Library.Books[url] && Library.Books[url][id]) {
-        console.log('Book already checked out');
-        return cb('According to our records, this book has already been added.');
-    } 
-    
-    console.log('No existing checkout found, proceeding...')
-    pressgang.checkoutSpec(url, id, dir, function (err, spec) { 
-        if (err) return cb(err, spec);
-
-        // If everything went ok, update the database
-        Library.addBook(spec.metadata, cb);
-    }); 
-
-}
-
-function buildstatus (req, res){
-    console.log('buildstatus handler called');
-    res.send('build status');
-}
-
-function buildbook(req,res){
-    console.log('buildbook handler called');
-    res.send('build book');
+    if (url && id) {
+        Library.checkoutBook(url, id, function(err, msg) {
+            if (err) { return res.send({code:1, msg: msg}); }
+            res.send({code:0, msg: msg});
+        });
+    }
 }
 

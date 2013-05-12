@@ -3,10 +3,12 @@ var fs=require('fs'),
     carrier = require('carrier'),   
     Library = require('./../lib/Library'),
     Stream = require('stream').Stream,
+    pressgang = require('pressgang-rest'),
     livePatch = require('./../lib/livePatch'),
     assembler = require('./../lib/assembler'),
     uuid = require('node-uuid'),
     ephemeral = require('./../lib/ephemeralStreams');
+
 
 exports.socketHandler = socketHandler;
 exports.pushSpec = pushSpec;
@@ -226,10 +228,19 @@ function pushSpec (data, client) {
                 if (code === BUILD_SUCCEEDED && data.command === 'push') {
                     console.log('Pushed: %s %s ', data.server, data.id);
                     // don't rebuild for the topic title spec align (clientless)
-                    if (Books[data.server] && Books[data.server][data.id] && client) {
-                        console.log('Initiating post-content-spec-push rebuild');
-                        console.log('We got that book...');
-                        assembler.build(data.server, data.id);
+                    if (Books[data.server] && Books[data.server][data.id]) {
+
+                        pressgang.getContentSpec(data.server, data.id, function (err, result) {
+                            err && console.log(err);
+                            result && Library.refreshMetadata(result, function () {
+                                // will be called back if the book is not deleted and re-added
+                                if (client) {
+                                    console.log('Initiating post-content-spec-push rebuild');
+                                    console.log('We got that book...');
+                                    assembler.build(data.server, data.id);
+                                }
+                            });
+                        });
                     }
                 }
                 cmd_running = false;         

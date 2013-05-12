@@ -1,8 +1,31 @@
 body {
-  padding: 50px;
+  padding: 80px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+#main:after {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-image: url("/assets/img/Battle_of_Endor_big.jpg");
+  background-position: center center;
+  width: 2560;
+  height: 1024;
+  opacity: 0.15;
+  z-index: -1;
+}
+#pg-menu {
+  position: fixed;
+  top: 10px;
+  left: 70px;
+}
 a {
+  color: #00f;
+  text-decoration: none;
+  border-bottom: 1px dotted;
+}
+.pg-book-title {
   color: #00f;
   text-decoration: none;
   border-bottom: 1px dotted;

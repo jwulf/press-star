@@ -58,6 +58,14 @@ app.get('/client-index', function (req, res) {
     res.render('index');
 });
 
+app.get('/docs', function (req, res) {
+    res.render('index');
+});
+
+app.get('/create', function (req, res) {
+    res.render('index');
+});
+
 app.get('/add', function (req, res) {
     res.render('index');
 });
