@@ -8,7 +8,8 @@ var validXML;
 var socket, 
     lastcmdclass,
     Model = {
-        modified: ko.observable()
+        modified: ko.observable(false),
+        socket_operation: ''
     };
     
 function disable(selector) {
@@ -17,7 +18,7 @@ function disable(selector) {
 }
 
 window.onbeforeunload = function(e) {
-    if (!$("#save-button").prop("disabled") === true) return 'You have unsaved changes.';
+   if (Model.modified()) { return 'You have unsaved changes.'; }
 };
 
 function errorOutput(text) {
@@ -63,7 +64,6 @@ function newCmdOutput(text) {
 function specEditorload() {
     deets = extractURLParameters();
     skynetURL = deets.skynetURL;
-    debugOutput('Loading socket.io from ' + nodeServer + '/socket.io/socket.io.js');
     $.getScript('/socket.io/socket.io.js', function() {
         debugOutput('Socket.io loaded', true);
     });
@@ -77,7 +77,7 @@ function loadSkynetTopic() {
 }
 
 function revert() {
-    if (Model.modified() && alert('Discard changes and reload?')) { 
+    if (Model.modified() && confirm('Discard changes and reload?')) {
         loadSkynetTopic(); 
     } else {
         loadSkynetTopic();
@@ -152,6 +152,30 @@ function pageSetup() {
         }
     });
 
+    socket || (socket = io.connect());
+    socket.on('connect', function() {
+        debugOutput('Connected to server');
+    });
+
+    socket.on('cmdexit', function(msg) {
+        var MSG = { 'success' : { 'push' : 'Content Specification pushed successfully',
+                                  'validate' : 'The Content Specification is valid'},
+                    'failure' : {'push' : 'The push was not successful.',
+                                  'validate' : 'Could not validate the Content Specification'}}
+        if (msg == '0') {
+            successOutput(MSG.success[Model.socket_operation], true);
+            loadSkynetTopic();
+        }
+        else {
+            errorOutput(MSG.failure[Model.socket_operation], true);
+        }
+        endServerTask();
+    });
+
+    socket.on('cmdoutput', function(msg) {
+        cmdOutput(msg);
+    });
+
     $('#save-button').click(pushSpec);
     $('#push-align').click(pushSpecPermissive);
     $('#validate-button').click(validateSpec);
@@ -190,29 +214,7 @@ function pushSpecPermissive() {
 }
 
 function pushSpecRoute(cmd, opts) {
-    socket || (socket = io.connect(nodeServer));
-    socket && emitPush(cmd, opts);
-    socket.on('connect', function() {
-        debugOutput('Connected to server ' + nodeServer);
-
-        socket.on('cmdoutput', function(msg) {
-            cmdOutput(msg);
-        });
-
-        socket.on('cmdfinish', function(msg) {});
-
-        socket.on('cmdexit', function(msg) {
-            //socket.disconnect();
-            if (msg == '0') {
-                successOutput('Content Specification pushed successfully', true);
-                loadSkynetTopic();
-            }
-            else {
-                errorOutput('The push was not successful. Exit Code: ' + msg, true);
-            }
-            endServerTask();
-        });
-    });
+    socket && (Model.socket_operation = 'push') && emitPush(cmd, opts);
 }
 
 function emitPush(cmd, opts) {
@@ -228,35 +230,14 @@ function emitPush(cmd, opts) {
 }
 
 function validateSpec() {
-    socket && emitValidate();
-    socket || (socket = io.connect(nodeServer)); // TIP: .connect with no args does auto-discovery
-    socket.on('connect', function() { // TIP: you can avoid listening on `connect` and listen on events directly too!
-        debugOutput('Connected to server ' + nodeServer);
-        socket.on('cmdoutput', function(msg) {
-            cmdOutput(msg);
-        });
-        //socket.on('cmdfinish', function (msg){timestampOutput('Validation operation completed.')});
-        socket.on('cmdexit', function(msg) {
-            //socket.disconnect(); 
-            if (msg == '0') {
-                successOutput('The Content Specification is valid', true);
-                //loadSkynetTopic();
-            }
-            else {
-                var errormsg = 'There was an error performing the validation. Exit code: ' + msg;
-                if (msg == '8') errormsg = 'The Content Specification is not valid';
-                errorOutput(errormsg, true);
-            }
-            endServerTask();
-        });
-       // emitValidate();
-    });
+    socket || (socket = io.connect()); // TIP: .connect with no args does auto-discovery
+     emitValidate();
 }
 
 function emitValidate() {
     timestampOutput(' Initiating validate');
     newCmdOutput();
-    socket.emit('pushspec', {
+    socket && (Model.socket_operation = 'validate') && socket.emit('pushspec', {
         'command': 'validate',
         'server': deets.skynetURL,
         'spec': editor.getValue()
