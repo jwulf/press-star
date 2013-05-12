@@ -5,20 +5,23 @@ function PressStarViewModel() {
     // Data
     var self = this;
     self.defaultURL = 'http://skynet.usersys.redhat.com:8080/TopicIndex';
-    self.pages = ['Home','Create New Book', 'Add Book', 'Remove Book', '"Publish and be Damned!"', 'Issues / Features'];
+    self.pages = ['Home','Create New Book', 'Add Book', 'Remove Book', '"Publish and be Damned!"', 'Issues / Features', 'Endor Readme'];
     self.templates = {
         'Issues / Features' : 'issues.ejs',
         'Home' : 'home.ejs',
         'Create New Book': 'create.ejs',
         'Add Book' : 'add.ejs',
         'Remove Book': 'remove.ejs',
-        '"Publish and be Damned!"' : 'publish.ejs'};
+        '"Publish and be Damned!"' : 'publish.ejs',
+        'Endor Readme' : 'docs.ejs'};
     self.pageURLs = {
         'Home' : '',
+        'Create New Book': 'create',
         'Add Book' : 'add',
         'Remove Book': 'remove',
         '"Publish and be Damned!"' : 'publish',
-        'Issues / Features': 'issues'
+        'Issues / Features': 'issues',
+        'Endor Readme' : 'docs'
     };
     self.URLs = {
         '': 'Home',
@@ -26,7 +29,8 @@ function PressStarViewModel() {
         'add': 'Add Book',
         'remove': 'Remove Book',
         'publish': '"Publish and be Damned!"',
-        'Issues / Features': 'issues'
+        'issues' : 'Issues / Features',
+        'docs' : 'Endor Readme'
     };
     self.chosenPageData = ko.observable();
     self.chosenPageId = ko.observable();
@@ -59,6 +63,7 @@ function PressStarViewModel() {
 
 
 function connectSocket() {
+    var NO_FLASH = false;
     var socket;
 
     // This code handles disconnection events (for example a server bounce, or the client switching networks)
@@ -83,7 +88,49 @@ function connectSocket() {
         //socket.on('notification', echo);
     }
 }
+
+function displayNotification (data, flash) {
+    var _flash, _msg, _title = 'Notification';
+
+    if ("string" == typeof data) _msg = data;
+    if ("object" == typeof data) {
+        _msg = data.msg;
+        if (data.title) _title = data.title;
+    }
+
+    _flash = (flash !== false); // means true unless flash is really set to false, not just null
+
+    if (_flash) flashTitle(_title);
+
+    $('.notifier').html(_msg);
+    $('.notifier').removeClass('invisible');
+}
+
+
+function disconnectedNotifier () {
+    var _text;
+    if (!socketConnected) {
+        retries ++;
+        displayNotification('Attempting to contact server... lost connection ' + (retries * 5) + ' seconds ago', NO_FLASH);
+        setTimeout(disconnectedNotifier, 5000); // retry the socket connection every 1 second
+    } else {
+        _text = $('.notifier').html();
+        if (_text.indexOf('Attempting to contact') != -1 || _text.indexOf('Lost connection to server') != -1)
+            clearNotifier();
+    }
+}
+
+function clearNotifier () {
+    clearInterval(flash);
+    document.title = originalTitle;
+    $('.notifier').addClass('invisible');
+    return true;
+}
+
+
 function libraryChange (data) {
+
+    console.log(data);
 
     if (data.id && data.url && data._name) {
         viewModel.Books[data.url][data.id][data._name] = data._value;
@@ -95,7 +142,11 @@ function libraryChange (data) {
     }
 
     if (data.update) {
+        if (data.update === 'add') {
+            viewModel
+        }
         renovateBookList(function () {
+            if (viewModel.chosenPageId() === 'Add Book') { return; }
             new EJS({url: viewModel.template}).update('page-view', {
                 books: viewModel.sortedBooks,
                 data: viewModel.Books,
