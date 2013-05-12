@@ -279,6 +279,12 @@ function clickToPublish(url, id) {
         'margin-left' : -popMargLeft
     });
 
+    var pgusername = getCookie('username');
+
+    if ($('#username').val() === '' && pgusername) {
+        $('#username').val(pgusername);
+    }
+
     $("input").keypress(function(event) {
         if (event.which == 13) {
             event.preventDefault();
