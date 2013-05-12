@@ -184,12 +184,13 @@ function checkMOTD () {
         last_MOTD_seen,
         today;
 
-    today = new Date().getDay();
+    today = new Date().getDate();
     last_MOTD_day = getCookie('last_MOTD_day');
     if (today === last_MOTD_day) { return }
 
     setCookie('last_MOTD_day', today, 365);
-    last_MOTD_seen = ( getCookie('last_MOTD_seen')) ? last_MOTD_seen : 0;
+    last_MOTD_seen = getCookie('last_MOTD_seen');
+    if (!last_MOTD_seen) { last_MOTD_seen = 0; }
     $.ajax({
         url: '/motd.json',
         dataType: 'json',
