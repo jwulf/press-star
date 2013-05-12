@@ -13,7 +13,7 @@
         "3" : {
             "key": 3,
             "title": "Automated Revision History",
-            "body": "Once you incorporate your Revision History, use the 'Update Revision History' button to get your major commit messages rolled up to a revhistory entry"
+            "body": "Once you incorporate your Revision History, use the 'Update Revision History' button (in the book) to get your major commit messages rolled up to a revhistory entry"
         },
         "4" : {
             "key": 4,

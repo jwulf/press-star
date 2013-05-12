@@ -15,12 +15,44 @@ a
   color: red
   border-bottom: 1px dotted
 .action-button a  
-  color: beige
+  color: bisque
 .action-button
-  color: Beige
-.action-button a:hover 
+  color: bisque
+tr.odd * .action-button a
+  color: white
+tr.odd * .action-button a:hover, .action-button a:hover
   color: red
   border-bottom: 1px dotted
+
+tr.odd
+    background-color: bisque;
+    margin-top: 5px
+    margin-bottom: 5px
+
+tr.odd td
+    height: 35px
+
+table.pg-table tr:hover td
+  background-color: beige;
+tr:hover * .action-button a
+  color: blue
+tr:hover * .action-button a:hover
+  color: red
+  border-bottom: 1px dotted
+
+tr td:first-child {
+    -moz-border-radius-topleft: 15px;
+    -moz-border-radius-bottomleft: 15px;
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-bottom-left-radius: 15px;
+}
+
+tr td:last-child {
+    -moz-border-radius-topright: 15px;
+    -moz-border-radius-bottomright: 15px;
+    -webkit-border-top-right-radius: 15px;
+    -webkit-border-bottom-right-radius: 15px;
+}
 
 #mask
   display: none

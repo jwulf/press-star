@@ -45,6 +45,10 @@ function PressStarViewModel() {
                                                     data: self.Books,
                                                     defaultURL: self.defaultURL
         });
+        $('.accordion-toggle').click(function(e){
+            $(this.getAttribute('href')).collapse('toggle');
+        });
+
         if (page === 'Add Book') { addPageSetup(); }
         if (page === '"Publish and be Damned!"') {    $('#publish-button').click(publish); }
     };
@@ -186,7 +190,7 @@ function checkMOTD () {
 
     today = new Date().getDate();
     last_MOTD_day = getCookie('last_MOTD_day');
-    if (today === last_MOTD_day) { return }
+    if (today ===  parseInt(last_MOTD_day)) { return }
 
     setCookie('last_MOTD_day', today, 365);
     last_MOTD_seen = getCookie('last_MOTD_seen');

@@ -16,16 +16,13 @@
                 basket.require({ url: '/scripts/ejs_production.js', unique: 1});
             })
             .then(function () {
-                basket.require({ url: '/bootstrap/js/bootstrap.js', unique: 1});
-            })
-            .then(function () {
-                basket.require({ url: '/bootstrap/js/bootstrap.js', unique: 1});
+                basket.require({ url: '/assets/js/bootstrap.min.js', unique: 1});
             })
             .then(function () {
                 basket.require({ url: '/socket.io/socket.io.js', unique: 1});
             })
             .then(function () {
-                basket.require({ url: '/assets/js/pg-authenticate.js', unique: 1});
+                basket.require({ url: '/assets/js/pg-identity.js', unique: 1});
             });
     </script>
 </head>

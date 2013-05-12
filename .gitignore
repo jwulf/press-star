@@ -10,3 +10,4 @@ publican-deathstar
 publish
 /lib/settings
 .idea
+*.DS_Store
