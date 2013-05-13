@@ -155,7 +155,7 @@ function pageSetup() {
                                   'validate' : 'Could not validate the Content Specification'}}
         if (msg == '0') {
             successOutput(MSG.success[Model.socket_operation], true);
-            loadSkynetTopic();
+            if (Model.socket_operation === 'push') { loadSkynetTopic(); }
         }
         else {
             errorOutput(MSG.failure[Model.socket_operation], true);
