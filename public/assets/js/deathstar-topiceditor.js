@@ -49,7 +49,6 @@ var validationServerResponse,
 $(function() {
     // Attach Save handlers
     $('.save-menu').click(getLogMessage);
-    $('#commitmsg-button').click(doCommitLogSave);
 
     // Deal with the browser back button using the History API
     window.addEventListener('popstate', function(event) {
@@ -743,8 +742,8 @@ function _showLogMessageDialog () {
 }
 
 function doLogMessageSave () {
-    Model.loglevel = this.dataset.logLevel;
-    doValidate(null, function() {doActualSave (Model.loglevel, Model.logmsg)});
+    Model.loglevel(this.dataset.logLevel);
+    doValidate(null, function() {doActualSave (Model.loglevel(), Model.logmsg())});
     $('#modal-commit-message').modal('hide');
 }
 
