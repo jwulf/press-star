@@ -20,9 +20,24 @@ body
 
 #pg-menu
   position:fixed;
-  top: 10px;
+  top: 2px;
   left: 70px;
+  z-index: 2;
 
+#pg-menu-background
+  position:fixed
+  top: 0
+  left: 60
+  opacity: 0.5
+  background-color: white
+  -webkit-filter: blur(9px) grayscale (.5) opacity(0.8) hue-rotate(120deg);
+  z-index: 1
+  height: 60px
+  width: 1500px
+  -moz-border-radius-topleft: 15px;
+  -moz-border-radius-bottomleft: 15px;
+  -webkit-border-top-left-radius: 15px;
+  -webkit-border-bottom-left-radius: 15px;
 
 .pg-main a
   color: blue
