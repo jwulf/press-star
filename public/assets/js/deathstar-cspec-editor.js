@@ -3,7 +3,8 @@ var url, id;
 var socket,
     Model = {
         modified: ko.observable(false),
-        socket_operation: ''
+        socket_operation: '',
+        username: ''
     };
     
 function disable(selector) {
@@ -208,23 +209,32 @@ function pushSpecRoute(cmd, opts) {
     socket && (Model.socket_operation = 'push') && emitPush(cmd, opts);
 }
 
-function emitPush(cmd, opts) {
-    var pgusername = getCookie('username');
-    if (pgusername) {
-        var cmdobj = {
-            command: cmd,
-            server: url,
-            username: pgusername,
-            spec: editor.getValue(),
-            id: id
-        };
-        if (opts) cmdobj.opts = opts;
-        timestampOutput(' Initiating ' + cmd);
-        socket.emit('pushspec', cmdobj);
-        startServerTask();
-    } else {
-        clientsideIdentify(function () {emitPush(cmd, opts)});
-    }
+
+function emitPush(cmd,opts) {
+    mapIdentity(function() { _emitPush(cmd, opts);});
+}
+
+function _emitPush(cmd, opts) {
+    var cmdobj = {
+        command: cmd,
+        server: url,
+        username: Model.username,
+        spec: editor.getValue(),
+        id: id
+    };
+    if (opts) cmdobj.opts = opts;
+    timestampOutput(' Initiating ' + cmd);
+    socket.emit('pushspec', cmdobj);
+    startServerTask();
+}
+
+function mapIdentity(callback) {
+    clientsideIdentify( function (identity) {
+        if (identity.identified) {
+            Model.username = identity.username;
+            if (callback) callback();
+        }
+    }, url);
 }
 
 function validateSpec() {
@@ -233,12 +243,10 @@ function validateSpec() {
 }
 
 function emitValidate() {
-    clientsideIdentify(_emitValidate);
+    mapIdentity(_emitValidate);
 }
 
 function _emitValidate() {
-    var pgusername = getCookie('username');
-
     timestampOutput(' Initiating validate');
     newCmdOutput();
     if (socket) {
@@ -247,7 +255,7 @@ function _emitValidate() {
             command: 'validate',
             server: url,
             spec: editor.getValue(),
-            username: pgusername,
+            username: Model.username,
             id: id
         });
         startServerTask();

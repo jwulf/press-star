@@ -4,16 +4,15 @@
  * {number=}	optional parameter
  * {*}			ALL types
  */
-var pressgang_userid,
-    UNKNOWN_USER = 89, // default "unknown user" ID
-    topicRevision; // used to check whether a new revision has been created on save
-    
-var previewRenderErrorMsg = '<p>Could not transform</p>';
+
 window.refreshTime = 1000;
 window.timerID = 0;
 window.clientXSLFile = "assets/xsl/docbook2html.xsl";
 window.mutex = 0;
-var validationServerResponse,
+
+var topicRevision, // used to check whether a new revision has been created on save
+    previewRenderErrorMsg = '<p>Could not transform</p>',
+    validationServerResponse,
     port,
     urlpath,
     serverURL,
@@ -41,7 +40,9 @@ var validationServerResponse,
         helpHintsOn: ko.observable(false),
         pageTitle: ko.observable(),
         loglevel: ko.observable(),  // 1 = minor, 2 = major
-        logmsg: ko.observable()
+        logmsg: ko.observable(),
+        username: ko.observable(),
+        userid: ko.observable()
     };
 
 
@@ -157,7 +158,7 @@ function _doSave() {
     if (Model.modified()) {
         // if the topic is not validated we'll call validation before saving
         if (!Model.validated())
-        { 
+        {
             doValidate(null, doActualSave);
         } else {
             doActualSave();
@@ -167,7 +168,17 @@ function _doSave() {
 }
 
 function doSave() {
-    clientsideIdentify(_doSave);
+    mapIdentity(_doSave)
+}
+
+function mapIdentity(callback) {
+    clientsideIdentify(function (identity) {
+        if (identity.identified) {
+            Model.username(identity.username);
+            Model.userid(identity.userid);
+            if (callback) callback();
+        }
+    });
 }
 
 function doActualSave (log_level, log_msg) {
@@ -193,7 +204,7 @@ function doActualSave (log_level, log_msg) {
     }
     
     var saveObject = {
-                        userid: pressgang_userid,
+                        userid: Model.userid(),
                         url: skynetURL,
                         id: topicID,
                         specid: specID,
@@ -720,22 +731,13 @@ function initializeTopicEditPage() {
         
     // Set up identity user identity
     
-    var username = getCookie('username');
-    if (username) {
-        $('#userid').val(username);
-        $('#userid').removeAttr('autofocus');
-        $('#commitmsg').attr('autofocus', 'autofocus');
-    }
-    
-    // Get our id from the cookie, if we have one
-    pressgang_userid = getCookie('pressgang_userid');
-    // Otherwise commit as unknown user
-    pressgang_userid = (pressgang_userid) ? pressgang_userid : UNKNOWN_USER;
+    Model.username(getCookie('pguser_username'));
 }
 
 function showLogMessageDialog () {
-    clientsideIdentify(_showLogMessageDialog);
+    mapIdentity(_showLogMessageDialog);
 }
+
 
 function _showLogMessageDialog () {
     $("#modal-commit-message").modal({keyboard: true, static: true});

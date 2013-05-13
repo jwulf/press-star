@@ -2,9 +2,14 @@
     <head>
         <link href="assets/css/bootstrap.css" rel="stylesheet">
     	<link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <script src="assets/js/jquery-1.7.2.min.js"></script> 
-        <script src="scripts/deathstar-buildlog.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            var pageIsEditor = true;
+            basket
+                    .require({ url: 'deathstar-buildlog.js', unique: 1 })
+                    .then(function () {
+                        basket.require({ url: '/socket.io/socket.io.js', unique: 1});
+                    });
+        </script>
     </head>
     <body onload="onLoad()">
         <pre><div id="div-preview-inline" class="div-preview cmd-output-pane"></div></pre>

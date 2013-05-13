@@ -25,6 +25,9 @@
                 basket.require({ url: '/socket.io/socket.io.js', unique: 1});
             })
             .then(function () {
+                basket.require({ url: 'assets/js/bootstrap.min.js', unique: 1});
+            })
+            .then(function () {
                 basket.require({ url: 'assets/js/bootstrap-tab.js', unique: 1});
             })
             .then(function () {

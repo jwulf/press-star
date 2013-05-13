@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+        <script src="assets/js/basket.full.min.js"></script>
+
+        <script type="text/javascript">
+            basket
+            .require({ url: 'assets/js/jquery-1.9.1.min.js', unique: 1 })
+            .then(function () {
+                basket.require({ url: '/scripts/knockout-2.2.1.js', unique: 1});
+            });
+        </script>
+        <script src="scripts/newaccount.js"></script>
+    </head>
+    <body>
+        <form>
+            <fieldset>
+                <legend>New PressGang Account</legend>
+                <span class="help-block">Choose your PressGang user name. Using your Kerb ID is a good idea. It's guaranteed unique, and we can prefill it for you when operations require Kerberos authentication.</span>
+                <label>Username</label>
+                <input autofocus data-bind="value: username, valueUpdate: 'afterkeydown'" type="text" placeholder="I suggest your Kerberos ID…">
+                <span class="help-block">The following details are used for Revision History and author attribution:</span>
+                <label>First Name</label>
+                <input data-bind="value: firstname, valueUpdate: 'afterkeydown'" type="text" placeholder="First Name">
+                <label>Surname</label>
+                <input data-bind="value: surname, valueUpdate: 'afterkeydown'" type="text" placeholder="Surname">
+                <label>Email</label>
+                <input data-bind="value: email, valueUpdate: 'afterkeydown'" type="text" placeholder="Email">
+                <button id='do-create-user' data-bind="enable: complete" class="btn btn-primary">Create Account</button>
+            </fieldset>
+        </form>
+        <div  data-bind="visible: errormsg">
+            <div class="alert alert-error">
+                <span data-bind="text: errormsg"></span>
+            </div>
+        </div>
+        <div  data-bind="visible: created">
+            <div class="alert alert-success">
+                <span data-bind="text: successmsg"></span>
+            </div>
+        </div>
+    </body>
+</html>

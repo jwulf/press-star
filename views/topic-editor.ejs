@@ -79,12 +79,13 @@
                    .then(function () {
                        basket.require({ url: 'scripts/ejs_production.js', unique: 1});
                    })
-                   .then(function () {
-                       basket.require({ url: 'assets/js/pg-identity.js', unique: 1});
-                   });
+                   //.then(function () {
+                   //    basket.require({ url: 'assets/js/pg-identity.js', unique: 1});
+                   //});
         </script>
 
         <script src="assets/js/deathstar-topiceditor.js"></script>
+        <script src="assets/js/pg-identity.js"></script>
 
         <!-- basket cases -->
         <!--
@@ -117,6 +118,7 @@
             <div>
                 <div class="titlediv">
                     <span id="page-title" class="brand">Deathstar Editor</span>
+                      <span class="pull-right label label-info" data-bind="visible: username">editing as: <span data-bind="text:username"></span>
                 </div>
             </div>
            <div class="subnav tabbable"> 
