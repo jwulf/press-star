@@ -5,7 +5,7 @@
  * {*}			ALL types
  */
 
-// We use this until we can get identity sorted out
+
 var pressgang_userid,
     UNKNOWN_USER = 89, // default "unknown user" ID
     topicRevision; // used to check whether a new revision has been created on save
@@ -220,18 +220,18 @@ function doCommitLogSave () {
                     var email = (author[2]) ? author [2] : 'www.redhat.com';
                     setCookie('useremail', email, 365);
 
-                    doActualSave(Model.loglevel, _log_msg);
+                    doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
                     closeMask();
                 }
                 if (pressgang_userid === UNKNOWN_USER) { // We're still unknown!
                     if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
-                        doActualSave(Model.loglevel, _log_msg);
+                        doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
                         closeMask();
                     }
                 }
             }, 'json');
     } else { // It's all kosher, we've authenticated and cookied this user before
-        doActualSave(Model.loglevel, _log_msg);
+        doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
         closeMask();
     }
 }
