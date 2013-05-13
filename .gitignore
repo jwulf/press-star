@@ -11,3 +11,4 @@ publish
 /lib/settings
 .idea
 *.DS_Store
+/public/assets/img/Batt*

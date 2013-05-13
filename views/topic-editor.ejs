@@ -11,6 +11,7 @@
         <link href="assets/css/codemirror-dialog.css" rel="stylesheet">
         <link href="assets/css/deathstar.css" rel="stylesheet">
         <link href="assets/css/jquery-ui-1.8.23.custom.css" rel="stylesheet">
+        <link href="stylesheets/editor.css" rel="stylesheet">
         <!-- <link href="assets/css/docs.css" rel="stylesheet"> -->
         <script src="assets/js/basket.full.min.js"></script>
 
@@ -22,7 +23,7 @@
                        basket.require({ url: 'assets/js/jquery-ui.min.js', unique: 1});
                    })
                    .then(function () {
-                       basket.require({ url: 'assets/js/bootstrap-tab.js', unique: 1});
+                       basket.require({ url: 'assets/js/bootstrap.min.js', unique: 1});
                    })
                    .then(function () {
                        basket.require({ url: 'assets/js/bootstrap-tooltip.js', unique: 1});
@@ -72,9 +73,9 @@
                    .then(function () {
                        basket.require({ url: 'assets/js/deathstar-editor.js', unique: 1});
                    })
-                   .then(function () {
-                       basket.require({ url: 'assets/js/deathstar-topiceditor.js', unique: 4});
-                   })
+                 //  .then(function () {
+                 //      basket.require({ url: 'assets/js/deathstar-topiceditor.js', unique: 5});
+                 //  })
                    .then(function () {
                        basket.require({ url: 'scripts/ejs_production.js', unique: 1});
                    })
@@ -83,9 +84,10 @@
                    });
         </script>
 
+        <script src="assets/js/deathstar-topiceditor.js"></script>
+
         <!-- basket cases -->
         <!--
-        <script src="assets/js/jquery-1.9.1.min.js"></script>
         <script src="assets/js/jquery-ui.min.js"></script>
         <script src="assets/js/bootstrap-tab.js"></script>
         <script src="assets/js/bootstrap-tooltip.js"></script>
@@ -152,6 +154,7 @@
         </div>
 
         <% include topic-editor-log-msg.ejs %>
+
     </body>
 </html>
 

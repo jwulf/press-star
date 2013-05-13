@@ -1,21 +1,17 @@
- <!-- Login form from: http://www.alessioatzeni.com/blog/login-box-modal-dialog-window-with-css-and-jquery/ -->
-    <div id="login-box" class="login-popup">
-        <a href="#" class="close"><img src="close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
-        <form class="signin" action="">
-
-            <fieldset class="textbox">
-            <legend id="commit-msg-type"></legend>
-            <label class="userid">
-                <span>User ID</span>
-                <input id="userid" name="userid" value="" type="text" autocomplete="on" autofocus placeholder="User ID">
-            </label>
-            
-            <label class="commit-message">
-                <span>Commit message</span>
-                <input id="commitmsg" name="commitmsg" class="wipe-me commitmsg" value="" type="text" autocomplete="on" placeholder="Commit Message">
-            </label>
-            <button id="commitmsg-button" class="btn btn-success pull-right" type="button">Save</button>
-            <button id="cancel-log-msg" class="btn btn-danger" type="button">Cancel</button>            
-            </fieldset>
-      </form>
+<div id="modal-commit-message" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close commit-message-close" data-dismiss="modal-commit-message" aria-hidden="true">&times;</button>
+        <h3>Commit Message</h3>
     </div>
+    <div class="modal-body">
+        <label class="commit-message">
+            <span>Commit message</span>
+            <input id="commit-message" name="commitmsg" class="wipe-me commitmsg" length="200" value="" type="text" autocomplete="on" placeholder="Commit Message">
+        </label>
+    </div>
+    <div class="modal-footer">
+        <button data-dismiss="modal-commit-message" class="commit-message-close btn">Cancel</button>
+        <button data-log-level="1" data-bind="enable: logmsg" class="do-commit-save btn btn-primary">Make it a note</button>
+        <button data-log-level="2" data-bind="enable: logmsg" class="do-commit-save btn btn-danger">Revision History Entry</button>
+    </div>
+</div>

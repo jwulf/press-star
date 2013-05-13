@@ -2,6 +2,9 @@ body {
   padding: 80px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+.div-preview {
+  font: Open Sans;
+}
 #main:after {
   content: "";
   display: block;
@@ -20,7 +23,25 @@ body {
   top: 10px;
   left: 70px;
 }
-a {
+.btn a,
+.btn a:visited,
+.btn a:link {
+  color: #000 !important;
+}
+.btn-primary a:link,
+.btn-success a:link,
+.btn-danger a:link {
+  color: #fff !important;
+}
+.btn-primary a,
+.btn-primary a:visited,
+.btn-success a,
+.btn-success a:visited,
+.btn-danger a,
+.btn-danger a:visited {
+  color: #fff !important;
+}
+.pg-main a {
   color: #00f;
   text-decoration: none;
   border-bottom: 1px dotted;

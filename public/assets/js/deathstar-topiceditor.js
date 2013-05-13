@@ -4,8 +4,6 @@
  * {number=}	optional parameter
  * {*}			ALL types
  */
-
-
 var pressgang_userid,
     UNKNOWN_USER = 89, // default "unknown user" ID
     topicRevision; // used to check whether a new revision has been created on save
@@ -108,139 +106,6 @@ $(document).keydown(function(event) {
 function topicEdited() {
     Model.validated(false);
     Model.modified(true);
-}
-
-function getLogMessage (e) {
-    var loginBox = '#login-box',
-        _log_level, msg, _username,
-        log_levels = {minor: 1, major: 2},
-        log_level_text = {1: "Minor Commit Note", 2: "Revision History Entry"};
-        
-    // I put the "minor" and "major" keys in the rel attribute of the commit menu items
-    // should go in a data- element
-    Model.log_level = (this) ? log_levels[$(this).attr('rel')] : 1; // Default to minor revision
-
-    _username = getCookie('username');
-    if ($('#username').val() === '') { $('#userid').val(_username) }
-
-    $('#commit-msg-type').html(log_level_text[Model.loglevel]);
-    
-    //Fade in the Popup
-    $(loginBox).fadeIn(300);
-    $('#save-dropup').removeClass('open');
-    
-    //Set the center alignment padding + border see css style
-    var popMargTop = ($(loginBox).height() + 24) / 2; 
-    var popMargLeft = ($(loginBox).width() + 24) / 2; 
-    
-    $(loginBox).css({ 
-        'margin-top' : -popMargTop,
-        'margin-left' : -popMargLeft
-    });
-    
-    $("#commitmsg").keypress(function(event) {
-        if (event.which == 13) {
-            event.preventDefault();
-            doCommitLogSave(_log_level);
-        }
-    });
-    $("input").keypress(function(event) {
-        if (event.keyCode == 27) {
-            closeMask ();
-        }    
-    });
-    
-    // Add the mask to body
-    $('body').append('<div id="mask"></div>');
-    $('#mask').click(closeMask);
-    $('.close').click(closeMask);
-    $('#cancel-log-msg').click(closeMask)
-    $('#mask').fadeIn(300);
-    return false;
-}
-
-function doCommitLogSave () {
-    var _log_msg, // the log message
-        username,  // the stored user name
-        thisusername, // the username currently requesting the commit
-        user; // iterator for the PressGang user list
-        
-    _log_msg = $('#commitmsg').val();
-     
-    // If they change their username in the commit dialog, or it hasn't been set, then we verify it with pressgang
-    // and set their userid
-
-    pressgang_userid = getCookie('pressgang_userid'); // Do we have a PressGang user ID stored?
-     username = getCookie('username'); // Do we have a username stored?
-     thisusername = $('#userid').val(); // What name are they using for this commit?
-    
-    /* If we have not verified a PressGang ID for this user, or they are requesting a commit
-        with a different user ID than the one we verified, we verify their ID. 
-        
-        It's not authentication or authorization, it's just identification, and it's completely open.
-        
-        The user gives us a user name, and we retrieve the unique ID to match from PressGang */
-
-    //REFACTOR: this needs to come out of this method into its own function
-    if (!pressgang_userid || (pressgang_userid == UNKNOWN_USER) || (thisusername != username)) { // either we have no verified PressGang userid, or else it differs from the requesting name
-        pressgang_userid = UNKNOWN_USER;
-            // Get all the users!
-            var _url = (skynetURL.indexOf('http://') == -1) ? 'http://' + skynetURL : skynetURL;
-
-        // REFACTOR:
-        // Rather than getting all the users, we can query for the specific user like this:
-        // http://skynet.usersys.redhat.com:8080/TopicIndex/seam/resource/rest/1/users/get/json/query;username=jwulf?expand=%7B%22branches%22%3A%5B%7B%22trunk%22%3A%20%7B%22name%22%3A%20%22users%22%7D%7D%5D%7D
-        
-        // NOTE:  Persist the user identity on the server when going offline!!!
-        // Getting a user identity needs to be part of the offlining process
-        
-        $.get(_url + '/seam/resource/rest/1/users/get/json/all', 
-            {expand: JSON.stringify({"branches":[{"trunk":{"name":"users"}}]})}, 
-            function (result) {
-                // Chrome gets result as a JSON object, FF 20 on Linux gets it as a string ???
-                // jQuery $.get does "intelligent guess" for the returned datatype if none is specified
-                // Try setting the datatype explicitly to json in $.get
-                // Also hack around with JSON.parse:
-                if (typeof result == 'string') result = JSON.parse(result); 
-
-                for (var users = 0; users < result.items.length; users ++) {
-                    user = result.items[users].item;
-                    if (user.name === thisusername) { pressgang_userid = user.id; break;}
-                }
-                
-                if (pressgang_userid !== UNKNOWN_USER) { // cool, we found them in there
-                    setCookie('username', thisusername, 365);
-                    setCookie('pressgang_userid', pressgang_userid, 365);
-                    var author = result.items[users].item.description.split(' ');
-
-                    var firstname = (author[0]) ? author[0] : 'Red Hat';
-                    setCookie('userfirstname', firstname, 365);
-                    var surname = (author[1]) ? author[1] : 'Engineering Content Services';
-                    setCookie('usersurname', surname, 365);
-                    var email = (author[2]) ? author [2] : 'www.redhat.com';
-                    setCookie('useremail', email, 365);
-
-                    doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
-                    closeMask();
-                }
-                if (pressgang_userid === UNKNOWN_USER) { // We're still unknown!
-                    if (confirm('No PressGang account for ' + thisusername + ' found. Click OK to commit as UNKNOWN. Click Cancel to change the user ID')) {
-                        doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
-                        closeMask();
-                    }
-                }
-            }, 'json');
-    } else { // It's all kosher, we've authenticated and cookied this user before
-        doValidate(null, function() {doActualSave(Model.loglevel, _log_msg)});
-        closeMask();
-    }
-}
-
-function closeMask () {
-    $('#mask , .login-popup').fadeOut(300 , function() {
-        $('#mask').remove();  
-    }); 
-    return false;
 }
 
 function timedRefresh() {
@@ -810,6 +675,13 @@ function initializeTopicEditPage() {
     $("#find-next-button").click(doFindNext);
     $("#find-previous-button").click(doFindPrevious);
     $("#replace-all-button").click(doReplaceAll);
+    $("#save-with-log-button").click(showLogMessageDialog);
+    $(".commit-message-close").click(function() {$('#modal-commit-message').modal('hide');});
+    $('.do-commit-save').click(doLogMessageSave);
+    $('#commit-message').on('keyup', function (e) {
+        Model.logmsg($(this).val());
+    });
+
 
     $('.inject-template').click(injectTemplate);
 
@@ -860,6 +732,20 @@ function initializeTopicEditPage() {
     pressgang_userid = getCookie('pressgang_userid');
     // Otherwise commit as unknown user
     pressgang_userid = (pressgang_userid) ? pressgang_userid : UNKNOWN_USER;
+}
+
+function showLogMessageDialog () {
+    clientsideIdentify(_showLogMessageDialog);
+}
+
+function _showLogMessageDialog () {
+    $("#modal-commit-message").modal({keyboard: true, static: true});
+}
+
+function doLogMessageSave () {
+    Model.loglevel = this.dataset.logLevel;
+    doValidate(null, function() {doActualSave (Model.loglevel, Model.logmsg)});
+    $('#modal-commit-message').modal('hide');
 }
 
 function togglePlainText (e) {
