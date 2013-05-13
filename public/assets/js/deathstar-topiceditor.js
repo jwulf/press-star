@@ -178,9 +178,9 @@ function doActualSave (log_level, log_msg) {
     if ($('#div-preview-inline').find('.titlepage')) builtHTML = $('#div-preview-inline').html();
 
     if (!Model.validated() && validationServerResponse == 1) {
-        // TODO: figure out why this is triggering false positive on a commit log message save
-        alert("This is not valid Docbook XML. If you are using Skynet injections I cannot help you.");
         Model.validated(false);
+        if (!confirm("This is not valid Docbook XML. Click OK to Save it anyway, Cancel to return to the editor.")) {return; }
+
     }
 
     if (validationServerResponse == 0) alert("Unable to perform validation. Saving without validation.");
