@@ -45,6 +45,14 @@ function restroute (req, res){
     if (op === 'getbooks') { getBooks(req, res); }
         else
     if (op === 'getlatestpackagenumber') { getLatestPackageNumber(req,res); }
+        else
+    if (op === 'reboot') { reboot(req, res); }
+}
+
+function reboot(req,res) {
+    console.log('Imma reboot now');
+    res.send("I'll be back!");
+    process.abort();
 }
 
 function getLatestPackageNumber(req, res) {
@@ -56,7 +64,7 @@ function getLatestPackageNumber(req, res) {
     my.title.split(' ').join('_') + '-' +
     my.version + '-web-en-US');
 
-    if (!packageName) { return res({code: 1, msg: "Can't find that book."}); }
+    if (!packageName) { return res.send({code: 1, msg: "Can't find that book."}); }
 
     console.log('Locating package number for ' + packageName);
     client.methodCall('getLatestBuilds', [settings.brewDocsTag, {'__starstar': 1, 'package': packageName}], function (error, result){

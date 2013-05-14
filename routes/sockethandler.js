@@ -97,7 +97,9 @@ function socketHandler (client){
 
         if (id && url && Library.Books[url] && Library.Books[url][id]) {
             Library.Books[url][id].on('change', bookStateListener);
+            console.log('Listener count: ' + Library.Books[url][id].listeners('change').length);
         }
+
     });
 
     client.on('subscribeToBookNotification', function(data) {
@@ -111,6 +113,7 @@ function socketHandler (client){
 
         if (id  && url && Library.Books[url] && Library.Books[url][id]) {
             Library.Books[url][id].on('notify', bookNotificationListener);
+            console.log('Listener count: ' + Library.Books[url][id].listeners('notify').length);
         }
     });
     
@@ -125,6 +128,7 @@ function socketHandler (client){
 
         if (id  && url && Library.Books[url] && Library.Books[url][id]) {
                 Library.Books[url][id].on('patch', patchListener);
+            console.log('Listener count: ' + Library.Books[url][id].listeners('patch').length);
         }
     });
     
@@ -133,6 +137,7 @@ function socketHandler (client){
     client.on('subscribeToLibrary', function () {
         console.log('Library Notification Subscription');
         Library.LibraryNotificationStream.on('data', libraryListener);
+        console.log('Listener count: ' + Library.LibraryNotificationStream.listeners('data').length);
     });
     
     client.on('disconnect', function () {

@@ -55,6 +55,7 @@ function PressStarViewModel() {
 
         if (page === 'Add Book') { addPageSetup(); }
         if (page === '"Publish and be Damned!"') {    $('#publish-button').click(publish); }
+        if (page === "Issues / Features") {     $('#reboot').click(reboot); }
     };
 
     //self.goToPage('Issues / Features');
@@ -191,7 +192,15 @@ function onLoad(){
         }
     };
 
+
   connectSocket();
+}
+
+function reboot(){
+    if (confirm('Do you really want to reboot the server?')) {
+        $.get('/rest/1/reboot', {}, function (result) { alert('Server says: ' + result);});
+    }
+    return false;
 }
 
 function renovateBookList (callback) {
