@@ -21,6 +21,7 @@ This brand has a number of outstanding features:
 2. Open Sans Webfont
 3. Simple target xrefs in HTML output
 4. "Codetabs" display
+5. Support for livepatching
 
 == Support for embedded video in Firefox ==
 This brand allows Firefox to display videos embedded using <videoobject> using any codecs installed on the users computer. 
@@ -74,8 +75,9 @@ Obviously with the code in each programlisting. In HTML this will be rendered as
 which is an acceptable way to present this information.
 
 Additionally, however, in browsers with JavaScript enabled, these multi-lingual code samples will appear
-as a set of tabs that allow the user to select which programming language they wish to see.
+as a set of tabs that allow the user to select which programming language they wish to see, and to set the default from
+anywhere in the book.
 
-A near-future enhancement will be to inject a selector in the preface of the book where the 
-user can set their book-wide preference, and the code samples will display that code language as the default.
+== Support for Live Patching ==
 
+This brand listens on a websocket, and can patch its own HTML when a topic is edited in Press Star.
