@@ -82,8 +82,6 @@ app.get('/issues', function (req, res) {
     res.render('index');
 });
 
-
-
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.post('/rest/:version/:operation', restapi.restroute);
@@ -94,37 +92,6 @@ app.get('/edit', function (req, res) {
         alwaysUseServerToLoadTopics: state.appstate.alwaysUseServerToLoadTopics || false, 
         offline: state.appstate.offline || false,
     });    
-});
-
-app.get('/publish', function (req, res) {
-    console.log('publish requested');
-    res.render('index', { books: Library.sortedBooks, data: Library.Books, title: 'Death Star 2.0', mode: 'publish'});
-});
-
-app.get('/add', function (req, res) {
-   // var resturl= '/rest/1/addbook?url=' + url + '&id=' + id;
-    res.render('add',{defaultURL: 'http://skynet.usersys.redhat.com:8080/TopicIndex', mode: 'add'});
-});
-
-app.get('/about', function (req,res){
-    res.render('about', { mode: 'about'});    
-});
-
-app.get('/booklist', function (req, res) {
-    //console.log(Library.sortedBooks);
-    res.render('booklist-partial', {layout: false, books: Library.sortedBooks, data: Library.Books, app: state.appstate, title: 'Death Star 2.0' });
-});
-
-app.get('/remove', function(req, res){
-    res.render('index', { books: Library.sortedBooks, data: Library.Books, title: 'Death Star 2.0', mode: 'remove' });    
-});
-
-app.get('/publishlist', function (req, res){
-    res.render('booklist-publish', {layout: false, books: Library.sortedBooks, data: Library.Books});    
-});
-
-app.get('/removelist', function (req, res){
-    res.render('booklist-remove', {layout: false, books: Library.sortedBooks, data: Library.Books, title: 'Remove Books'})
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
