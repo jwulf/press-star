@@ -487,11 +487,13 @@ function patchTopic (msg) {
              */
 
             var new_title_text = $(target.find('.title')[0]).text();  // Grab the new title
-            new_title_text = (new_title_text.substr(new_title_text.indexOf(' '))); // remove the section number
+
+            // fromCharCode(160) is &nbsp; <- what the xsl renderer puts in after the section number
+            new_title_text = (new_title_text.substr(new_title_text.indexOf(String.fromCharCode(160)))); // remove the section number
 
             $(target.find('.title')[0]).replaceWith(title); // Old TOC anchor and section number
 
-            var old_section_num = $(title).text().substr(0, $(title).text().indexOf(' ')); // separate old section number
+            var old_section_num = $(title).text().substr(0, $(title).text().indexOf(String.fromCharCode(160))); // separate old section number
 
             var _a = $(target.find('.title')[0]).children('a').detach();  // grab the anchor target
             $(target.find('.title')[0]).text(old_section_num + ' ' + new_title_text); // new title
