@@ -59,8 +59,27 @@ function createUser (e) {
                 success:  function (result) {
                     if (result.id && result.name) {
                         Model.created(true);
-                        Model.successmsg('User ' + Model.username() + ' successfully created. Close this window now.')
+                        Model.successmsg('User ' + Model.username() + ' successfully created. Close this window now.');
                         window.opener.pgInjectIdentity(result.name);
+                        // Create assigned writer tag
+                        _req_url = _url + "/seam/resource/rest/1/tag/create/json";
+                        _req_JSON = {"name": Model.username(),"configuredParameters": ["categories", "properties"],"categories":
+                            {"items":[{"item": {"id": "4"},"state": "1"}]},
+                            "properties":{ "items":
+                                [{ "item": {"id": "1", "value": Model.firstname, "configuredParameters": ["value"]},
+                                        "state": "1"},
+                                    {"item": {"id": "2", "value": Model.surname, "configuredParameters": ["value"]},
+                                        "state": "1"},
+                                    {"item": {"id": "3", "value": Model.email, "configuredParameters": ["value"]},
+                                        "state": "1"}]}};
+                        $.ajax ({
+                            url: _req_url,
+                            type: "POST",
+                            data: JSON.stringify(_req_JSON),
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success:  function (result) { console.log(result); }
+                        });
                     }  else {
                         Model.errormsg('Something went wrong there. Sorry. I suggest you try again with the browser console open and watch for errors to help debug.');
                     }

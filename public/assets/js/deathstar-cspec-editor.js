@@ -202,7 +202,7 @@ function pushSpec() {
 }
 
 function pushSpecPermissive() {
-    if (confirm('Rewrite topic titles to align them with the latest edits?')) pushSpecRoute('push', '-p');
+    if (confirm('Rewrite topic titles to align them with the latest edits?')) { pushSpecRoute('push', '-p'); }
 }
 
 function pushSpecRoute(cmd, opts) {
@@ -274,6 +274,7 @@ function startServerTask() {
 
 function endServerTask() {
     $("#save-button").button('reset');
+    $('#push-align').click(pushSpecPermissive);
     $("#push-menu").button('reset');
     $("#validate-button").button('reset');
     $("#revert-button").button('reset');
