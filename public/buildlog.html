@@ -2,10 +2,12 @@
     <head>
         <link href="assets/css/bootstrap.css" rel="stylesheet">
     	<link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <script src="assets/js/basket.full.min.js"></script>
+
         <script type="text/javascript">
             var pageIsEditor = true;
             basket
-                    .require({ url: 'deathstar-buildlog.js', unique: 1 })
+                    .require({ url: 'scripts/deathstar-buildlog.js', unique: 1 })
                     .then(function () {
                         basket.require({ url: '/socket.io/socket.io.js', unique: 1});
                     });
