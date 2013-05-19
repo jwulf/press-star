@@ -952,8 +952,10 @@ function doReplace() {
 // This is a generic click handler for Insert Docbook sub-menu entries
 // It uses the id attribute of the sub-menu entry to look up the template in a 
 // dictionary. 
-function injectTemplate() {
-    
+function injectTemplate(e) {
+
+    e.preventDefault();
+
     var d = new Date(); 
     var n = d.getMonth(); // we use n to dynamically populate the changelog with the current month 
     var month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
