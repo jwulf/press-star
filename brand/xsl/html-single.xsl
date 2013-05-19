@@ -23,6 +23,7 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
     <script src="Common_Content/scripts/skynetURL.js"></script>
     <script src="Common_Content/scripts/basket.full.min.js"></script>
     <script src="Common_Content/scripts/deathstar.js"></script>
+    <script src="Common_Content/scripts/publican-pressgang-utils.js"></script>
     <script type="text/javascript">
         basket
             .require({ url: 'Common_Content/scripts/jquery-1.9.1.min.js', unique: 1 })
@@ -47,9 +48,9 @@ href="http://docbook.sourceforge.net/release/xsl/current/xhtml/graphics.xsl"/>
            // .then(function () {
            //     basket.require({ url: 'Common_Content/scripts/knockout-2.2.1.js', unique: 1});
            // })
-            .then(function () {
-                basket.require({ url: 'Common_Content/scripts/publican-pressgang-utils.js', unique: 1});
-            })
+           // .then(function () {
+           //     basket.require({ url: 'Common_Content/scripts/publican-pressgang-utils.js', unique: 1});
+           // })
             .then(function () {
                 basket.require({ url: '/socket.io/socket.io.js', unique: 1});
             });

@@ -11,6 +11,7 @@ var flash,
     updatingRevHistory = false,
     revHistoryFragment,
     openNewURL,
+    zenMode = false,
     Bookmd = { // Book metadata
         building: false,
         publishing: false,
@@ -97,8 +98,55 @@ function deathstarItUp ()
             return false;
         }
     });
+    addZenLinks();
     scanForUpstreamUpdates();
 }
+
+function addZenLinks() {
+    var _class,
+        CLASSES = {sectionTopic: '.sectionTopic', section: '.section', chapter: '.chapter', appendix: '.appendix', preface: '.preface'};
+
+    for (_class in CLASSES) {
+        $(CLASSES[_class]).each( function () {
+
+            // Don't add the section rel to .sectionTopics
+            if (!($(this).hasClass('sectionTopic') && _class === 'section')) {
+                if ($(this).parents('dt').length === 0) {
+                    $(this).prepend('<a class="zen-click" rel="' + _class + '" href="#zen-mode"><span class="img-zenmode"></span></a>');
+                }
+            }
+        });
+    }
+    $('.zen-click').click(function (e) {
+        e.preventDefault();
+        if (zenMode) {
+            $('*').removeClass('zen-invisible');
+            zenMode = false;
+            // Figure out what the page is  scrolled to at the moment
+            //var viewportOffset = $(this).offset().top - getPageScroll()[1];
+            $(window).scrollTop($(this).offset().top - 100);
+        } else {
+            $('*').addClass('zen-invisible');
+
+            zenMode = true;
+            $(this).parents().each(function () { $(this).removeClass('zen-invisible'); });
+            $(this).children().each(function () { $(this).removeClass('zen-invisible'); });
+
+            $(this).parents('.' + $(this).attr('rel')).find('*').each(function () { $(this).removeClass('zen-invisible') });
+
+            $('.control-panel').removeClass('zen-invisible');
+            $('.control-panel').parents().each( function () { $(this).removeClass('zen-invisible'); });
+
+
+            // Figure out what the page is  scrolled to at the moment
+            var viewportOffset = $(this).offset().top - getPageScroll()[1];
+            $(window).scrollTop($(this).offset().top - viewportOffset);
+
+
+        }
+    });
+}
+
 
 function scanForUpstreamUpdates () {
     var _revision, _id, _upstream_revision, _this;
@@ -334,8 +382,11 @@ function getBookmd () {
 }
 
 function updateControlPanel (md, percentage) {
+    var _percentage;
+
+    _percentage = percentage || 0;
     new EJS({url: 'Common_Content/scripts/control-panel.ejs'}).update('ds-control-panel', {bookmd: md,
-                updatingRevHistory: updatingRevHistory, percentage: percentage});
+                updatingRevHistory: updatingRevHistory, percentage: _percentage});
 
     $('#rebuild-link').click(clickBuild);
     $('#edit-structure').click(clickEditStructure);

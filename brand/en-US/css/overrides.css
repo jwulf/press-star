@@ -117,7 +117,7 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
 }
 
 .RoleCreateBugPara a:visited {color: red;}
-.RoleCreateBugPara { float:right; text-align:right; position: absolute; top:0px; right: 0px;}
+.RoleCreateBugPara { float:right; text-align:right; position: absolute; top:0px; right: 20px;}
 .RoleCreateBugPara a:hover {border: 1px dotted white;}
 .RoleCreateBugPara a:link {color: red;}
 
@@ -127,11 +127,11 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
   color: white;
 }
 
-.sectionTopic
-{
-  position: relative;
+.section, .appendix, .chapter, .preface, .sectionTopic {
+    position: relative;
 }
 
+/*
 .sectionTopic:hover
 {
     background:#f6f6f6;
@@ -139,6 +139,7 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
     -moz-box-shadow: 0 0 0 10px #f6f6f6, 0 0 0 11px #ddd, 0 0 10px 11px #ccc;
     -webkit-box-shadow: 0 0 0 10px #f6f6f6, 0 0 0 11px #ddd, 0 0 10px 11px #ccc;
 }
+*/
 
 /* 
     Begin Master selector for tabbed code samples
@@ -478,6 +479,31 @@ span.remark{
 
 .invisible {
     display: none;   
+}
+
+.zen-invisible {
+    display: none;
+}
+
+.img-zenmode {
+    background-image: url(../images/glyphicons-halflings.png);
+    background-position: -456px -144px;
+    border-bottom: none;
+    opacity: 0.6;
+    float:right;
+    text-align:right;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    height: 15px;
+}
+
+.img-zenmode:hover {
+    opacity: 1;
+}
+
+.img-zenmode:before {
+    content: '';
 }
 
 @-webkit-keyframes blinker {  
