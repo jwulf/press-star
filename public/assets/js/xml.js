@@ -1,11 +1,11 @@
 CodeMirror.defineMode("xml", function(config, parserConfig) {
   var indentUnit = config.indentUnit;
   var Kludges = parserConfig.htmlMode ? {
-    autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
+    autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 
                       'embed': true, 'frame': true, 'hr': true, 'img': true, 'input': true,
                       'keygen': true, 'link': true, 'meta': true, 'param': true, 'source': true,
                       'track': true, 'wbr': true},
-    implicitlyClosed: {'dd': true, 'li': true, 'optgroup': true, 'option': true, 'p': true,
+    implicitlyClosed: {'dd': true, 'li': true, 'optgroup': true, 'option': true, 'p': true, 'command': true,
                        'rp': true, 'rt': true, 'tbody': true, 'td': true, 'tfoot': true,
                        'th': true, 'tr': true},
     contextGrabbers: {
