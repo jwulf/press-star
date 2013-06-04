@@ -183,9 +183,9 @@ function generateRevisionHistoryFragment(results, cb) {
 
     // This information is created in a cookie when a log message is saved from the
     // topic editor
-    firstname = getCookie('userfirstname') || 'Red Hat';
-    surname = getCookie('usersurname') || 'Engineering Content Services';
-    email = getCookie('useremail') || 'www.redhat.com';
+    firstname = getCookie('pguser_firstname') || 'Red Hat';
+    surname = getCookie('pguser_surname') || 'Engineering Content Services';
+    email = getCookie('pguser_email') || 'www.redhat.com';
 
     revHistoryFragment =  '            <revision>\n';
     revHistoryFragment += '            <!-- Automated Revision History Entry -->\n';
