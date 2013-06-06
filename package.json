@@ -24,7 +24,8 @@
     "cheerio": "0.11.0",
     "carrier": "*",
     "xmlrpc": "1.1.0",
-    "contextify": "0.1.5"
+    "contextify": "0.1.5",
+    "newrelic" : "0.9.21"
   },
   "description": "node-deathstar = A fully operational battlestation",
   "main": "app.js",
