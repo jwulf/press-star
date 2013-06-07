@@ -6,6 +6,7 @@
 //var memwatch = require('memwatch');
 //memwatch.on('leak', function(info) { console.log(info)});
 
+require('newrelic');
 var express = require('express'),
     routes = require('./routes'),
     user = require('./routes/user'),
