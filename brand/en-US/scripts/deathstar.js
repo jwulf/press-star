@@ -518,9 +518,12 @@ function patchTopic (msg) {
 
             // Locate and preserve its .see-also-list child, if it exists
             var seealso = target.children('.see-also-list').detach();
+            
+          	// Locate and preserve the zen mode link
+    		var zenmode = target.children('.zen-click').detach();            
 
             // Locate and preserve the bug link / edit child
-            var buglink = target.children('.bug-link').detach();
+            var buglink = target.children('.RoleCreateBugPara').detach();
 
             // Get the title from the existing topic - this gets us the TOC anchor and correct section number
             var title = target.find('.title')[0];
@@ -567,6 +570,7 @@ function patchTopic (msg) {
             if (changelog) changelog.insertAfter(target.find('hr'));
             if (seealso) seealso.appendTo(target);
             if (buglink) buglink.appendTo(target);
+            if (zenmode) zenmode.appendTo(target);
         });
 
     }
