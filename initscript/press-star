@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# press-star         Boot
+#
+# chkconfig: 2345 90 60
+# description: Press Star application \
+
+### BEGIN INIT INFO
+# Provides: press-star
+# Required-Start: $local_fs $syslog
+# Required-Stop: $local_fs $syslog
+# Default-Start:  2345
+# Default-Stop: 90
+# Short-Description: Starts Press Star with forever, which keeps it running no matter what
+# Description: Press Star application service
+### END INIT INFO
+
+INSTALLDIR=/opt/press-star
+FOREVER=/opt/nvm/v0.8.22/bin/forever
+NODE=/opt/nvm/v0.8.22/bin/node
+
+start () {
+	cd $INSTALLDIR
+	$NODE $FOREVER app.js &
+	sleep 2
+	status
+}
+
+stop () {
+	FOREVER_PID=`ps -ef|grep node|grep forever| awk '{print $2}'`
+	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`	
+	kill -TERM $FOREVER_PID
+	kill -TERM $PRESSSTAR_PID
+}
+
+restart () {
+	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`
+	kill -HUP $PRESSSTAR_PID
+	sleep 2
+	status
+	sleep 1
+}
+
+status () {
+	FOREVER_PID=`ps -ef|grep node|grep forever| awk '{print $2}'`
+	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`
+	echo "Forever running as PID: $FOREVER_PID"
+	echo "Press Star process PID: $PRESSSTAR_PID"
+}
+
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    restart)
+	$1
+        ;;
+    status)
+	$1
+        ;;
+    *)
+      	echo $"Usage: $0 {start|stop|restart|status}"
+        exit 2
+esac
+exit $?
