@@ -865,7 +865,7 @@ function togglePlainText (e) {
                                                         '    <title>Title</title>\n' +
                                                         '    <mediaobject>\n' +
                                                         '        <imageobject>\n' +
-                                                        '            <imagedata align="center" fileref="images/'+ imgid + '.png"/>\n' +
+                                                        '            <imagedata align="left" fileref="images/'+ imgid + '.png"/>\n' +
                                                         '        </imageobject>\n' +
                                                         '        <textobject>\n' +
                                                         '            <phrase>Description</phrase>\n' +
@@ -1034,7 +1034,7 @@ function injectTemplate(e) {
     <title></title>\n\
     <mediaobject>\n\
       <imageobject>\n\
-        <imagedata align="center" fileref="images/PUTTHENUMBERHERE.png"/>\n\
+        <imagedata fileref="images/PUTTHENUMBERHERE.png"/>\n\
       </imageobject>\n\
       <textobject>\n\
          <phrase>\n\
