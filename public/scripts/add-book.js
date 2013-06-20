@@ -4,13 +4,9 @@ $(function() {
     
     // Disable the Add Book button when the Content Spec field is empty
     // Enable it when there is something in there
-    $('#specid-input').keyup(function(){
-        if ($('#specid-input').val() === '') {
-            $('#add-button').attr('disabled', 'disabled');
-        } else {
-            $('#add-button').removeAttr('disabled');
-        }
-    });
+    $('#specid-input').keyup(enableSubmit);
+    
+    $('#specid-input').bind('paste',enableSubmit);
     
   $("#add-button").click(function() {  
     $('#result').html('Checking out book on server').removeClass('alert-success').removeClass('alert-error').addClass('alert alert-info');
@@ -26,3 +22,11 @@ $(function() {
       return false;
   });   
 });  
+
+function enableSubmit () {
+	if ($('#specid-input').val() === '') {
+        $('#add-button').attr('disabled', 'disabled');
+    } else {
+        $('#add-button').removeAttr('disabled');
+    }	
+}
