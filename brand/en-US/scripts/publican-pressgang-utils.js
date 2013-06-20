@@ -487,7 +487,7 @@ function getTopicRevisions (url, id, start, end, cb) {
     }, _cb).fail(
         function (err) {
             console.log('yo, got an error for topic id %s: %s ', id, err);
-            cb(null);
+            _cb(null);
         });
     _rest_calls++; // Who's counting?
 
@@ -520,6 +520,7 @@ function getTopicRevisionsSince (url, id, date, cb) {
             _item,
             revisions;
 
+		if ( result === null) { return cb(null); }
         revisions = (result.revisions && result.revisions.items) ? result.revisions.items : [];
 
         // Iterate through them, pushing them to our result array
@@ -627,8 +628,10 @@ function getLogMessagesSince (url, id, date, sort_earliest_first, cb) {
     _spawned_log_msgs && (_spawned_log_msgs[id] = 'Searching'); // global counter
 
     getTopicRevisionsSince(url, id, date, function (result) {
+    	
+    	if (result === null || result.length === 0) { return _cb(null); }  // No result (REST error) or this topic has no revisions
+
         _revisions_left_to_check = result.length;
-        if (_revisions_left_to_check === 0)  { _cb(null); } // This topic has no revisions
 
         function getLogMessageCallback (logmsg) {
             if (logmsg !== null) { _logmsgs.push(logmsg); }
