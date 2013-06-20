@@ -579,9 +579,31 @@ function getLogMessage (url, id, rev, cb) {
             var surname = (author[1]) ? author[1] : 'Engineering Content Services';
             var email = (author[2]) ? author [2] : 'www.redhat.com';
 
+			// RFE #48 :  Auto-link bug ids in revision history.
+			// https://github.com/jwulf/press-star/issues/48
+			
+			// https://bugzilla.redhat.com/show_bug.cgi?id=
+			
+			// Find occurrances of BZ# in the log message, and ulink them
+			var logmsgBugLinked = '',
+				buglink = '<ulink url="https://bugzilla.redhat.com/'
+				logmsgArray = logDetails.message.split(' ');
+			for (var iterate = 0; iterate < logmsgArray.length; iterate ++) {
+				if (logmsgArray[iterate].toUpperCase() === 'BZ#' && iterate < logmsgArray.length - 1) {
+					// In this case there is a space, and the bug id is in the next element
+					logmsgArray[iterate] = buglink + logmsgArray[iterate + 1] + '">' + logmsgArray[iterate];
+					logmsgArray[iterate + 1] += '"</ulink>"';
+				} else 
+				if (logmsgArray[iterate].substr(0,3).toUpperCase() === 'BZ#') {
+					logmsgArray[iterate] = buglink + logmsgArray[iterate].substr(3) + '">' + logmsgArray[iterate] + "</ulink>";
+				}
+			}
+			
+			logmsgBugLinked = logmsgArray.join(' ');
+			
             var _log = {
                 topic: id,
-                msg: logDetails.message,
+                msg: logmsgBugLinked,
                 timestamp: logDetails.date,
                 date: new Date(logDetails.date).toUTCString(),
                 author: {
