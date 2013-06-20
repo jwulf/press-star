@@ -20,21 +20,26 @@ FOREVER=/opt/nvm/v0.8.22/bin/forever
 NODE=/opt/nvm/v0.8.22/bin/node
 
 start () {
-	cd $INSTALLDIR
-	$NODE $FOREVER app.js &
-	sleep 2
-	status
+	getPIDs
+	if [ "x$FOREVER_PID" != "x" ]; then
+		cd $INSTALLDIR
+		$NODE $FOREVER app.js &
+		sleep 2
+		status
+	else
+		echo "Service already running!"
+		status
+	fi
 }
 
 stop () {
-	FOREVER_PID=`ps -ef|grep node|grep forever| awk '{print $2}'`
-	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`	
+	gitPIDs
 	kill -TERM $FOREVER_PID
 	kill -TERM $PRESSSTAR_PID
 }
 
 restart () {
-	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`
+	getPIDs
 	kill -HUP $PRESSSTAR_PID
 	sleep 2
 	status
@@ -42,12 +47,15 @@ restart () {
 }
 
 status () {
-	FOREVER_PID=`ps -ef|grep node|grep forever| awk '{print $2}'`
-	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`
+	getPIDs
 	echo "Forever running as PID: $FOREVER_PID"
 	echo "Press Star process PID: $PRESSSTAR_PID"
 }
 
+getPIDs () {
+	FOREVER_PID=`ps -ef|grep node|grep forever| awk '{print $2}'`
+	PRESSSTAR_PID=`ps -ef|grep node|grep press-star| awk '{print $2}'`
+}
 
 case "$1" in
     start)
