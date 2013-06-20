@@ -586,7 +586,7 @@ function getLogMessage (url, id, rev, cb) {
 			
 			// Find occurrances of BZ# in the log message, and ulink them
 			var logmsgBugLinked = '',
-				buglink = '<ulink url="https://bugzilla.redhat.com/'
+				buglink = '<ulink url="https://bugzilla.redhat.com/',
 				logmsgArray = logDetails.message.split(' ');
 			for (var iterate = 0; iterate < logmsgArray.length; iterate ++) {
 				if (logmsgArray[iterate].toUpperCase() === 'BZ#' && iterate < logmsgArray.length - 1) {
