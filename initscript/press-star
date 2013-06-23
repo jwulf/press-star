@@ -15,21 +15,19 @@
 # Description: Press Star application service
 ### END INIT INFO
 
+NVM=/opt/nvm/nvm.sh
 INSTALLDIR=/opt/press-star
-FOREVER=/opt/nvm/v0.8.22/bin/forever
-NODE=/opt/nvm/v0.8.22/bin/node
+FOREVER=forever
+NODE=node
 
 start () {
-	getPIDs
-	if [ "x$FOREVER_PID" != "x" ]; then
-		cd $INSTALLDIR
-		$NODE $FOREVER app.js &
-		sleep 2
-		status
-	else
-		echo "Service already running!"
-		status
-	fi
+        # initialize node environment
+        source $NVM
+        echo "Node version: " `node --version`
+        cd $INSTALLDIR
+        $FOREVER app.js &
+        sleep 2
+        status
 }
 
 stop () {
