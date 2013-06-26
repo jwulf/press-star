@@ -865,7 +865,7 @@ function togglePlainText (e) {
                                                         '    <title>Title</title>\n' +
                                                         '    <mediaobject>\n' +
                                                         '        <imageobject>\n' +
-                                                        '            <imagedata align="left" fileref="images/'+ imgid + '.png"/>\n' +
+                                                        '            <imagedata fileref="images/'+ imgid + '.png"/>\n' +
                                                         '        </imageobject>\n' +
                                                         '        <textobject>\n' +
                                                         '            <phrase>Description</phrase>\n' +
