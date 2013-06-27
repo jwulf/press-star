@@ -13,7 +13,7 @@
                 <h4>
                     <% if (thisBook.builtFilename) { %>
                     <span class=<% if (thisBook.buildError) { %>"active-indicator-button"<% } else { %>"book-title"<% } %>>
-                    <a href="<%= 'builds/' + id + '-' + thisBook.builtFilename %>" target="_blank">
+                    <a href="<%= 'builds/' + id + '-' + thisBook.builtFilename  + ' ' + thisBook.version %> " target="_blank">
                       <%= thisBook.title %>
                         [<%= id %>]</a></span>
                     <% } else { %>
