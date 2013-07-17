@@ -220,7 +220,7 @@ pre {
 code {
 	font-family: "liberation mono", "bitstream vera mono", "dejavu mono", monospace;
 	white-space: pre-wrap;
-  font-weight:normal;
+  	font-weight:normal;
 	/* font-weight:bold; */
 }
 
@@ -311,8 +311,10 @@ span.remark{
 
 /* css for the code switcher */
 .codetabs pre{
-  border: 1px solid; color: #AAA;
+  border: 1px solid color: #AAA;
 }
+
+.codetabs pre
 
 .code-select-li{
   float:left;
