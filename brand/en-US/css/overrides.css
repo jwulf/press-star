@@ -96,7 +96,6 @@ body, h1, h2, h3, h4, h5, h6, pre, li, div {
     color: white;
 }
 
-
 .RoleCreateBugPara a {
   display:inline-block;
   border: 1px dotted red;
@@ -313,8 +312,6 @@ span.remark{
 .codetabs pre{
   border: 1px solid color: #AAA;
 }
-
-.codetabs pre
 
 .code-select-li{
   float:left;
