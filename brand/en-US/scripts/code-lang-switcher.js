@@ -238,7 +238,7 @@ function setUpCodeTabs()
         ul.append(setAsDefaultListItem);
 
 
-        thisCodeDiv.prepend(ul);
+        thisCodeDiv.find('dl').before(ul);
 
         // atm default to first, but will store the lang pref (perhaps in a cookie)
         makeFirstActive(thisCodeDiv);
