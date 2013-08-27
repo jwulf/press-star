@@ -126,9 +126,9 @@ window.addEventListener('unload', function(event) {
 });
 
 // callback function for use when a node server is generating the live HTML preview
-function handleHTMLPreviewResponse (preview, serverFunction) {
-    if (preview != previewRenderErrorMsg) {
-        Model.htmlpreview(preview);
+function handleHTMLPreviewResponse (previewResponse, serverFunction) {
+    if (previewResponse.error === null) {
+        Model.htmlpreview(previewResponse.preview);
         /*
         var parser = new DOMParser();
         var doc = parser.parseFromString(preview, 'text/xml');
@@ -405,7 +405,7 @@ function serversideUpdateXMLPreview (cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL},
+        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: condition},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
