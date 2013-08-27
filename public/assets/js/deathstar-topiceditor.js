@@ -42,7 +42,8 @@ var topicRevision, // used to check whether a new revision has been created on s
         loglevel: ko.observable(),  // 1 = minor, 2 = major
         logmsg: ko.observable(),
         username: ko.observable(),
-        userid: ko.observable()
+        userid: ko.observable(),
+        condition: []
     };
 
 
@@ -405,7 +406,7 @@ function serversideUpdateXMLPreview (cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: condition},
+        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: Model.condition},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
