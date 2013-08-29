@@ -43,7 +43,9 @@ var topicRevision, // used to check whether a new revision has been created on s
         logmsg: ko.observable(),
         username: ko.observable(),
         userid: ko.observable(),
-        condition: []
+        conditions: [],
+        selectedConditions: [],
+        conditionBoxes: {}
     };
 
 
@@ -67,6 +69,31 @@ $(function() {
 
     window.opener && window.opener.registerCallback && window.opener.registerCallback(invokeOpen);
 
+	// From http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
+	Array.prototype.equals = function (array, strict) {
+	    if (!array)
+	        return false;
+	
+	    if (arguments.length == 1)
+	        strict = true;
+	
+	    if (this.length != array.length)
+	        return false;
+	
+	    for (var i = 0; i < this.length; i++) {
+	        if (this[i] instanceof Array && array[i] instanceof Array) {
+	            if (!this[i].equals(array[i], strict))
+	                return false;
+	        }
+	        else if (strict && this[i] != array[i]) {
+	            return false;
+	        }
+	        else if (!strict) {
+	            return this.sort().equals(array.sort(), true);
+	        }
+	    }
+	    return true;
+	};
 });
 
 $(window).keypress(function(event) { // Ctrl-S  / Cmd-S
@@ -130,22 +157,47 @@ window.addEventListener('unload', function(event) {
 function handleHTMLPreviewResponse (previewResponse, serverFunction) {
     if (previewResponse.error === null) {
         Model.htmlpreview(previewResponse.preview);
-        /*
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(preview, 'text/xml');
-        var section = doc.getElementsByClassName("section");
-        if (section.length !== 0) {
-            Model.htmlpreview(section[0].innerHTML);
-        } else { // the topic preview is empty, or is not a section, could it be an appendix, i.e: a Revision History?
-            section = doc.getElementsByClassName("appendix");
-            if (section !== null) {
-                Model.htmlpreview(section[0].innerHTML);
-            }
-        } */
+        
+        // Check if we have new conditions
+        if (!previewResponse.conditions.equals(Model.conditions, false)) {
+        	Model.conditions = previewResponse.conditions;
+        	updateAvailableConditions();
+        }
     } else {
         showStatusMessage('Topic cannot be rendered - XML not well-formed', '', 'alert-error');
     }
 }
+
+function updateAvailableConditions() {
+	if (Model.conditions.length > 0) { $('#conditions-label').attr('display', 'block'); } else
+		{ $('#conditions-label').attr('display', 'none');}
+	for (var boxes = 0; boxes < Model.conditions.length; boxes ++) {
+		if (!Model.conditionBoxes[Model.conditions[boxes]]) {
+			// create a new box for this condition
+			var parentElement = document.getElementById('conditions');
+
+			var newSpan = document.createElement('span');
+		    newSpan.className = 'condition-checkbox';
+			
+		    var newCheckBox = document.createElement('input');
+		    newCheckBox.type = 'checkbox';
+		    newCheckBox.id = 'condition-' + Model.conditions[boxes]; // need unique Ids!
+		    newCheckBox.value = Model.conditions[boxes];
+			newCheckBox.setAttribute('data-condition', Model.conditions[boxes]);
+			Model.conditionBoxes[Model.conditions[boxes]] = newCheckBox;
+		    newCheckBox.change = function() {
+		    	// Click handler
+		    	alert(this.attr('data-condition'));
+		    	alert($(this).is(':checked'));
+		    };
+		    newSpan.appendChild(newCheckBox);
+		    newSpan.appendChild(document.createTextNode(Model.conditions[boxes]));
+
+		    parentElement.appendChild(newSpan);
+		}
+	}
+}	
+
 
 function doValidate(me, callback) {
     if (!Model.validated() || callback) {
@@ -406,7 +458,7 @@ function serversideUpdateXMLPreview (cm, serverFunction) {
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
 
-        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: Model.condition},
+        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: Model.selectedConditions},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
