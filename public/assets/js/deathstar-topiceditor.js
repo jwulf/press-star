@@ -56,7 +56,7 @@ $(function() {
 
     // Deal with the browser back button using the History API
     window.addEventListener('popstate', function(event) {
-        if (Model.modified() && event.cancelable && confirm('Discard all changes and load new topic?')) {
+        if (Model.modified() && event.cancelable && !confirm('Discard all changes and load new topic?')) {
             return false;
         }
         generateRESTParameters();
@@ -145,7 +145,7 @@ function timedRefresh() {
 }
 
 window.onbeforeunload = function(e) {
-    if (Model.modified()) return confirm('Discard unsaved changes?');
+    if (Model.modified()) return 'You currently have unsaved changes';
 };
 
 window.addEventListener('unload', function(event) {
