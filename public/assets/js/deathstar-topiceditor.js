@@ -185,11 +185,11 @@ function updateAvailableConditions() {
 		    newCheckBox.value = Model.conditions[boxes];
 			newCheckBox.setAttribute('data-condition', Model.conditions[boxes]);
 			Model.conditionBoxes[Model.conditions[boxes]] = newCheckBox;
-		    newCheckBox.change = function() {
+		    newCheckBox.addEventListener('click', function () {
 		    	// Click handler
-		    	alert(this.attr('data-condition'));
-		    	alert($(this).is(':checked'));
-		    };
+		    	serversideUpdateXMLPreview();
+
+		    }, false);
 		    newSpan.appendChild(newCheckBox);
 		    newSpan.appendChild(document.createTextNode(Model.conditions[boxes]));
 
@@ -338,7 +338,7 @@ function flashTitle(msg) {
 
 // Sends the editor content to a node server for validation
 function serversideValidateTopic(editor, cb) {
-    var xmlText;
+    var xmlText, setConditions = [];
 
     function validationCallback(data, cb) {
 
@@ -359,8 +359,10 @@ function serversideValidateTopic(editor, cb) {
     } else {
         xmlText = editor.getValue();
     }
+    
+    
 
-    $.post("/rest/1/dtdvalidate", {xml: xmlText},
+    $.post("/rest/1/dtdvalidate", {xml: xmlText, condition: setConditions},
         function(data) {
             validationCallback(data, cb);
         }).error(function(a) {
@@ -444,7 +446,7 @@ function generateRESTParameters() {
 
 // This function sends the editor content to a node server to get back a rendered HTML view
 function serversideUpdateXMLPreview (cm, serverFunction) {
-    var xmlText;
+    var xmlText, setConditions = [];
 
     // If we weren't called from the 2 second timer, we must have been called by the 
     // Enter key event. In that case we'll clear the timer
@@ -457,8 +459,15 @@ function serversideUpdateXMLPreview (cm, serverFunction) {
     }
     //preview.innerHTML=cm.getValue();
     if (window.mutex == 0) {
+    	
+		for (condition in Model.conditionBoxes) {
+			var thisCondition = $(Model.conditionBoxes[condition]);
+			if (thisCondition.is(':checked')) {
+				setConditions.push(thisCondition.attr('data-condition'));
+			}
+		}
 
-        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: Model.selectedConditions},
+        $.post("/rest/1/xmlpreview", {xml: xmlText, sectionNum: sectionNum, url: skynetURL, condition: setConditions},
         function(data) {
             handleHTMLPreviewResponse(data, serverFunction);
             window.mutex = 0;
@@ -894,7 +903,7 @@ function togglePlainText (e) {
                                         type: "GET",
                                         contentType: "application/json; charset=utf-8",
                                         success: function imageCreatedNowPostContent (result) {
-                                            var uploadID = result.languageImages_OTM.items[0].item.id
+                                            var uploadID = result.languageImages_OTM.items[0].item.id;
                                             _url = skynetURL + '/seam/resource/rest/1/image/update/json?expand=' +
                                                 encodeURI(JSON.stringify({"branches":[{"trunk":{"name": "languageImages"},"branches":[{"trunk":{"name": "imageDataBase64"}}]}]}));
                                             content = {configuredParameters: ["languageImages", "description"],
@@ -905,7 +914,7 @@ function togglePlainText (e) {
                                                     filename: _filename,
                                                     id: uploadID,
                                                     imageData: encodedImage
-                                                }, state: 3}]}}
+                                                }, state: 3}]}};
                                             $.ajax({
                                                 url: _url,
                                                 type: "POST",
@@ -932,7 +941,7 @@ function togglePlainText (e) {
                                     });
                                 }
                             });
-                        }
+                        };
                         reader.readAsArrayBuffer(event.dataTransfer.files[0]);
 
                         return true;  // stop the editor response
