@@ -188,10 +188,17 @@ function updateAvailableConditions() {
 		    newCheckBox.addEventListener('click', function () {
 		    	// Click handler
 		    	serversideUpdateXMLPreview();
-
+				if ($(this).is(':checked')) {
+					$(this).next().addClass('selected-condition');
+				} else {
+					$(this).next().removeClass('selected-condition');	
+				}
 		    }, false);
 		    newSpan.appendChild(newCheckBox);
-		    newSpan.appendChild(document.createTextNode(Model.conditions[boxes]));
+		    var textSpan = document.createElement('span');
+		    textSpan.className = 'condition-checkbox-label';
+		    textSpan.appendChild(document.createTextNode(Model.conditions[boxes]));
+		    newSpan.appendChild(textSpan);
 
 		    parentElement.appendChild(newSpan);
 		}
@@ -506,8 +513,16 @@ function injectPreviewLink() {
     $("#preview-link").html('<a href="preview.html?skyneturl=http://' + skynetURL + '&topicid=' + topicID + '">Preview Link</a>');
 }
 
+function initializeModelConditions () {
+	// Remove existing conditions
+	$('.condition-checkbox').remove();
+	Model.conditionBoxes = [];
+	Model.conditionBoxes= {};	
+}
+
 function loadSkynetTopic(_flash) {
     var  alwaysUseServerToLoadTopics = true;
+    
     if (alwaysUseServerToLoadTopics)
     {
         loadTopicViaDeathStar(skynetURL, topicID, function (json) {
@@ -527,7 +542,8 @@ function loadSkynetTopic(_flash) {
                     }
                 }
                 topicRevision = json.revision;
-                Model.title(json.title)
+                Model.title(json.title);
+      			initializeModelConditions();
                 setPageTitle(json.title);
                 updateXMLPreviewRoute(json.xml, document.getElementsByClassName("div-preview"));
                 _flash && flashTitle('Editing');

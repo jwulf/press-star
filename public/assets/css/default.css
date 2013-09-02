@@ -2,3 +2,33 @@
 @import url("overrides.css");
 
 .div-preview{max-width: 703px; margin-left: 20; margin: 0 auto !important;}
+
+#conditions {
+  position: fixed;
+  background: white;
+  width: 500px;
+  height: 20px;
+  margin: 0;
+  border-style: dotted;
+  border-width: 1px;
+  padding: 5px;
+  color: gray;
+  top: inherit;
+}
+
+#conditions-label {
+  padding: 3px;
+}
+
+.selected-condition {
+	color: black;
+}
+
+.condition-checkbox {
+	padding-left: 6px;
+	padding-right: 3px;
+}
+
+.condition-checkbox-label {
+	padding-left: 3px;
+}
