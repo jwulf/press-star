@@ -65,7 +65,7 @@ function specEditorload() {
 
 function loadSkynetTopic() {
     //loadTopicFromPressGangInBrowser( deets.skynetURL, deets.topicID, updateSpecText);
-    loadTopicViaDeathStar(url, id, updateSpecText);
+    loadSpecViaDeathStar(url, id, updateSpecText);
 }
 
 function revert() {
@@ -77,15 +77,14 @@ function revert() {
 }
 
 function updateSpecText(json) {
-    if (json.xml) {
-        editor.setValue(json.xml);
+    if (json.code) {
+        alert('REST Communication Error while retrieving Spec: ' + json.code);
+    } else {
+    	editor.setValue(json);
         $("#page-title").html("Content Spec: " + id + " - " + json.title);
         document.title = id + ' - ' + json.title;
         Model.modified(false);
-    } else {
-        alert('REST Communication Error while retrieving Spec: ' + json.code);
     }
-
 }
 
 function pageSetup() {

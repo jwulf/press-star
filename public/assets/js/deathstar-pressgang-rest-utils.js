@@ -140,7 +140,18 @@ function loadTopicViaDeathStar (url, id, cb) {
     
     //Otherwise you get a topic
 } 
-
+function loadSpecViaDeathStar (url, specid, cb) {
+    var _url;
+    // Add a leading 'http://' if the url doesn't already have one
+    _url = (url.indexOf('http://') === 0) ? _url = url : _url = 'http://' + url;
+    
+    $.get('/rest/1/gettopic', {url: _url, specid: specid}, cb);
+    
+    // Here's what you get back in the callback when the PG server cannot be reached: 
+    //{code: "ENOTFOUND", errno: "ENOTFOUND", syscall: "getaddrinfo"} 
+    
+    //Otherwise you get a topic
+} 
 
 
 /* This is the demo function for this library. 
