@@ -564,6 +564,7 @@ function patchTopic (msg) {
             }); // get rid of previous revision information
 
             target.addClass('pg-topic-rev-' + msg.revision); // Add current revision
+            target.data().pgTopicRev = msg.revision;
 
             // Restore injected content
             if (prereq) prereq.insertAfter(target.find('hr'));
